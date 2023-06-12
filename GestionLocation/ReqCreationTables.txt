@@ -1,0 +1,147 @@
+﻿-- phpMyAdmin SQL Dump
+-- version 5.2.0
+-- https://www.phpmyadmin.net/
+--
+-- Hôte : 127.0.0.1:3306
+-- Généré le : lun. 12 juin 2023 à 19:28
+-- Version du serveur : 8.0.31
+-- Version de PHP : 8.0.26
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de données : gestionlocation
+--
+CREATE DATABASE IF NOT EXISTS gestionlocation DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE gestionlocation;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table bien
+--
+
+DROP TABLE IF EXISTS bien;
+CREATE TABLE bien (
+  idbien int NOT NULL,
+  nombien varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  loyerhc int DEFAULT NULL,
+  charges int DEFAULT NULL,
+  loyercc int DEFAULT NULL,
+  adressebien varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  cpbien varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  villebien varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  chargesimputables int DEFAULT NULL,
+  chargeannuelles int DEFAULT NULL,
+  bienarchive tinyint(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Structure de la table caution
+--
+
+DROP TABLE IF EXISTS caution;
+CREATE TABLE caution (
+  idcaution int NOT NULL,
+  prenomcaution varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  nomcaution varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  nomcompletcaution varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  adressecaution varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  cpcaution varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  villecaution varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  telephonecaution varchar(14) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  emailcaution varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  cautionarchivee tinyint(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Structure de la table locataire
+--
+
+DROP TABLE IF EXISTS locataire;
+CREATE TABLE locataire (
+  idlocataire int NOT NULL,
+  prenomlocataire varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  nomlocataire varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  nomcompletlocataire varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  adresselocataire varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  cplocataire varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  villelocataire varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  datenaissancelocataire date DEFAULT NULL,
+  lieunaissancelocataire varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  telephonelocataire varchar(14) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  emailocataire varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  locatairearchive tinyint(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Structure de la table location
+--
+
+DROP TABLE IF EXISTS location;
+CREATE TABLE location (
+  idlocation int NOT NULL,
+  idbien int NOT NULL,
+  idcaution int NOT NULL,
+  idlocataire int NOT NULL,
+  debutlocation date DEFAULT NULL,
+  finlocation date DEFAULT NULL,
+  depotgarantie decimal(13,2) DEFAULT NULL,
+  locationarchivee tinyint(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Index pour les tables déchargées
+--
+
+--
+-- Index pour la table bien
+--
+ALTER TABLE bien
+  ADD PRIMARY KEY (idbien);
+
+--
+-- Index pour la table caution
+--
+ALTER TABLE caution
+  ADD PRIMARY KEY (idcaution);
+
+--
+-- Index pour la table locataire
+--
+ALTER TABLE locataire
+  ADD PRIMARY KEY (idlocataire);
+
+--
+-- Index pour la table location
+--
+ALTER TABLE location
+  ADD PRIMARY KEY (idlocation),
+  ADD KEY i_fk_location_bien1 (idbien),
+  ADD KEY i_fk_location_caution1 (idcaution),
+  ADD KEY i_fk_location_locataire1 (idlocataire);
+
+--
+-- Contraintes pour les tables déchargées
+--
+
+--
+-- Contraintes pour la table location
+--
+ALTER TABLE location
+  ADD CONSTRAINT location_ibfk_1 FOREIGN KEY (idbien) REFERENCES bien (idbien),
+  ADD CONSTRAINT location_ibfk_2 FOREIGN KEY (idcaution) REFERENCES caution (idcaution),
+  ADD CONSTRAINT location_ibfk_3 FOREIGN KEY (idlocataire) REFERENCES locataire (idlocataire);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
