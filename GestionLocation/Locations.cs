@@ -68,6 +68,7 @@ namespace GestionLocation
         /// </summary>
         public void AfficherBiens()
         {
+            clbBiens.Items.Clear();
             string req = "SELECT nombien FROM bien WHERE bienarchive = 0 ORDER BY nombien";
             this.command = new MySqlCommand(req, this.connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
