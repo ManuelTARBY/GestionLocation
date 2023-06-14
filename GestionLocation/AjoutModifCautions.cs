@@ -22,7 +22,7 @@ namespace GestionLocation
         private MySqlCommand command;
         private readonly string[] rubCautions = { "idcaution", "prenomcaution", "nomcaution", "nomcompletcaution",
             "adressecaution", "cpcaution", "villecaution", "telephonecaution", "emailcaution", "cautionarchivee" };
-        private readonly char[] charDelimit = { ',', ' ' };
+        private readonly string[] stringDelimit = { ", " };
 
         /// <summary>
         /// Constructeur de AjoutModifCaution
@@ -90,7 +90,11 @@ namespace GestionLocation
         /// <returns></returns>
         private bool ChampsRenseignes()
         {
-            if (txtPrenom.Text.Equals("") || txtNom.Text.Equals("") || txtTelephone.Text.Equals(""))
+            if (txtPrenom.Text.Equals("") || txtNom.Text.Equals("") )
+            {
+                return false;
+            }
+            else if (txtEmail.Text.Equals("") && txtTelephone.Text.Equals(""))
             {
                 return false;
             }
@@ -109,7 +113,7 @@ namespace GestionLocation
         {
             if (!ChampsRenseignes())
             {
-                MessageBox.Show("Vous devez au moins remplir les champs Prénom, Nom et Téléphone pour pouvoir valider la saisie.");
+                MessageBox.Show("Vous devez au moins remplir les champs Prénom, Nom et Téléphone ou Email pour pouvoir valider la saisie.");
             }
             else
             {
@@ -142,7 +146,7 @@ namespace GestionLocation
             string[] nomprenom = MiseEnFormeNomPrenom();
             this.req = $"{this.typeReq} caution SET ";
             this.req += $"idcaution = {this.id}, prenomcaution = \"{nomprenom[0]}\", nomcaution = \"{nomprenom[1]}\", " +
-                $"adressecaution = \"{txtAdresse.Text}\", cpcaution = \"{txtCp.Text}\", villecaution = \"{txtVille.Text}\", " +
+                $"adressecaution = \"{txtAdresse.Text}\", cpcaution = \"{txtCp.Text}\", villecaution = \"{txtVille.Text.ToUpper()}\", " +
                 $"telephonecaution = \"{EspacerNumTel()}\", emailcaution = \"{txtEmail.Text}\", cautionarchivee = {cbxArchive.Checked}, " +
                 $"nomcompletcaution = \"{nomprenom[2]}\" WHERE idcaution = {this.id}";
         }
@@ -160,7 +164,7 @@ namespace GestionLocation
                 this.req += $"{rubCautions[i]}, ";
             }
             this.req += $"{rubCautions[rubCautions.Length - 1]}) VALUES ({this.id}, \"{nomprenom[0]}\"," +
-                $"\"{nomprenom[1]}\", \"{nomprenom[2]}\", \"{txtAdresse.Text}\", \"{txtCp.Text}\", \"{txtVille.Text}\"," +
+                $"\"{nomprenom[1]}\", \"{nomprenom[2]}\", \"{txtAdresse.Text}\", \"{txtCp.Text}\", \"{txtVille.Text.ToUpper()}\"," +
                 $" \"{EspacerNumTel()}\", \"{txtEmail.Text}\", {cbxArchive.Checked})";
         }
 
@@ -199,7 +203,7 @@ namespace GestionLocation
         private string[] MiseEnFormeNomPrenom()
         {
             string[] nomprenom = { "", "", "" };
-            string[] lesPrenoms = txtPrenom.Text.Split(charDelimit);
+            string[] lesPrenoms = txtPrenom.Text.Split(stringDelimit, StringSplitOptions.RemoveEmptyEntries);
             // Met le nom tout en majuscule
             nomprenom[1] = txtNom.Text.ToUpper();
             // Construit le nom complet (nom + prénom)

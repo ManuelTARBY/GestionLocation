@@ -22,7 +22,7 @@ namespace GestionLocation
         private string req;
         private MySqlCommand command;
         private readonly string[] rubLocataires = { "idlocataire", "prenomlocataire", "nomlocataire", "nomcompletlocataire", "adresselocataire", "cplocataire", "villelocataire", "datenaissancelocataire", "lieunaissancelocataire", "telephonelocataire", "emailocataire", "locatairearchive" };
-        private readonly char[] charDelimit = { ',', ' ' };
+        private readonly string[] stringDelimit = { ", " };
 
         /// <summary>
         /// Constructeur de AjoutModifLocataire
@@ -144,8 +144,8 @@ namespace GestionLocation
             string[] nomprenom = MiseEnFormeNomPrenom();
             this.req = $"{this.typeReq} locataire SET ";
             this.req += $"idlocataire = {this.id}, prenomlocataire = \"{nomprenom[0]}\", nomlocataire = \"{nomprenom[1]}\", " +
-                $"adresselocataire = \"{txtAdresse.Text}\", cplocataire = \"{txtCp.Text}\", villelocataire = \"{txtVille.Text}\", " +
-                $"datenaissancelocataire = \"{datDateNaissance.Value:yyyy-MM-dd}\", lieunaissancelocataire = \"{txtLieuNaissance.Text}\", " +
+                $"adresselocataire = \"{txtAdresse.Text}\", cplocataire = \"{txtCp.Text}\", villelocataire = \"{txtVille.Text.ToUpper()}\", " +
+                $"datenaissancelocataire = \"{datDateNaissance.Value:yyyy-MM-dd}\", lieunaissancelocataire = \"{txtLieuNaissance.Text.ToUpper()}\", " +
                 $"telephonelocataire = \"{EspacerNumTel()}\", emailocataire = \"{txtEmail.Text}\", locatairearchive = {cbxArchive.Checked}, " +
                 $"nomcompletlocataire = \"{nomprenom[2]}\" WHERE idlocataire = {this.id}";
         }
@@ -162,7 +162,7 @@ namespace GestionLocation
                 this.req += $"{rubLocataires[i]}, ";
             }
             this.req += $"{rubLocataires[rubLocataires.Length - 1]}) VALUES ({this.id}, \"{nomprenom[0]}\", \"{nomprenom[1]}\"," +
-                $"\"{nomprenom[2]}\", \"{txtAdresse.Text}\", \"{txtCp.Text}\", \"{txtVille.Text}\", \"{datDateNaissance.Value:yyyy-MM-dd}\"," +
+                $"\"{nomprenom[2]}\", \"{txtAdresse.Text}\", \"{txtCp.Text}\", \"{txtVille.Text.ToUpper()}\", \"{datDateNaissance.Value:yyyy-MM-dd}\"," +
                 $" \"{txtLieuNaissance.Text}\", \"{EspacerNumTel()}\", \"{txtEmail.Text}\", {cbxArchive.Checked})";
         }
 
@@ -201,7 +201,8 @@ namespace GestionLocation
         private string[] MiseEnFormeNomPrenom()
         {
             string[] nomprenom = { "", "", "" };
-            string[] lesPrenoms = txtPrenom.Text.Split(charDelimit);
+            //string[] lesPrenoms = txtPrenom.Text.Split(charDelimit);
+            string[] lesPrenoms = txtPrenom.Text.Split(stringDelimit, StringSplitOptions.RemoveEmptyEntries);
             // Met le nom tout en majuscule
             nomprenom[1] = txtNom.Text.ToUpper();
             // Construit le nom complet (nom + prénom)
