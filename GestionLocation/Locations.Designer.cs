@@ -41,8 +41,6 @@ namespace GestionLocation
             this.btnModifier = new System.Windows.Forms.Button();
             this.btnArchiver = new System.Windows.Forms.Button();
             this.btnAucun = new System.Windows.Forms.Button();
-            this.lstID = new System.Windows.Forms.ListBox();
-            this.lblRef = new System.Windows.Forms.Label();
             this.btnSupprimer = new System.Windows.Forms.Button();
             this.grpLocationArchive.SuspendLayout();
             this.SuspendLayout();
@@ -169,25 +167,6 @@ namespace GestionLocation
             this.btnAucun.UseVisualStyleBackColor = true;
             this.btnAucun.Click += new System.EventHandler(this.BtnAucun_Click);
             // 
-            // lstID
-            // 
-            this.lstID.FormattingEnabled = true;
-            this.lstID.ItemHeight = 20;
-            this.lstID.Location = new System.Drawing.Point(912, 228);
-            this.lstID.Name = "lstID";
-            this.lstID.Size = new System.Drawing.Size(51, 164);
-            this.lstID.TabIndex = 12;
-            this.lstID.UseTabStops = false;
-            // 
-            // lblRef
-            // 
-            this.lblRef.AutoSize = true;
-            this.lblRef.Location = new System.Drawing.Point(917, 205);
-            this.lblRef.Name = "lblRef";
-            this.lblRef.Size = new System.Drawing.Size(35, 20);
-            this.lblRef.TabIndex = 13;
-            this.lblRef.Text = "Ref";
-            // 
             // btnSupprimer
             // 
             this.btnSupprimer.Location = new System.Drawing.Point(408, 141);
@@ -202,10 +181,8 @@ namespace GestionLocation
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(977, 438);
+            this.ClientSize = new System.Drawing.Size(929, 438);
             this.Controls.Add(this.btnSupprimer);
-            this.Controls.Add(this.lblRef);
-            this.Controls.Add(this.lstID);
             this.Controls.Add(this.btnAucun);
             this.Controls.Add(this.btnArchiver);
             this.Controls.Add(this.btnModifier);
@@ -220,7 +197,6 @@ namespace GestionLocation
             this.grpLocationArchive.ResumeLayout(false);
             this.grpLocationArchive.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -237,8 +213,6 @@ namespace GestionLocation
         private System.Windows.Forms.Button btnModifier;
         private System.Windows.Forms.Button btnArchiver;
         private System.Windows.Forms.Button btnAucun;
-        private System.Windows.Forms.ListBox lstID;
-        private System.Windows.Forms.Label lblRef;
         private System.Windows.Forms.Button btnSupprimer;
     }
 }

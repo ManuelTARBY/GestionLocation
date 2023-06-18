@@ -18,6 +18,7 @@ namespace GestionLocation
         private MySqlCommand command;
         private string where;
         private string req;
+        private Dictionary<string, int> lesId;
 
         /// <summary>
         /// Constructeur
@@ -27,6 +28,7 @@ namespace GestionLocation
         {
             InitializeComponent();
             this.connexion = connexion;
+            this.lesId = new Dictionary<string, int>();
             AfficherBiens();
             AfficherLocations();
         }
@@ -38,11 +40,19 @@ namespace GestionLocation
         public void AfficherLocations()
         {
             lstLocations.Items.Clear();
-            lstID.Items.Clear();
+            lesId.Clear();
             StringBuilder req = new StringBuilder();
             req.AppendLine("SELECT nombien AS `Bien`, nomcompletlocataire AS `Locataire`, debutlocation AS `Début de location`, finlocation AS `Fin de location`, nomcompletcaution AS `Caution`, idlocation AS `id`");
             req.AppendLine("FROM location JOIN locataire USING(idlocataire) JOIN bien USING(idbien) JOIN caution USING(idcaution)");
-            req.AppendLine(Where());
+            if (clbBiens.CheckedItems.Count > 0)
+            {
+                req.AppendLine(Where());
+            }
+            else
+            {
+                lstLocations.Items.Clear();
+                return;
+            }
             req.AppendLine("ORDER BY nombien");
             this.command = new MySqlCommand(req.ToString(), this.connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
@@ -54,8 +64,10 @@ namespace GestionLocation
             while (!finCurseur)
             {
                 // affichage des champs récupérés dans la ligne
-                lstLocations.Items.Add($"{reader["Bien"]} || {reader["Locataire"]} || Du {reader.GetDateTime(2):d} au {reader.GetDateTime(3):d} || Caution : {reader["Caution"]}");
-                lstID.Items.Add(reader["id"]);
+                string item = $"{reader["Bien"]} || {reader["Locataire"]} || Du {reader.GetDateTime(2):d} au {reader.GetDateTime(3):d} || Caution : {reader["Caution"]}";
+                lstLocations.Items.Add(item);
+                lesId.Add(item, (int)(reader["id"]));
+                /*lstID.Items.Add(reader["id"]);*/
                 // lecture de la ligne suivante dans le curseur
                 finCurseur = !reader.Read();
             }
@@ -167,7 +179,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void MajLocations_Click(object sender, EventArgs e)
         {
-            if (clbBiens.CheckedItems.Count != 0)
+            if (clbBiens.CheckedItems != null)
             {
                 AfficherLocations();
             }
@@ -263,7 +275,8 @@ namespace GestionLocation
             else
             {
                 // Récupère l'id de la location sélectionnée
-                int idLocation = Int32.Parse(lstID.Items[lstLocations.SelectedIndex].ToString());
+                int idLocation = lesId[lstLocations.SelectedItem.ToString()];
+               // int idLocation = Int32.Parse(lstID.Items[lstLocations.SelectedIndex].ToString());
                 // Requête pour récupérer la valeur de locationarchivee de la location sélectionnée
                 this.command = new MySqlCommand($"SELECT locationarchivee FROM location WHERE idlocation = {idLocation}", this.connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
@@ -310,7 +323,8 @@ namespace GestionLocation
             if (lstLocations.SelectedItem != null)
             {
                 // Récupère l'id de la location sélectionnée
-                int id = Int32.Parse(lstID.Items[lstLocations.SelectedIndex].ToString());
+                int id = lesId[lstLocations.SelectedItem.ToString()];
+                //int id = Int32.Parse(lstID.Items[lstLocations.SelectedIndex].ToString());
                 // Crée puis ouvre la fenêtre d'ajout/modif location
                 AjoutModifLocations modifLocataire = new AjoutModifLocations(this, this.connexion, "UPDATE", id);
                 modifLocataire.ShowDialog();
@@ -331,7 +345,7 @@ namespace GestionLocation
             if (lstLocations.SelectedItem != null)
             {
                 // Récupère l'id de la location sélectionnée
-                int id = Int32.Parse(lstID.Items[lstLocations.SelectedIndex].ToString());
+                int id = lesId[lstLocations.SelectedItem.ToString()];
                 this.req = $"DELETE FROM location WHERE idlocation = \"{id}\"";
                 ExecuteReqIUD();
                 AfficherLocations();
