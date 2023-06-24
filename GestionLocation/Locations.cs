@@ -67,7 +67,6 @@ namespace GestionLocation
                 string item = $"{reader["Bien"]} || {reader["Locataire"]} || Du {reader.GetDateTime(2):d} au {reader.GetDateTime(3):d} || Caution : {reader["Caution"]}";
                 lstLocations.Items.Add(item);
                 lesId.Add(item, (int)(reader["id"]));
-                /*lstID.Items.Add(reader["id"]);*/
                 // lecture de la ligne suivante dans le curseur
                 finCurseur = !reader.Read();
             }
@@ -276,7 +275,6 @@ namespace GestionLocation
             {
                 // Récupère l'id de la location sélectionnée
                 int idLocation = lesId[lstLocations.SelectedItem.ToString()];
-               // int idLocation = Int32.Parse(lstID.Items[lstLocations.SelectedIndex].ToString());
                 // Requête pour récupérer la valeur de locationarchivee de la location sélectionnée
                 this.command = new MySqlCommand($"SELECT locationarchivee FROM location WHERE idlocation = {idLocation}", this.connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
@@ -324,7 +322,6 @@ namespace GestionLocation
             {
                 // Récupère l'id de la location sélectionnée
                 int id = lesId[lstLocations.SelectedItem.ToString()];
-                //int id = Int32.Parse(lstID.Items[lstLocations.SelectedIndex].ToString());
                 // Crée puis ouvre la fenêtre d'ajout/modif location
                 AjoutModifLocations modifLocataire = new AjoutModifLocations(this, this.connexion, "UPDATE", id);
                 modifLocataire.ShowDialog();
