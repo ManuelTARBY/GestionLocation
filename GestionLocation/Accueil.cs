@@ -108,6 +108,10 @@ namespace GestionLocation
             SurvolSortie((Button) sender);
         }
 
+        /// <summary>
+        /// Gère l'évènement de survol d'un bouton
+        /// </summary>
+        /// <param name="bouton">bouton survolé</param>
         private void SurvolEntree(Button bouton)
         {
             bouton.Size = new Size(bouton.Width + 6, bouton.Height + 6);

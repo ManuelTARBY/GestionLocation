@@ -35,6 +35,7 @@ CREATE TABLE bien (
   bienarchive tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
 --
 -- Structure de la table caution
 --
@@ -52,6 +53,52 @@ CREATE TABLE caution (
   emailcaution varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   cautionarchivee tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
+--
+-- Structure de la table chargesannuelles
+--
+
+DROP TABLE IF EXISTS chargesannuelles;
+CREATE TABLE chargesannuelles (
+  idchargeannuelle int NOT NULL,
+  idbien int NOT NULL,
+  libelle varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  refFrequence varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  montantcharge decimal(13,2) DEFAULT NULL,
+  chargeannuelle decimal(13,2) DEFAULT NULL,
+  imputable tinyint(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table frequencepaiement
+--
+
+DROP TABLE IF EXISTS frequencepaiement;
+CREATE TABLE frequencepaiement (
+  libelle varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  occurrence int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table frequencepaiement
+--
+
+INSERT INTO frequencepaiement (libelle, occurrence) VALUES
+('10x par an', 10),
+('11x par an', 11),
+('Annuelle', 1),
+('Bimensuelle', 6),
+('Hebdomadaire', 52),
+('Mensuelle', 12),
+('Ponctuelle', 1),
+('Semestrielle', 2),
+('Trimestrielle', 4);
+
+-- --------------------------------------------------------
 
 --
 -- Structure de la table locataire
@@ -73,6 +120,9 @@ CREATE TABLE locataire (
   locatairearchive tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+-- --------------------------------------------------------
+
 --
 -- Structure de la table location
 --
@@ -89,6 +139,8 @@ CREATE TABLE location (
   locationarchivee tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+
 --
 -- Index pour les tables déchargées
 --
@@ -104,6 +156,20 @@ ALTER TABLE bien
 --
 ALTER TABLE caution
   ADD PRIMARY KEY (idcaution);
+
+--
+-- Index pour la table chargesannuelles
+--
+ALTER TABLE chargesannuelles
+  ADD PRIMARY KEY (idchargeannuelle),
+  ADD KEY i_fk_chargesannuelles_bien1 (idbien),
+  ADD KEY i_fk_chargesannuelles_libelleFreq (refFrequence) USING BTREE;
+
+--
+-- Index pour la table frequencepaiement
+--
+ALTER TABLE frequencepaiement
+  ADD PRIMARY KEY (libelle);
 
 --
 -- Index pour la table locataire
@@ -123,6 +189,13 @@ ALTER TABLE location
 --
 -- Contraintes pour les tables déchargées
 --
+
+--
+-- Contraintes pour la table chargesannuelles
+--
+ALTER TABLE chargesannuelles
+  ADD CONSTRAINT chargesannuelles_ibfk_1 FOREIGN KEY (idbien) REFERENCES bien (idbien),
+  ADD CONSTRAINT chargesannuelles_ibfk_2 FOREIGN KEY (refFrequence) REFERENCES frequencepaiement (libelle) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --
 -- Contraintes pour la table location

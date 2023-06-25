@@ -1,4 +1,6 @@
 ﻿
+using System.Drawing;
+
 namespace GestionLocation
 {
     partial class Biens
@@ -38,10 +40,11 @@ namespace GestionLocation
             this.rdbBienArchive = new System.Windows.Forms.RadioButton();
             this.btnRechercher = new System.Windows.Forms.Button();
             this.btnSupprimer = new System.Windows.Forms.Button();
+            this.btnFicheBien = new System.Windows.Forms.Button();
             this.gbrBienArchive.SuspendLayout();
             this.SuspendLayout();
             // 
-            // lstCautions
+            // lstBiens
             // 
             this.lstBiens.FormattingEnabled = true;
             this.lstBiens.ItemHeight = 20;
@@ -80,7 +83,7 @@ namespace GestionLocation
             this.btnArchiver.UseVisualStyleBackColor = true;
             this.btnArchiver.Click += new System.EventHandler(this.BtnArchiverDesarchiver_Click);
             // 
-            // gbrCautionArchive
+            // gbrBienArchive
             // 
             this.gbrBienArchive.Controls.Add(this.rdbBienNonArchive);
             this.gbrBienArchive.Controls.Add(this.rdbBienArchive);
@@ -91,7 +94,7 @@ namespace GestionLocation
             this.gbrBienArchive.TabStop = false;
             this.gbrBienArchive.Text = "Tri";
             // 
-            // rdbCautionNonArchive
+            // rdbBienNonArchive
             // 
             this.rdbBienNonArchive.AutoSize = true;
             this.rdbBienNonArchive.Checked = true;
@@ -103,7 +106,7 @@ namespace GestionLocation
             this.rdbBienNonArchive.Text = "Non archivé";
             this.rdbBienNonArchive.UseVisualStyleBackColor = true;
             // 
-            // rdbCautionArchive
+            // rdbBienArchive
             // 
             this.rdbBienArchive.AutoSize = true;
             this.rdbBienArchive.Location = new System.Drawing.Point(6, 25);
@@ -116,7 +119,7 @@ namespace GestionLocation
             // 
             // btnRechercher
             // 
-            this.btnRechercher.Location = new System.Drawing.Point(226, 188);
+            this.btnRechercher.Location = new System.Drawing.Point(226, 177);
             this.btnRechercher.Name = "btnRechercher";
             this.btnRechercher.Size = new System.Drawing.Size(153, 35);
             this.btnRechercher.TabIndex = 5;
@@ -126,19 +129,37 @@ namespace GestionLocation
             // 
             // btnSupprimer
             // 
-            this.btnSupprimer.Location = new System.Drawing.Point(288, 12);
+            this.btnSupprimer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
+            this.btnSupprimer.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSupprimer.ForeColor = System.Drawing.SystemColors.Control;
+            this.btnSupprimer.Location = new System.Drawing.Point(291, 229);
             this.btnSupprimer.Name = "btnSupprimer";
-            this.btnSupprimer.Size = new System.Drawing.Size(132, 48);
+            this.btnSupprimer.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.btnSupprimer.Size = new System.Drawing.Size(132, 62);
             this.btnSupprimer.TabIndex = 6;
             this.btnSupprimer.Text = "Supprimer";
-            this.btnSupprimer.UseVisualStyleBackColor = true;
+            this.btnSupprimer.UseVisualStyleBackColor = false;
             this.btnSupprimer.Click += new System.EventHandler(this.BtnSupprimer_Click);
+            // 
+            // btnFicheBien
+            // 
+            this.btnFicheBien.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.btnFicheBien.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnFicheBien.ForeColor = System.Drawing.SystemColors.Control;
+            this.btnFicheBien.Location = new System.Drawing.Point(302, 12);
+            this.btnFicheBien.Name = "btnFicheBien";
+            this.btnFicheBien.Size = new System.Drawing.Size(121, 61);
+            this.btnFicheBien.TabIndex = 7;
+            this.btnFicheBien.Text = "Fiche du bien";
+            this.btnFicheBien.UseVisualStyleBackColor = false;
+            this.btnFicheBien.Click += new System.EventHandler(this.BtnFicheBien_Click);
             // 
             // Biens
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(435, 304);
+            this.Controls.Add(this.btnFicheBien);
             this.Controls.Add(this.btnSupprimer);
             this.Controls.Add(this.btnRechercher);
             this.Controls.Add(this.gbrBienArchive);
@@ -165,5 +186,6 @@ namespace GestionLocation
         private System.Windows.Forms.RadioButton rdbBienArchive;
         private System.Windows.Forms.Button btnRechercher;
         private System.Windows.Forms.Button btnSupprimer;
+        private System.Windows.Forms.Button btnFicheBien;
     }
 }

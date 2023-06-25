@@ -150,21 +150,26 @@ namespace GestionLocation
             }
             else
             {
-                this.req = $"SELECT idbien FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"";
-                this.command = new MySqlCommand(this.req, this.connexion);
-                MySqlDataReader reader = this.command.ExecuteReader();
-                reader.Read();
-                int id = reader.GetInt32(0);
-                reader.Close();
-                if (VerifIntegrite(id) == true)
+                // Demande confirmation de suppression du bien
+                DialogResult result = MessageBox.Show($"Êtes-vous sûr de vouloir supprimer le bien {lstBiens.SelectedItem} ?", "Confirmer suppression", MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
                 {
-                    this.req = $"DELETE FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"";
-                    ExecuteReqIUD();
-                    RemplirLstBiens();
-                }
-                else
-                {
-                    MessageBox.Show("Ce bien est relié à une ou plusieurs locations. Vous ne pouvez pas le supprimer.");
+                    this.req = $"SELECT idbien FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"";
+                    this.command = new MySqlCommand(this.req, this.connexion);
+                    MySqlDataReader reader = this.command.ExecuteReader();
+                    reader.Read();
+                    int id = reader.GetInt32(0);
+                    reader.Close();
+                    if (VerifIntegrite(id) == true)
+                    {
+                        this.req = $"DELETE FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"";
+                        ExecuteReqIUD();
+                        RemplirLstBiens();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Ce bien est relié à une ou plusieurs locations. Vous ne pouvez pas le supprimer.");
+                    }
                 }
             }
         }
@@ -212,6 +217,33 @@ namespace GestionLocation
             else
             {
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Gère le clic sur le bouton d'accès à la fiche du bien sélectionné
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnFicheBien_Click(object sender, EventArgs e)
+        {
+            // Si aucun bien n'est sélectionné
+            if (lstBiens.SelectedItem == null)
+            {
+                MessageBox.Show("Veuillez sélectionner un bien pour pouvoir afficher sa fiche.");
+            }
+            else
+            {
+                this.req = $"SELECT * FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"";
+                this.command = new MySqlCommand(this.req, this.connexion);
+                MySqlDataReader reader = this.command.ExecuteReader();
+                reader.Read();
+                int id = reader.GetInt32(0);
+                reader.Close();
+                
+                // Crée la fenêtre de fiche du bien à ouvrir et l'ouvre avec la connexion et le tableau des données du bien en paramètres
+                FicheBien modifBiens = new FicheBien(this.connexion, id);
+                modifBiens.ShowDialog();
             }
         }
     }
