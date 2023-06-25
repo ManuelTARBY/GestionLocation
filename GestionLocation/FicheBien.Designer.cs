@@ -201,7 +201,7 @@ namespace GestionLocation
             // 
             // btnFermer
             // 
-            this.btnFermer.Location = new System.Drawing.Point(483, 282);
+            this.btnFermer.Location = new System.Drawing.Point(477, 297);
             this.btnFermer.Name = "btnFermer";
             this.btnFermer.Size = new System.Drawing.Size(99, 58);
             this.btnFermer.TabIndex = 18;
@@ -256,7 +256,7 @@ namespace GestionLocation
             // 
             // btnListeCharges
             // 
-            this.btnListeCharges.Location = new System.Drawing.Point(156, 288);
+            this.btnListeCharges.Location = new System.Drawing.Point(155, 309);
             this.btnListeCharges.Name = "btnListeCharges";
             this.btnListeCharges.Size = new System.Drawing.Size(213, 46);
             this.btnListeCharges.TabIndex = 24;
@@ -268,7 +268,7 @@ namespace GestionLocation
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(603, 358);
+            this.ClientSize = new System.Drawing.Size(603, 406);
             this.Controls.Add(this.btnListeCharges);
             this.Controls.Add(this.lblSeuilRentaJours);
             this.Controls.Add(this.txtSeuilRentaJours);
