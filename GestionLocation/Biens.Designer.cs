@@ -132,10 +132,10 @@ namespace GestionLocation
             this.btnSupprimer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
             this.btnSupprimer.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSupprimer.ForeColor = System.Drawing.SystemColors.Control;
-            this.btnSupprimer.Location = new System.Drawing.Point(291, 229);
+            this.btnSupprimer.Location = new System.Drawing.Point(291, 12);
             this.btnSupprimer.Name = "btnSupprimer";
             this.btnSupprimer.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnSupprimer.Size = new System.Drawing.Size(132, 62);
+            this.btnSupprimer.Size = new System.Drawing.Size(132, 48);
             this.btnSupprimer.TabIndex = 6;
             this.btnSupprimer.Text = "Supprimer";
             this.btnSupprimer.UseVisualStyleBackColor = false;
@@ -143,12 +143,13 @@ namespace GestionLocation
             // 
             // btnFicheBien
             // 
-            this.btnFicheBien.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.btnFicheBien.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            //this.btnFicheBien.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.btnFicheBien.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(190)))), ((int)(((byte)(54)))));
+            this.btnFicheBien.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnFicheBien.ForeColor = System.Drawing.SystemColors.Control;
-            this.btnFicheBien.Location = new System.Drawing.Point(302, 12);
+            this.btnFicheBien.Location = new System.Drawing.Point(237, 243);
             this.btnFicheBien.Name = "btnFicheBien";
-            this.btnFicheBien.Size = new System.Drawing.Size(121, 61);
+            this.btnFicheBien.Size = new System.Drawing.Size(186, 48);
             this.btnFicheBien.TabIndex = 7;
             this.btnFicheBien.Text = "Fiche du bien";
             this.btnFicheBien.UseVisualStyleBackColor = false;

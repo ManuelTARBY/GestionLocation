@@ -128,7 +128,7 @@ namespace GestionLocation
             {
                 string[] strChargesAnnuelles = txtChargesAnnuelles.Text.Split(' ');
                 int loyerCCAnnuel = loyerCC * 12;
-                float renta = float.Parse(strChargesAnnuelles[0]) / loyerCCAnnuel;
+                float renta = float.Parse(strChargesAnnuelles[0]) / loyerCCAnnuel * 100;
                 // En pourcentage
                 txtSeuilRenta.Text = $"{Math.Round(renta, 1)} %";
                 // En jours

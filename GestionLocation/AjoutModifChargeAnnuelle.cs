@@ -81,7 +81,7 @@ namespace GestionLocation
         /// </summary>
         public string AttribuerIDCharge()
         {
-            this.req = $"SELECT MAX(idchargeannuelle) FROM (SELECT idchargeannuelle FROM chargesannuelles WHERE idbien = {this.leBien[0]}) AS req";
+            this.req = $"SELECT MAX(idchargeannuelle) FROM (SELECT idchargeannuelle FROM chargesannuelles) AS req";
             this.command = new MySqlCommand(this.req, this.connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
@@ -132,17 +132,18 @@ namespace GestionLocation
         {
             if (VerifChamps())
             {
+                float annu = CalculerMontantAnnuel();
                 // Prépare la requête
                 switch (this.typeReq)
                 {
                     case "INSERT":
                         this.req = "INSERT INTO chargesannuelles (idchargeannuelle, idbien, libelle, refFrequence, montantcharge, chargeannuelle, imputable) " +
                             $"VALUES ({lblID.Text}, {this.leBien[0]}, \'{txtLibelle.Text}\', " +
-                            $"\'{cobFrequence.SelectedItem}\', {txtMontant.Text}, {CalculerMontantAnnuel()}, {cbxImputable.Checked})";
+                            $"\'{cobFrequence.SelectedItem}\', \'{MontantPoint()}\', \'{annu}\', {cbxImputable.Checked})";
                         break;
                     case "UPDATE":
                         this.req = $"UPDATE chargesannuelles SET idbien = {leBien[0]}, libelle = \'{txtLibelle.Text}\', refFrequence = \'{cobFrequence.SelectedItem}\', " +
-                            $"montantcharge = \'{txtMontant.Text}\', chargeannuelle = \'{CalculerMontantAnnuel()}\', imputable = {cbxImputable.Checked} " +
+                            $"montantcharge = \'{MontantPoint()}\', chargeannuelle = \'{annu}\', imputable = {cbxImputable.Checked} " +
                             $"WHERE idchargeannuelle = {this.idCharge}";
                         break;
                 }
@@ -171,13 +172,14 @@ namespace GestionLocation
         /// <returns></returns>
         private float CalculerMontantAnnuel()
         {
+            // Récupère l'occurrence de la charge
             this.req = $"SELECT occurrence FROM frequencepaiement WHERE libelle = \'{cobFrequence.SelectedItem}\'";
             this.command = new MySqlCommand(this.req, this.connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
-            float occurrence = (int)(reader["occurrence"]);
+            int occurrence = (int)(reader["occurrence"]);
             reader.Close();
-            float totalAnnuel = (occurrence * float.Parse(txtMontant.Text));
+            float totalAnnuel = (occurrence * MontantVirg());
             return (int)Math.Round(totalAnnuel, 2);
         }
 
@@ -237,6 +239,32 @@ namespace GestionLocation
             this.command.Prepare();
             // exécution de la requête
             this.command.ExecuteNonQuery();
+        }
+
+
+        /// <summary>
+        /// Modifie un montant pour le rendre lisible dans la requête
+        /// </summary>
+        /// <param name="chaine"></param>
+        /// <returns>Chaîne lisible</returns>
+        public float MontantVirg()
+        {
+            string chaine = txtMontant.Text;
+            if (chaine.Contains('.'))
+            {
+                chaine = chaine.Replace('.', ',');
+            }
+            return float.Parse(chaine);
+        }
+
+        public string MontantPoint()
+        {
+            string chaine = txtMontant.Text;
+            if (chaine.Contains(','))
+            {
+                chaine = chaine.Replace(',', '.');
+            }
+            return chaine;
         }
     }
 }
