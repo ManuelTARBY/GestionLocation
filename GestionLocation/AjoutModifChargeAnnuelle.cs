@@ -243,20 +243,34 @@ namespace GestionLocation
 
 
         /// <summary>
-        /// Modifie un montant pour le rendre lisible dans la requête
+        /// Rend le contenu du champ txtMontant convertible en float pour permettre le calcul du montant annuel
         /// </summary>
         /// <param name="chaine"></param>
-        /// <returns>Chaîne lisible</returns>
+        /// <returns>Chaîne initiale convertie en nombre flottant</returns>
         public float MontantVirg()
         {
             string chaine = txtMontant.Text;
+            float result;
             if (chaine.Contains('.'))
             {
                 chaine = chaine.Replace('.', ',');
             }
-            return float.Parse(chaine);
+            try
+            {
+                result = float.Parse(chaine);
+                return result;
+            }
+            catch
+            {
+                MessageBox.Show("Montant incorrect.");
+                return 0;
+            }
         }
 
+        /// <summary>
+        /// Rend le champ txtMontant lisible par une requête
+        /// </summary>
+        /// <returns>Chaîne du montant à insérer dans la requête</returns>
         public string MontantPoint()
         {
             string chaine = txtMontant.Text;

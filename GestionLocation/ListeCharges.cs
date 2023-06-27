@@ -15,29 +15,57 @@ namespace GestionLocation
     {
 
         private readonly MySqlConnection connexion;
-        private readonly string[] leBien;
+        private readonly string[] leBien = new string[2];
         private string req;
         private MySqlCommand command;
-        private Dictionary<string, string> lesCharges;
+        private readonly Dictionary<string, string> lesCharges;
         private readonly FicheBien fenFicheBien;
+        private readonly Accueil fenAccueil;
+        private readonly Dictionary<string, string> lesBiens;
         
+
         /// <summary>
         /// Constructeur de ListeCharges
         /// </summary>
         /// <param name="connexion">Chaîne de connexion à la base de données</param>
         /// <param name="nombien">Nom du bien</param>
         //public ListeCharges(MySqlConnection connexion, string[] leBien)
-        public ListeCharges(FicheBien fenFicheBien)
+        public ListeCharges(Form fenetre)
         {
-            this.fenFicheBien = fenFicheBien;
-            this.connexion = fenFicheBien.GetConnexion();
-            this.leBien = fenFicheBien.GetLeBien();
+            // Si le paramètre contient la fenêtre de type FicheBien
+            if (fenetre is FicheBien bien)
+            {
+                //this.fenFicheBien = (FicheBien)fenetre;
+                this.fenFicheBien = bien;
+                this.connexion = this.fenFicheBien.GetConnexion();
+                this.leBien = this.fenFicheBien.GetLeBien();
+            }
+            // Si la fenêtre a été ouverte depuis la fenêtre Accueil (sans bien sélectionné)
+            else
+            {
+                this.fenAccueil = (Accueil)fenetre;
+                this.connexion = this.fenAccueil.GetConnexion();
+            }
             this.lesCharges = new Dictionary<string, string>();
+            this.lesBiens = new Dictionary<string, string>();
             InitializeComponent();
-            lblNomBien.Text = $"Liste des charges - {this.leBien[1].ToUpper()}";
+            RemplirListeBiens();
             RecupListeCharges();
+            AfficheTitre();
         }
 
+        /// <summary>
+        /// Gère le titre à afficher
+        /// </summary>
+        /// <returns></returns>
+        public void AfficheTitre()
+        {
+            string titre = "Liste des charges";
+            if (/*this.fenFicheBien != null || */this.leBien[1] != null) { 
+                titre += $" - {this.leBien[1].ToUpper()}";
+            }
+            lblNomBien.Text = titre;
+        }
 
         /// <summary>
         /// Récupère la liste des charges à partir de l'id du bien 
@@ -47,7 +75,12 @@ namespace GestionLocation
             // Vide la liste
             lstCharges.Items.Clear();
             this.lesCharges.Clear();
-            this.req = $"SELECT idchargeannuelle, libelle, montantcharge, refFrequence FROM chargesannuelles WHERE idbien={this.leBien[0]} ORDER BY libelle";
+            this.req = $"SELECT idchargeannuelle, libelle, montantcharge, refFrequence FROM chargesannuelles ";
+            if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
+            {
+                this.req += $"WHERE idbien={this.leBien[0]} ";
+            }
+            this.req += "ORDER BY libelle";
             this.command = new MySqlCommand(this.req, this.connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
@@ -163,7 +196,7 @@ namespace GestionLocation
 
 
         /// <summary>
-        /// Met à jour la table bien au niveau du montant total des charges annuelles
+        /// Met à jour le champ charges annuelles du bien
         /// </summary>
         public void MajChargesDuBien()
         {
@@ -197,6 +230,80 @@ namespace GestionLocation
             this.req = $"UPDATE bien SET chargeannuelles = \'{Math.Round(charges, 2)}\', chargesimputables = \'{Math.Round(chImputables / 12, 2)}\' WHERE idbien = {leBien[0]}";
             // Exécute la requête
             ExecuteReqIUD();
+        }
+
+
+        /// <summary>
+        /// Gère la fermeture de la fenêtre
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnFermer_Click(object sender, EventArgs e)
+        {
+            this.Dispose();
+        }
+
+
+        /// <summary>
+        /// Remplit la liste des biens
+        /// </summary>
+        private void RemplirListeBiens()
+        {
+            this.req = "SELECT idbien, nombien FROM bien ORDER BY nombien";
+            this.command = new MySqlCommand(this.req, this.connexion);
+            MySqlDataReader reader = this.command.ExecuteReader();
+            bool finCurseur = !reader.Read();
+            while (!finCurseur)
+            {
+                lesBiens.Add(reader.GetString(0), reader.GetString(1));
+                lstBiens.Items.Add(reader["nombien"].ToString());
+                finCurseur = !reader.Read();
+            }
+            reader.Close();
+
+            // Si la fenêtre a été ouverte depuis la fiche d'un bien
+            if (fenFicheBien != null)
+            {
+                // Positionne le focus sur le bien en question
+                int index = lstBiens.FindString(leBien[1]);
+                lstBiens.SetSelected(index, true);
+            }
+        }
+
+
+        /// <summary>
+        /// Gère le filtrage des charges
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnFiltrer_Click(object sender, EventArgs e)
+        {
+            if (lstBiens.SelectedItem == null)
+            {
+                MessageBox.Show("Veuillez sélectionner un bien dans la liste pour pouvoir afficher ses charges.");
+            }
+            else
+            {
+                this.leBien[1] = lstBiens.SelectedItem.ToString();
+                RetrouverID();
+                RecupListeCharges();
+                AfficheTitre();
+            }
+        }
+
+        /// <summary>
+        /// Retrouve l'id d'un bien à partir de son nom
+        /// </summary>
+        public void RetrouverID()
+        {
+            // Parcourt le dictionnaire des biens
+            foreach (var cle in lesBiens)
+            {
+                if (cle.Value.Equals(this.leBien[1]))
+                {
+                    this.leBien[0] = cle.Key;
+                }
+            }
         }
     }
 }

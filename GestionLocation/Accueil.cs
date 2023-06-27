@@ -119,6 +119,10 @@ namespace GestionLocation
             bouton.BackColor = Color.FromArgb(79, 242, 120);
         }
 
+        /// <summary>
+        /// Gère l'évènenement de sortie de survol d'un bouton
+        /// </summary>
+        /// <param name="bouton"></param>
         private void SurvolSortie(Button bouton)
         {
             bouton.Size = new Size(bouton.Width - 6, bouton.Height - 6);
@@ -126,37 +130,72 @@ namespace GestionLocation
             bouton.BackColor = Color.Transparent;
         }
 
+        /// <summary>
+        /// Gère le survol du bouton Locations
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnLocations_MouseEnter(object sender, EventArgs e)
         {
             SurvolEntree((Button)sender);
         }
 
+        /// <summary>
+        /// Gère la sortie de survol du bouton Locations
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnLocations_MouseLeave(object sender, EventArgs e)
         {
             SurvolSortie((Button)sender);
         }
 
+        /// <summary>
+        /// Gère le survol du bouton Locataires
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnLocataires_MouseEnter(object sender, EventArgs e)
         {
             SurvolEntree((Button)sender);
         }
 
+        /// <summary>
+        /// Gère la sortie de survol du bouton Locataires
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnLocataires_MouseLeave(object sender, EventArgs e)
         {
             SurvolSortie((Button)sender);
         }
 
+        /// <summary>
+        /// Gère le clic sur le bouton Locataires
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnLocataires_Click(object sender, EventArgs e)
         {
             Locataires locataire = new Locataires(this.connexion);
             locataire.ShowDialog();
         }
 
+        /// <summary>
+        /// Gère le survol du bouton Cautions
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnCautions_MouseEnter(object sender, EventArgs e)
         {
             SurvolEntree((Button)sender);
         }
 
+        /// <summary>
+        /// Gère la sortie de survol du bouton Cautions
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnCautions_MouseLeave(object sender, EventArgs e)
         {
             SurvolSortie((Button)sender);
@@ -171,6 +210,47 @@ namespace GestionLocation
         {
             Cautions fenCaution = new Cautions(this.connexion);
             fenCaution.ShowDialog();
+        }
+
+        /// <summary>
+        /// Gère le survol du bouton Charges
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnCharges_MouseEnter(object sender, EventArgs e)
+        {
+            SurvolEntree((Button)sender);
+        }
+
+        /// <summary>
+        /// Gère la sortie de survol du bouton Charges
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnCharges_MouseLeave(object sender, EventArgs e)
+        {
+            SurvolSortie((Button)sender);
+        }
+
+        /// <summary>
+        /// Gère l'ouverture de la fenêtre de la liste des charges
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnCharges_Click(object sender, EventArgs e)
+        {
+            ListeCharges fenCharges = new ListeCharges(this);
+            fenCharges.ShowDialog();
+        }
+
+
+        /// <summary>
+        /// Renvoie l'instance de la connexion Sql
+        /// </summary>
+        /// <returns>Connexion</returns>
+        public MySqlConnection GetConnexion()
+        {
+            return this.connexion;
         }
     }
 }

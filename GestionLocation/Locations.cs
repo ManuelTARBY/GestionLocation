@@ -18,7 +18,7 @@ namespace GestionLocation
         private MySqlCommand command;
         private string where;
         private string req;
-        private Dictionary<string, int> lesId;
+        private readonly Dictionary<string, int> lesId;
 
         /// <summary>
         /// Constructeur
