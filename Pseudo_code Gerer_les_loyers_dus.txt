@@ -1,0 +1,59 @@
+// Validation d'une location
+// Déclaration des variables
+lesMensualites : liste de tableaux de chaines (taille 4)
+jour : chaine
+debutLoc <- txtDebutLoc : chaîne
+finLoc <- txtFinLoc : chaîne
+datePaiement : chaîne
+moisCpt <- debutLoc[2:4] : entier
+anneCpt <- debutLoc[4:8] : entier
+
+// Enregistre les mensualités dues dans un tableau
+tantque anneeCpt <= finLoc[4:8]
+	tantque moisCpt <= finLoc[2:4] ET debutLoc[2:4] <= 12
+		// Détermine le jour de la mensualité (jour de début, jour de fin de contrat ou 1er du mois)
+		si moisCpt = debutLoc[2:4] et anneeCpt = debutLoc[4:8] alors
+			jour <- debutLoc[0:2]
+		sinon si moisCpt = finLoc[2:4] et anneeCpt = finLoc[4:8]
+			jour <- finLoc[0:2]
+		sinon
+			jour <- 1
+		finsi
+		// Enregistre la mensualité due
+		datePaiement <- anneeCpt + "-" + moisCpt + "-" + jour
+		lesMensualites <- ('idlocation', 'datepaiement')
+		moisCpt <- moisCpt + 1
+	fin tanque
+	anneeCpt <- anneeCpt + 1
+	moisCpt <- 1
+fin tantque
+
+// Recherche si des enregistrements de paiement existent pour cette location
+i = 0 : entier
+j = 0 : entier
+// Crée et exécute la requête
+requete : chaîne
+requete <- "SELECT * FROM paiement WHERE idlocation = id"
+resBdd: liste de tableaux de chaines (taille 3 (idpaiement, idlocation, periodefacturee))
+resBdd <- ExecuteRequete(requete)
+// Si la requête n'a pas trouvé d'enregistrements de paiement pour cette location
+si longueur de resBdd = 0 alors
+	tantque i <= longueur de lesMensualites - 1
+		ExecuteRequeteAjout(lesMensualites[i])
+		i <- i + 1
+	fintantque
+sinon
+	date : date
+	tantque j <= longueur de lesMensualites - 1
+		// Vérifie si un enregistrement existe pour cette location, ce mois et cette année
+		si lesMensualites[j][1[0:7]] est dans resBdd alors
+			date <- mensBdd
+			// Vérifie si le jour de l'enregistrement de la table correspond à ce qui est saisi
+			si lesMensualites[j][1[7:9]] <> date[7:9] alors
+				CalculMontantDuEtLoyerRegle()
+				ExecuteRequeteModif()
+			finsi
+		finsi
+		j <- j  + 1
+	fintantque
+finsi

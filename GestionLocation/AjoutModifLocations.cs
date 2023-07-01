@@ -54,6 +54,7 @@ namespace GestionLocation
             lblID.Text = $"ID : {this.id}";
         }
 
+
         /// <summary>
         /// Remplit les listes des biens, locataires et cautions
         /// </summary>
@@ -63,6 +64,7 @@ namespace GestionLocation
             RemplirLstLocataires();
             RemplirLstCautions();
         }
+
 
         /// <summary>
         /// Gère le remplissage de la liste des biens
@@ -89,6 +91,7 @@ namespace GestionLocation
             reader.Close();
         }
 
+
         /// <summary>
         /// Gère le remplissage de la liste des locataires
         /// </summary>
@@ -113,6 +116,7 @@ namespace GestionLocation
             // fermeture du curseur
             reader.Close();
         }
+
 
         /// <summary>
         /// Gère le remplissage de la liste des locataires
@@ -139,6 +143,7 @@ namespace GestionLocation
             reader.Close();
         }
 
+
         /// <summary>
         /// Sélectionne le bien, le locataire et la caution de la location sélectionnée
         /// </summary>
@@ -164,6 +169,7 @@ namespace GestionLocation
             }
             reader.Close();
         }
+
 
         /// <summary>
         /// Retrouve le bien à partir de l'id d'une location
@@ -194,6 +200,7 @@ namespace GestionLocation
             return nomLocataire;
         }
 
+
         /// <summary>
         /// Retrouve la caution à partir de l'id d'une location
         /// </summary>
@@ -208,6 +215,7 @@ namespace GestionLocation
             return nomCaution;
         }
 
+
         /// <summary>
         /// Enregistre la location
         /// </summary>
@@ -215,7 +223,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnValider_Click(object sender, EventArgs e)
         {
-            if (ChampsRenseignes())
+            if (ChampsRenseignes() == true)
             {
                 string[] lesId = RecupLesId();
                 if (this.typeReq.Equals("UPDATE"))
@@ -228,17 +236,20 @@ namespace GestionLocation
                     // Construit la requête d'ajout
                     ConstruitReqAjout(lesId);
                 }
-                // Exécute la requête
+                // Exécute la requête d'enregistrement de location
                 this.command = new MySqlCommand(this.req, this.connexion);
-                // préparation de la requête
                 this.command.Prepare();
-                // exécution de la requête
                 this.command.ExecuteNonQuery();
+                // Ajoute/modifie les enregistrements de la table Paiement pour cette location
+                MajTablePaiement(this.id);
+                // Met à jour les champs de la fenêtre de Locations
                 this.fenLocation.AfficherBiens();
                 this.fenLocation.AfficherLocations();
+                // Ferme la fenêtre
                 this.Dispose();
             }
         }
+
 
         /// <summary>
         /// Vérifie si tous les champs ont été renseignés
@@ -286,6 +297,7 @@ namespace GestionLocation
             }
         }
 
+
         /// <summary>
         /// Récupère l'id du bien sélectionné ainsi que celui du locataire et de la caution
         /// </summary>
@@ -305,6 +317,7 @@ namespace GestionLocation
             return lesId;
         }
 
+
         /// <summary>
         /// Construit la requête de modification
         /// </summary>
@@ -315,6 +328,7 @@ namespace GestionLocation
                 $"debutlocation = \"{datDebut.Value:yyyy-MM-dd}\", finlocation = \"{datFin.Value:yyyy-MM-dd}\", " +
                 $"depotgarantie = \"{txtDepotGarantie.Text}\", locationarchivee = {cbxArchive.Checked} WHERE idlocation = {this.id}";
         }
+
 
         /// <summary>
         /// Construit la requête d'ajout
@@ -330,6 +344,7 @@ namespace GestionLocation
                 $"{lesId[1]}, \"{datDebut.Value:yyyy-MM-dd}\", \"{datFin.Value:yyyy-MM-dd}\", {txtDepotGarantie.Text}, {cbxArchive.Checked})";
         }
 
+
         /// <summary>
         /// Retourne le résultat unique d'une requête select
         /// </summary>
@@ -344,6 +359,7 @@ namespace GestionLocation
             return resultat;
         }
 
+
         /// <summary>
         /// Ferme la fenêtre
         /// </summary>
@@ -352,6 +368,277 @@ namespace GestionLocation
         private void BtnFermer_Click(object sender, EventArgs e)
         {
             this.Dispose();
+        }
+
+
+        /// <summary>
+        /// Gère les procédures de mise à jour et d'ajout des enregistrements de la table Paiement
+        /// </summary>
+        /// <param name="id">id de la location sur laquelle porte les Paiements</param>
+        public void MajTablePaiement(int id)
+        {
+            // Déclaration/affectation des variables
+            bool succes;
+            List<string[]> lesMensualites = new List<string[]>();
+            string periodeFacturee;
+            string debutLoc = $"{datDebut.Value:yyyy-MM-dd}";
+            string finLoc = $"{datFin.Value:yyyy-MM-dd}";
+            int moisDebutLoc, anneeDebutLoc, moisFinLoc, anneeFinLoc, jour;
+            succes = int.TryParse(debutLoc.Substring(5, 2), out int moisCpt);
+            if (succes == false)
+            {
+                MessageBox.Show("Erreur sur la conversion du mois de début de location.");
+            }
+            succes = int.TryParse(debutLoc.Substring(0, 4), out int anneeCpt);
+            if (succes == false)
+            {
+                MessageBox.Show("Erreur sur la conversion de l'année de début de location.");
+            }
+            anneeFinLoc = int.Parse(finLoc.Substring(0, 4));
+            moisFinLoc = int.Parse(finLoc.Substring(5, 2));
+            anneeDebutLoc = int.Parse(debutLoc.Substring(0, 4));
+            moisDebutLoc = int.Parse(debutLoc.Substring(5, 2));
+
+            // Enregistrement des données dans le tableau
+            while (anneeCpt <= anneeFinLoc)
+            {
+                while (moisCpt <= moisFinLoc && moisDebutLoc <= 12){
+                    // Détermine le jour de la mensualité (jour de début, jour de fin de contrat ou 1er jour du mois)
+                    if (moisCpt == moisDebutLoc && anneeCpt == anneeDebutLoc)
+                    {
+                        jour = int.Parse(debutLoc.Substring(8, 2));
+                    }
+                    else if (moisCpt == moisFinLoc && anneeCpt == anneeFinLoc)
+                    {
+                        jour = int.Parse(finLoc.Substring(8, 2));
+                    }
+                    else
+                    {
+                        jour = 1;
+                    }
+
+                    // Enregistre la période facturée de la mensualité dans la liste
+                    periodeFacturee = anneeCpt.ToString() + "-" + moisCpt.ToString("D2") + "-" + jour.ToString("D2");
+                    string[] mensualite = { periodeFacturee, id.ToString() };
+                    lesMensualites.Add(mensualite);
+                    moisCpt++;
+                }
+                anneeCpt++;
+                moisCpt = 1;
+            }
+
+            // Recherche si des enregistrements de Paiement existent pour cette location
+            int i = 0;
+            this.req = $"SELECT * FROM paiement WHERE idlocation = {id}";
+            List<string[]> resBdd = new List<string[]>();
+            this.command = new MySqlCommand(this.req, this.connexion);
+            MySqlDataReader reader = this.command.ExecuteReader();
+            bool finCurseur = !reader.Read();
+            while (!finCurseur)
+            {
+                DateTime laDate = reader.GetDateTime(4);
+                string[] tab = { laDate.ToString("yyyy-MM-dd"), reader.GetString(0) };
+                resBdd.Add(tab);
+                finCurseur = !reader.Read();
+            }
+            reader.Close();
+
+            // Si la requête n'a pas trouvé d'enregistrement
+            if (resBdd.Count() == 0)
+            {
+                // Crée un nouvel id de paiement
+                this.req = "SELECT MAX(idpaiement) FROM (SELECT idpaiement FROM paiement) AS req";
+                this.command = new MySqlCommand(this.req, this.connexion);
+                reader = this.command.ExecuteReader();
+                reader.Read();
+                int idPaiement = int.Parse(reader.GetString(0)) + 1;
+                reader.Close();
+                while (i <= lesMensualites.Count() - 1)
+                {
+                    AjoutePaiement(lesMensualites[i], idPaiement);
+                    i++;
+                    idPaiement++;
+                }
+            }
+            // Si la requête a trouvé des enregistrements correspondant à la location dans la table Paiement
+            else
+            {
+                while (i < lesMensualites.Count())
+                {
+                    bool trouve = false;
+                    // Vérifie si un enregistrement existe pour cette location, ce mois et cette année
+                    foreach (string[] enr in resBdd)
+                    {
+                        // Si un enregistrement existe avec la même année et le même mois
+                        if (enr[0].Substring(0, 7).Equals(lesMensualites[i][0].Substring(0, 7)))
+                        {
+                            // Si l'enregistrement n'a pas le même jour
+                            if (!enr[0].Substring(8, 2).Equals(lesMensualites[i][0].Substring(8, 2)))
+                            {
+                                float montantDu = CalculeMontantDu(lstBiens.SelectedItem.ToString(), lesMensualites[i][0]);
+                                ModifiePaiement(enr[1], montantDu, lesMensualites[i][0]);
+                            }
+                            trouve = true;
+                            break;
+                        }
+                    }
+                    // Si aucun enregistrement n'a été trouvé pour cette location et pour ce mois + année
+                    if (trouve == false)
+                    {
+                        // Récupère l'id du paiement
+                        int idPaiement;
+                        this.req = "SELECT MAX(idpaiement) FROM (SELECT idpaiement FROM paiement) AS req";
+                        this.command = new MySqlCommand(this.req, this.connexion);
+                        reader = this.command.ExecuteReader();
+                        reader.Read();
+                        idPaiement = int.Parse(reader.GetString(0)) + 1;
+                        reader.Close();
+                        AjoutePaiement(lesMensualites[i], idPaiement);
+                    }
+                    i++;
+                }
+                // Vérifie si des enregistrements doivent être supprimés
+                // Crée le tableau des dates de paiement de la location
+                string[] lesMensu = new string[lesMensualites.Count()];
+                for (int j = 0; j < lesMensu.Length; j++)
+                {
+                    lesMensu[j] = lesMensualites[j][0].Substring(0, 7);
+                }
+                // Parcourt les enregistrements qui étaient déjà présents dans la BDD
+                string dateAChercher;
+                for (int k = 0; k < resBdd.Count(); k++)
+                {
+                    // Extrait annee + mois de l'enregistrement
+                    dateAChercher = resBdd[k][0].Substring(0, 7);
+                    // Si la date issue de la BDD n'est pas dans le tableau des dates de paiement de la location
+                    if (!lesMensu.Contains(dateAChercher))
+                    {
+                        this.req = $"DELETE FROM paiement WHERE idpaiement = {resBdd[k][1]}";
+                        ExecuteReqCUD();
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Ajoute un enregistrement dans la table Paiement
+        /// </summary>
+        /// <param name="laMensualite">Mensualité à ajouter à la table</param>
+        /// <param name="idPaiement">id du paiement à ajouter</param>
+        public void AjoutePaiement(string[] laMensualite, int idPaiement)
+        {
+            float montantDu = CalculeMontantDu(lstBiens.SelectedItem.ToString(), laMensualite[0]);
+            string montantD = montantDu.ToString().Replace(',', '.');
+            this.req = $"INSERT INTO paiement (idpaiement, idlocation, datepaiement, montantpaye, periodefacturee, montantdu, resteapayer, loyerregle)" +
+                $" VALUES ({idPaiement}, {laMensualite[1]}, \'0000-00-00\', 0, \'{laMensualite[0]}\', \'{montantD}\', \'{montantD}\', false)";
+            ExecuteReqCUD();
+        }
+
+
+        /// <summary>
+        /// Calcule le montant dû pour la mensualité concernée
+        /// </summary>
+        /// <returns>Montant dû pour la période</returns>
+        public float CalculeMontantDu(string leBien, string laMensualite)
+        {
+            // Récupère le loyer charges comprises à partir du nom du bien
+            this.req = $"SELECT loyercc FROM bien WHERE nombien = \'{leBien}\'";
+            this.command = new MySqlCommand(this.req, this.connexion);
+            MySqlDataReader reader = this.command.ExecuteReader();
+            reader.Read();
+            int loyercc = (int) reader["loyercc"];
+            reader.Close();
+
+            // Détermine si c'est un mois "entrant", "sortant" ou entier
+            string type = "entier";
+            if (laMensualite.Substring(0, 7).Equals($"{datDebut.Value:yyyy-MM-dd}".Substring(0, 7)))
+            {
+                type = "entrant";
+            }
+            else if (laMensualite.Substring(0, 7).Equals($"{datFin.Value:yyyy-MM-dd}".Substring(0, 7)))
+            {
+                type = "sortant";
+            }
+
+            // Récupère le nombre de jour dans le mois
+            int nbDeJours = DateTime.DaysInMonth(int.Parse(laMensualite.Substring(0, 4)), int.Parse(laMensualite.Substring(5, 2)));
+
+            // Calcule le prorata du montant dû
+            float montantDu;
+            int jourEntree = int.Parse(laMensualite.Substring(8, 2));
+            switch (type)
+            {
+                case "entrant":
+                    montantDu = ((float)loyercc / nbDeJours) * (nbDeJours - jourEntree + 1);
+                    break;
+                case "sortant":
+                    montantDu = ((float)loyercc / nbDeJours) * jourEntree;
+                    break;
+                default:
+                    montantDu = loyercc;
+                    break;
+            }
+            return (float) Math.Round(montantDu, 2);
+        }
+
+
+        /// <summary>
+        /// Gère la requête de modification de l'enregistrement de Paiement
+        /// </summary>
+        /// <param name="idPaiement">id du paiement à modifier</param>
+        /// <param name="montantDu">nouveau montant dû à mettre à jour dans la table</param>
+        public void ModifiePaiement(string idPaiement, float montantDu, string periodeFacturee)
+        {
+            string resteAPayer = CalculerResteAPayer(idPaiement, montantDu);
+            bool regle;
+            if (float.Parse(resteAPayer) <= 0)
+            {
+                regle = true;
+            }
+            else
+            {
+                regle = false;
+            }
+            resteAPayer = resteAPayer.Replace(',', '.');
+            string montantD = montantDu.ToString().Replace(',', '.');
+            this.req = $"UPDATE paiement SET periodefacturee = \'{periodeFacturee}\', montantdu = \'{montantD}\', resteapayer = \'{resteAPayer}\', " +
+                $"loyerregle = {regle} WHERE idpaiement = {idPaiement}";
+            ExecuteReqCUD();
+        }
+
+
+        /// <summary>
+        /// Gère le calcul du reste à payer
+        /// </summary>
+        /// <param name="idPaiement">id du paiement concerné</param>
+        /// <param name="montantDu">montant dû pour ce paiement</param>
+        /// <returns>Reste à payer</returns>
+        public string CalculerResteAPayer(string idPaiement, float montantDu)
+        {
+            float resteAPayer;
+            this.req = $"SELECT montantpaye FROM paiement WHERE idpaiement = {idPaiement}";
+            this.command = new MySqlCommand(this.req, this.connexion);
+            MySqlDataReader reader = this.command.ExecuteReader();
+            reader.Read();
+            float montantpaye = float.Parse(reader["montantpaye"].ToString());
+            reader.Close();
+            resteAPayer = montantDu - montantpaye;
+            return resteAPayer.ToString();
+        }
+
+
+        /// <summary>
+        /// Exécute une requête de création, modification ou suppression
+        /// </summary>
+        public void ExecuteReqCUD()
+        {
+            // Exécute la requête
+            this.command = new MySqlCommand(this.req, this.connexion);
+            // préparation de la requête
+            this.command.Prepare();
+            // exécution de la requête
+            this.command.ExecuteNonQuery();
         }
     }
 }

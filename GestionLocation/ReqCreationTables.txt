@@ -11,8 +11,6 @@ SET time_zone = "+00:00";
 --
 -- Base de données : gestionlocation
 --
-CREATE DATABASE IF NOT EXISTS gestionlocation DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE gestionlocation;
 
 -- --------------------------------------------------------
 
@@ -35,6 +33,8 @@ CREATE TABLE bien (
   bienarchive tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+-- --------------------------------------------------------
 
 --
 -- Structure de la table caution
@@ -71,7 +71,6 @@ CREATE TABLE chargesannuelles (
   imputable tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
 
 --
 -- Structure de la table frequencepaiement
@@ -121,7 +120,6 @@ CREATE TABLE locataire (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
--- --------------------------------------------------------
 
 --
 -- Structure de la table location
@@ -137,6 +135,24 @@ CREATE TABLE location (
   finlocation date DEFAULT NULL,
   depotgarantie decimal(13,2) DEFAULT NULL,
   locationarchivee tinyint(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
+--
+-- Structure de la table paiement
+--
+
+DROP TABLE IF EXISTS paiement;
+CREATE TABLE paiement (
+  idpaiement int NOT NULL,
+  idlocation int NOT NULL,
+  datepaiement date DEFAULT NULL,
+  montantpaye decimal(13,2) DEFAULT NULL,
+  periodefacturee date DEFAULT NULL,
+  montantdu decimal(13,2) DEFAULT NULL,
+  resteapayer decimal(13,2) DEFAULT NULL,
+  loyerregle tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
@@ -187,6 +203,13 @@ ALTER TABLE location
   ADD KEY i_fk_location_locataire1 (idlocataire);
 
 --
+-- Index pour la table paiement
+--
+ALTER TABLE paiement
+  ADD PRIMARY KEY (idpaiement),
+  ADD KEY i_fk_paiement_location1 (idlocation);
+
+--
 -- Contraintes pour les tables déchargées
 --
 
@@ -204,6 +227,12 @@ ALTER TABLE location
   ADD CONSTRAINT location_ibfk_1 FOREIGN KEY (idbien) REFERENCES bien (idbien),
   ADD CONSTRAINT location_ibfk_2 FOREIGN KEY (idcaution) REFERENCES caution (idcaution),
   ADD CONSTRAINT location_ibfk_3 FOREIGN KEY (idlocataire) REFERENCES locataire (idlocataire);
+
+--
+-- Contraintes pour la table paiement
+--
+ALTER TABLE paiement
+  ADD CONSTRAINT paiement_ibfk_1 FOREIGN KEY (idlocation) REFERENCES location (idlocation);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
