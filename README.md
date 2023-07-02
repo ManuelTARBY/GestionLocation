@@ -1,5 +1,5 @@
 # GestionLocation
-Application permettant de gérer ses locations (biens, locataires, cautions, locations)
+Application permettant de gérer ses locations (biens, locataires, cautions, locations, paiements)
 
 #################################################
 ######## Mise en oeuvre de l'application ########
