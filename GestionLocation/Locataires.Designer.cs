@@ -71,7 +71,7 @@ namespace GestionLocation
             this.btnAjouter.UseVisualStyleBackColor = true;
             this.btnAjouter.Click += new System.EventHandler(this.BtnAjouter_Click);
             // 
-            // rdbCautionArchive
+            // rdbLocataireArchive
             // 
             this.rdbLocataireArchive.AutoSize = true;
             this.rdbLocataireArchive.Location = new System.Drawing.Point(6, 25);
@@ -84,15 +84,15 @@ namespace GestionLocation
             // 
             // btnRechercher
             // 
-            this.btnRechercher.Location = new System.Drawing.Point(285, 194);
+            this.btnRechercher.Location = new System.Drawing.Point(285, 189);
             this.btnRechercher.Name = "btnRechercher";
-            this.btnRechercher.Size = new System.Drawing.Size(153, 35);
+            this.btnRechercher.Size = new System.Drawing.Size(153, 46);
             this.btnRechercher.TabIndex = 12;
             this.btnRechercher.Text = "Chercher";
             this.btnRechercher.UseVisualStyleBackColor = true;
             this.btnRechercher.Click += new System.EventHandler(this.BtnRechercher_Click);
             // 
-            // gbrCautionArchive
+            // gbrLocataireArchive
             // 
             this.gbrLocataireArchive.Controls.Add(this.rdbLocataireNonArchive);
             this.gbrLocataireArchive.Controls.Add(this.rdbLocataireArchive);
@@ -103,7 +103,7 @@ namespace GestionLocation
             this.gbrLocataireArchive.TabStop = false;
             this.gbrLocataireArchive.Text = "Tri";
             // 
-            // rdbCautionNonArchive
+            // rdbLocataireNonArchive
             // 
             this.rdbLocataireNonArchive.AutoSize = true;
             this.rdbLocataireNonArchive.Checked = true;
@@ -117,21 +117,21 @@ namespace GestionLocation
             // 
             // btnArchiver
             // 
-            this.btnArchiver.Location = new System.Drawing.Point(48, 249);
+            this.btnArchiver.Location = new System.Drawing.Point(285, 247);
             this.btnArchiver.Name = "btnArchiver";
-            this.btnArchiver.Size = new System.Drawing.Size(183, 48);
+            this.btnArchiver.Size = new System.Drawing.Size(153, 62);
             this.btnArchiver.TabIndex = 10;
-            this.btnArchiver.Text = "Archiver/Désarchiver";
+            this.btnArchiver.Text = "Archiver / Désarchiver";
             this.btnArchiver.UseVisualStyleBackColor = true;
             this.btnArchiver.Click += new System.EventHandler(this.BtnArchiver_Click);
             // 
-            // lstCautions
+            // lstLocataires
             // 
             this.lstLocataires.FormattingEnabled = true;
             this.lstLocataires.ItemHeight = 20;
             this.lstLocataires.Location = new System.Drawing.Point(30, 85);
             this.lstLocataires.Name = "lstLocataires";
-            this.lstLocataires.Size = new System.Drawing.Size(230, 144);
+            this.lstLocataires.Size = new System.Drawing.Size(230, 224);
             this.lstLocataires.TabIndex = 7;
             // 
             // Locataires

@@ -73,7 +73,7 @@ namespace GestionLocation
         /// </summary>
         private void GenererChaineConnexion()
         {
-            this.chaineConnexion = $"server={serveurbdd};user id={txtId.Text};password={txtPwd.Text};Convert Zero Datetime=True;Convert Zero Datetime=True;Allow Zero Datetime=true;database ={nombdd}";
+            this.chaineConnexion = $"server={adressebdd};user id={txtId.Text};password={txtPwd.Text};Convert Zero Datetime=True;Convert Zero Datetime=True;Allow Zero Datetime=true;database ={nombdd}";
         }
 
         /// <summary>

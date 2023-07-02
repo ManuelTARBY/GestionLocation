@@ -42,6 +42,7 @@ namespace GestionLocation
             this.btnArchiver = new System.Windows.Forms.Button();
             this.btnAucun = new System.Windows.Forms.Button();
             this.btnSupprimer = new System.Windows.Forms.Button();
+            this.btnFenPaiements = new System.Windows.Forms.Button();
             this.grpLocationArchive.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -177,11 +178,22 @@ namespace GestionLocation
             this.btnSupprimer.UseVisualStyleBackColor = true;
             this.btnSupprimer.Click += new System.EventHandler(this.BtnSupprimer_Click);
             // 
+            // btnFenPaiements
+            // 
+            this.btnFenPaiements.Location = new System.Drawing.Point(724, 37);
+            this.btnFenPaiements.Name = "btnFenPaiements";
+            this.btnFenPaiements.Size = new System.Drawing.Size(182, 46);
+            this.btnFenPaiements.TabIndex = 15;
+            this.btnFenPaiements.Text = "Afficher les paiements";
+            this.btnFenPaiements.UseVisualStyleBackColor = true;
+            this.btnFenPaiements.Click += new System.EventHandler(this.BtnFenPaiements_Click);
+            // 
             // Locations
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(929, 438);
+            this.Controls.Add(this.btnFenPaiements);
             this.Controls.Add(this.btnSupprimer);
             this.Controls.Add(this.btnAucun);
             this.Controls.Add(this.btnArchiver);
@@ -214,6 +226,7 @@ namespace GestionLocation
         private System.Windows.Forms.Button btnArchiver;
         private System.Windows.Forms.Button btnAucun;
         private System.Windows.Forms.Button btnSupprimer;
+        private System.Windows.Forms.Button btnFenPaiements;
     }
 }
 

@@ -48,9 +48,9 @@ namespace GestionLocation
             // 
             this.lstBiens.FormattingEnabled = true;
             this.lstBiens.ItemHeight = 20;
-            this.lstBiens.Location = new System.Drawing.Point(46, 79);
+            this.lstBiens.Location = new System.Drawing.Point(24, 79);
             this.lstBiens.Name = "lstBiens";
-            this.lstBiens.Size = new System.Drawing.Size(153, 144);
+            this.lstBiens.Size = new System.Drawing.Size(183, 144);
             this.lstBiens.TabIndex = 0;
             // 
             // btnAjouter
@@ -75,7 +75,7 @@ namespace GestionLocation
             // 
             // btnArchiver
             // 
-            this.btnArchiver.Location = new System.Drawing.Point(32, 243);
+            this.btnArchiver.Location = new System.Drawing.Point(24, 243);
             this.btnArchiver.Name = "btnArchiver";
             this.btnArchiver.Size = new System.Drawing.Size(183, 48);
             this.btnArchiver.TabIndex = 3;
@@ -89,7 +89,7 @@ namespace GestionLocation
             this.gbrBienArchive.Controls.Add(this.rdbBienArchive);
             this.gbrBienArchive.Location = new System.Drawing.Point(226, 79);
             this.gbrBienArchive.Name = "gbrBienArchive";
-            this.gbrBienArchive.Size = new System.Drawing.Size(153, 92);
+            this.gbrBienArchive.Size = new System.Drawing.Size(197, 92);
             this.gbrBienArchive.TabIndex = 4;
             this.gbrBienArchive.TabStop = false;
             this.gbrBienArchive.Text = "Tri";
@@ -121,7 +121,7 @@ namespace GestionLocation
             // 
             this.btnRechercher.Location = new System.Drawing.Point(226, 177);
             this.btnRechercher.Name = "btnRechercher";
-            this.btnRechercher.Size = new System.Drawing.Size(153, 35);
+            this.btnRechercher.Size = new System.Drawing.Size(197, 46);
             this.btnRechercher.TabIndex = 5;
             this.btnRechercher.Text = "Chercher";
             this.btnRechercher.UseVisualStyleBackColor = true;
@@ -143,7 +143,6 @@ namespace GestionLocation
             // 
             // btnFicheBien
             // 
-            //this.btnFicheBien.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.btnFicheBien.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(190)))), ((int)(((byte)(54)))));
             this.btnFicheBien.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnFicheBien.ForeColor = System.Drawing.SystemColors.Control;

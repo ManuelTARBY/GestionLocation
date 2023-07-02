@@ -39,6 +39,7 @@ namespace GestionLocation
             this.btnLocataires = new System.Windows.Forms.Button();
             this.btnCautions = new System.Windows.Forms.Button();
             this.btnCharges = new System.Windows.Forms.Button();
+            this.btnPaiements = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lstLocations
@@ -133,11 +134,24 @@ namespace GestionLocation
             this.btnCharges.MouseEnter += new System.EventHandler(this.BtnCharges_MouseEnter);
             this.btnCharges.MouseLeave += new System.EventHandler(this.BtnCharges_MouseLeave);
             // 
+            // btnPaiements
+            // 
+            this.btnPaiements.Location = new System.Drawing.Point(35, 107);
+            this.btnPaiements.Name = "btnPaiements";
+            this.btnPaiements.Size = new System.Drawing.Size(136, 66);
+            this.btnPaiements.TabIndex = 14;
+            this.btnPaiements.Text = "Paiements";
+            this.btnPaiements.UseVisualStyleBackColor = true;
+            this.btnPaiements.Click += new System.EventHandler(this.BtnPaiements_Click);
+            this.btnPaiements.MouseEnter += new System.EventHandler(this.BtnPaiements_MouseEnter);
+            this.btnPaiements.MouseLeave += new System.EventHandler(this.BtnPaiements_MouseLeave);
+            // 
             // Accueil
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1006, 411);
+            this.Controls.Add(this.btnPaiements);
             this.Controls.Add(this.btnCharges);
             this.Controls.Add(this.btnCautions);
             this.Controls.Add(this.btnLocataires);
@@ -163,5 +177,6 @@ namespace GestionLocation
         private System.Windows.Forms.Button btnLocataires;
         private System.Windows.Forms.Button btnCautions;
         private System.Windows.Forms.Button btnCharges;
+        private System.Windows.Forms.Button btnPaiements;
     }
 }

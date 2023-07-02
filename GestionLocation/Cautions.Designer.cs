@@ -73,9 +73,9 @@ namespace GestionLocation
             // 
             // btnRechercher
             // 
-            this.btnRechercher.Location = new System.Drawing.Point(285, 199);
+            this.btnRechercher.Location = new System.Drawing.Point(285, 192);
             this.btnRechercher.Name = "btnRechercher";
-            this.btnRechercher.Size = new System.Drawing.Size(153, 35);
+            this.btnRechercher.Size = new System.Drawing.Size(153, 43);
             this.btnRechercher.TabIndex = 19;
             this.btnRechercher.Text = "Chercher";
             this.btnRechercher.UseVisualStyleBackColor = true;
@@ -117,11 +117,11 @@ namespace GestionLocation
             // 
             // btnArchiver
             // 
-            this.btnArchiver.Location = new System.Drawing.Point(48, 254);
+            this.btnArchiver.Location = new System.Drawing.Point(285, 248);
             this.btnArchiver.Name = "btnArchiver";
-            this.btnArchiver.Size = new System.Drawing.Size(183, 48);
+            this.btnArchiver.Size = new System.Drawing.Size(153, 66);
             this.btnArchiver.TabIndex = 17;
-            this.btnArchiver.Text = "Archiver/Désarchiver";
+            this.btnArchiver.Text = "Archiver / Désarchiver";
             this.btnArchiver.UseVisualStyleBackColor = true;
             this.btnArchiver.Click += new System.EventHandler(this.BtnArchiver_Click);
             // 
@@ -131,7 +131,7 @@ namespace GestionLocation
             this.lstCautions.ItemHeight = 20;
             this.lstCautions.Location = new System.Drawing.Point(30, 90);
             this.lstCautions.Name = "lstCautions";
-            this.lstCautions.Size = new System.Drawing.Size(230, 144);
+            this.lstCautions.Size = new System.Drawing.Size(230, 224);
             this.lstCautions.TabIndex = 14;
             // 
             // Cautions

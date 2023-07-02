@@ -252,5 +252,39 @@ namespace GestionLocation
         {
             return this.connexion;
         }
+
+
+        /// <summary>
+        /// Gère le survol du bouton Paiements
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnPaiements_MouseEnter(object sender, EventArgs e)
+        {
+            SurvolEntree((Button)sender);
+        }
+
+
+        /// <summary>
+        /// Gère la sortie de survol du bouton Paiements
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnPaiements_MouseLeave(object sender, EventArgs e)
+        {
+            SurvolSortie((Button)sender);
+        }
+
+
+        /// <summary>
+        /// Ouvre la fenêtre des Paiements
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnPaiements_Click(object sender, EventArgs e)
+        {
+            Paiements fenPaiements = new Paiements(this.connexion);
+            fenPaiements.Show();
+        }
     }
 }

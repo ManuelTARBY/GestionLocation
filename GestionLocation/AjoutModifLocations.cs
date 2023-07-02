@@ -399,7 +399,7 @@ namespace GestionLocation
             anneeDebutLoc = int.Parse(debutLoc.Substring(0, 4));
             moisDebutLoc = int.Parse(debutLoc.Substring(5, 2));
 
-            // Enregistrement des données dans le tableau
+            // Enregistrement des mensualités de la location dans un tableau
             while (anneeCpt <= anneeFinLoc)
             {
                 while (moisCpt <= moisFinLoc && moisDebutLoc <= 12){
@@ -427,7 +427,7 @@ namespace GestionLocation
                 moisCpt = 1;
             }
 
-            // Recherche si des enregistrements de Paiement existent pour cette location
+            // Recherche si des enregistrements de Paiement existent déjà pour cette location
             int i = 0;
             this.req = $"SELECT * FROM paiement WHERE idlocation = {id}";
             List<string[]> resBdd = new List<string[]>();
@@ -443,7 +443,7 @@ namespace GestionLocation
             }
             reader.Close();
 
-            // Si la requête n'a pas trouvé d'enregistrement
+            // Si la requête n'a pas trouvé d'enregistrements
             if (resBdd.Count() == 0)
             {
                 // Crée un nouvel id de paiement
@@ -455,6 +455,7 @@ namespace GestionLocation
                 reader.Close();
                 while (i <= lesMensualites.Count() - 1)
                 {
+                    // Ajouter le nouvel enregistrement dans la table Paiement
                     AjoutePaiement(lesMensualites[i], idPaiement);
                     i++;
                     idPaiement++;
@@ -550,19 +551,26 @@ namespace GestionLocation
             int loyercc = (int) reader["loyercc"];
             reader.Close();
 
-            // Détermine si c'est un mois "entrant", "sortant" ou entier
+            // Détermine si c'est un mois "entrant", "sortant", "entier" ou "partiel" (mois = premier et dernier de la location)
             string type = "entier";
-            if (laMensualite.Substring(0, 7).Equals($"{datDebut.Value:yyyy-MM-dd}".Substring(0, 7)))
+            // Si le mois est à la fois premier et dernier de la location
+            if ($"{datDebut.Value:yyyy-MM-dd}".Substring(0, 7).Equals($"{datFin.Value:yyyy-MM-dd}".Substring(0, 7)))
+            {
+                type = "partiel";
+            }
+            // Si le mois est le premier de la location
+            else if (laMensualite.Substring(0, 7).Equals($"{datDebut.Value:yyyy-MM-dd}".Substring(0, 7)))
             {
                 type = "entrant";
             }
+            // Si le mois est le dernier de la location
             else if (laMensualite.Substring(0, 7).Equals($"{datFin.Value:yyyy-MM-dd}".Substring(0, 7)))
             {
                 type = "sortant";
             }
 
             // Récupère le nombre de jour dans le mois
-            int nbDeJours = DateTime.DaysInMonth(int.Parse(laMensualite.Substring(0, 4)), int.Parse(laMensualite.Substring(5, 2)));
+            int nbDeJoursMax = DateTime.DaysInMonth(int.Parse(laMensualite.Substring(0, 4)), int.Parse(laMensualite.Substring(5, 2)));
 
             // Calcule le prorata du montant dû
             float montantDu;
@@ -570,10 +578,15 @@ namespace GestionLocation
             switch (type)
             {
                 case "entrant":
-                    montantDu = ((float)loyercc / nbDeJours) * (nbDeJours - jourEntree + 1);
+                    montantDu = ((float)loyercc / nbDeJoursMax) * (nbDeJoursMax - jourEntree + 1);
                     break;
                 case "sortant":
-                    montantDu = ((float)loyercc / nbDeJours) * jourEntree;
+                    montantDu = ((float)loyercc / nbDeJoursMax) * jourEntree;
+                    break;
+                case "partiel":
+                    int jourFin = int.Parse($"{datFin.Value:yyyy-MM-dd}".Substring(8, 2));
+                    int nbDeJours = jourFin - jourEntree + 1;
+                    montantDu = ((float) loyercc / nbDeJoursMax) * nbDeJours;
                     break;
                 default:
                     montantDu = loyercc;

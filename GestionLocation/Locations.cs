@@ -39,8 +39,10 @@ namespace GestionLocation
         /// </summary>
         public void AfficherLocations()
         {
+            // Vide le champ liste et le dictionnaire contenant les id
             lstLocations.Items.Clear();
             lesId.Clear();
+            // Construit la requête
             StringBuilder req = new StringBuilder();
             req.AppendLine("SELECT nombien AS `Bien`, nomcompletlocataire AS `Locataire`, debutlocation AS `Début de location`, finlocation AS `Fin de location`, nomcompletcaution AS `Caution`, idlocation AS `id`");
             req.AppendLine("FROM location JOIN locataire USING(idlocataire) JOIN bien USING(idbien) JOIN caution USING(idcaution)");
@@ -56,21 +58,15 @@ namespace GestionLocation
             req.AppendLine("ORDER BY nombien");
             this.command = new MySqlCommand(req.ToString(), this.connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
-            /* lecture de la première ligne du curseur (finCurseur passe à false en fin de
-            curseur) */
             bool finCurseur = !reader.Read();
-            // boucle tant que la ligne lue contient quelque chose
-            // (donc tant que la fin du curseur n'est pas atteinte)
             while (!finCurseur)
             {
                 // affichage des champs récupérés dans la ligne
                 string item = $"{reader["Bien"]} || {reader["Locataire"]} || Du {reader.GetDateTime(2):d} au {reader.GetDateTime(3):d} || Caution : {reader["Caution"]}";
                 lstLocations.Items.Add(item);
                 lesId.Add(item, (int)(reader["id"]));
-                // lecture de la ligne suivante dans le curseur
                 finCurseur = !reader.Read();
             }
-            // fermeture du curseur
             reader.Close();
         }
 
@@ -341,16 +337,44 @@ namespace GestionLocation
         {
             if (lstLocations.SelectedItem != null)
             {
-                // Récupère l'id de la location sélectionnée
-                int id = lesId[lstLocations.SelectedItem.ToString()];
-                this.req = $"DELETE FROM location WHERE idlocation = \"{id}\"";
-                ExecuteReqIUD();
-                AfficherLocations();
+                // Demande confirmation de suppression du bien
+                DialogResult result = MessageBox.Show($"Êtes-vous sûr de vouloir supprimer la location : {lstLocations.SelectedItem} et tous les paiements qui y sont reliés ?", "Confirmer suppression", MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
+                {
+                    // Récupère l'id de la location sélectionnée
+                    int id = lesId[lstLocations.SelectedItem.ToString()];
+                    // Supprime les paiements attachés à la location
+                    this.req = $"DELETE FROM paiement WHERE idlocation = \"{id}\"";
+                    ExecuteReqIUD();
+                    // Supprime la location
+                    this.req = $"DELETE FROM location WHERE idlocation = \"{id}\"";
+                    ExecuteReqIUD();
+                    AfficherLocations();
+                }
             }
             else
             {
                 MessageBox.Show("Veuillez saisir une location dans la liste pour pouvoir la supprimer.");
             }
+        }
+
+
+        /// <summary>
+        /// Ouvre la fenêtre des enregistrements de la table Paiement
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnFenPaiements_Click(object sender, EventArgs e)
+        {
+            int id = 0;
+            // Si une location est sélectionnée
+            if (lstLocations.SelectedItem != null)
+            {
+                // Récupère l'id de la location sélectionnée
+                id = lesId[lstLocations.SelectedItem.ToString()];
+            }
+            Paiements fenPaiement = new Paiements(this.connexion, id);
+            fenPaiement.Show();
         }
     }
 }
