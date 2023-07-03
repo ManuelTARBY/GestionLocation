@@ -28,11 +28,11 @@ namespace GestionLocation
         /// <param name="connexion">Chaîne de connexion</param>
         /// <param name="typeReq">Type de requête</param>
         /// <param name="id">id de la location</param>
-        public AjoutModifLocations(Locations fenLocation, MySqlConnection connexion, string typeReq, int id = 0)
+        public AjoutModifLocations(Locations fenLocation, string typeReq, int id = 0)
         {
             InitializeComponent();
             this.fenLocation = fenLocation;
-            this.connexion = connexion;
+            this.connexion = this.fenLocation.GetFenAccueil().GetConnexion();
             this.typeReq = typeReq;
             this.id = id;
             // Remplit les listes des biens, des locataires et des cautions
@@ -245,6 +245,7 @@ namespace GestionLocation
                 // Met à jour les champs de la fenêtre de Locations
                 this.fenLocation.AfficherBiens();
                 this.fenLocation.AfficherLocations();
+                this.fenLocation.GetFenAccueil().AfficherLocations();
                 // Ferme la fenêtre
                 this.Dispose();
             }
@@ -378,53 +379,40 @@ namespace GestionLocation
         public void MajTablePaiement(int id)
         {
             // Déclaration/affectation des variables
-            bool succes;
             List<string[]> lesMensualites = new List<string[]>();
-            string periodeFacturee;
+            int jour;
             string debutLoc = $"{datDebut.Value:yyyy-MM-dd}";
             string finLoc = $"{datFin.Value:yyyy-MM-dd}";
-            int moisDebutLoc, anneeDebutLoc, moisFinLoc, anneeFinLoc, jour;
-            succes = int.TryParse(debutLoc.Substring(5, 2), out int moisCpt);
-            if (succes == false)
+            string periodeFacturee, moisDebutLoc, anneeDebutLoc, moisFinLoc, anneeFinLoc; // date = dateCpt.ToString();
+            DateTime dateCpt = datDebut.Value;
+            string date = "01" + dateCpt.ToString().Substring(2);
+            dateCpt = DateTime.Parse(date);
+            anneeFinLoc = finLoc.Substring(0, 4);
+            moisFinLoc = finLoc.Substring(5, 2);
+            anneeDebutLoc = debutLoc.Substring(0, 4);
+            moisDebutLoc = debutLoc.Substring(5, 2);
+            // Parcourt tous les mois de la date de début à la date de fin
+            while (dateCpt <= datFin.Value)
             {
-                MessageBox.Show("Erreur sur la conversion du mois de début de location.");
-            }
-            succes = int.TryParse(debutLoc.Substring(0, 4), out int anneeCpt);
-            if (succes == false)
-            {
-                MessageBox.Show("Erreur sur la conversion de l'année de début de location.");
-            }
-            anneeFinLoc = int.Parse(finLoc.Substring(0, 4));
-            moisFinLoc = int.Parse(finLoc.Substring(5, 2));
-            anneeDebutLoc = int.Parse(debutLoc.Substring(0, 4));
-            moisDebutLoc = int.Parse(debutLoc.Substring(5, 2));
-
-            // Enregistrement des mensualités de la location dans un tableau
-            while (anneeCpt <= anneeFinLoc)
-            {
-                while (moisCpt <= moisFinLoc && moisDebutLoc <= 12){
-                    // Détermine le jour de la mensualité (jour de début, jour de fin de contrat ou 1er jour du mois)
-                    if (moisCpt == moisDebutLoc && anneeCpt == anneeDebutLoc)
-                    {
-                        jour = int.Parse(debutLoc.Substring(8, 2));
-                    }
-                    else if (moisCpt == moisFinLoc && anneeCpt == anneeFinLoc)
-                    {
-                        jour = int.Parse(finLoc.Substring(8, 2));
-                    }
-                    else
-                    {
-                        jour = 1;
-                    }
-
-                    // Enregistre la période facturée de la mensualité dans la liste
-                    periodeFacturee = anneeCpt.ToString() + "-" + moisCpt.ToString("D2") + "-" + jour.ToString("D2");
-                    string[] mensualite = { periodeFacturee, id.ToString() };
-                    lesMensualites.Add(mensualite);
-                    moisCpt++;
+                // Détermine le jour de la mensualité (jour de début, jour de fin de contrat ou 1er jour du mois)
+                if (dateCpt.ToString().Substring(3, 2).Equals(moisDebutLoc) && dateCpt.ToString().Substring(6, 4).Equals(anneeDebutLoc))
+                {
+                    jour = int.Parse(debutLoc.Substring(8, 2));
                 }
-                anneeCpt++;
-                moisCpt = 1;
+                else if (dateCpt.ToString().Substring(3, 2).Equals(moisFinLoc) && dateCpt.ToString().Substring(6, 4).Equals(anneeFinLoc))
+                {
+                    jour = int.Parse(finLoc.Substring(8, 2));
+                }
+                else
+                {
+                    jour = 1;
+                }
+
+                // Enregistre la période facturée de la mensualité dans la liste lesMensualités
+                periodeFacturee = dateCpt.ToString().Substring(6, 4) + "-" + dateCpt.ToString().Substring(3, 2) + "-" + jour.ToString("D2");
+                string[] mensualite = { periodeFacturee, id.ToString() };
+                lesMensualites.Add(mensualite);
+                dateCpt = dateCpt.AddMonths(1);
             }
 
             // Recherche si des enregistrements de Paiement existent déjà pour cette location

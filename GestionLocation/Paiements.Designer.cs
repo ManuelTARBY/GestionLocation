@@ -34,6 +34,7 @@ namespace GestionLocation
             this.btnFermer = new System.Windows.Forms.Button();
             this.btnSaisirPaiement = new System.Windows.Forms.Button();
             this.btnFiltreArchive = new System.Windows.Forms.Button();
+            this.btnNonRegle = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lstPaiements
@@ -42,7 +43,7 @@ namespace GestionLocation
             this.lstPaiements.ItemHeight = 20;
             this.lstPaiements.Location = new System.Drawing.Point(20, 178);
             this.lstPaiements.Name = "lstPaiements";
-            this.lstPaiements.Size = new System.Drawing.Size(958, 224);
+            this.lstPaiements.Size = new System.Drawing.Size(958, 244);
             this.lstPaiements.TabIndex = 0;
             // 
             // lstLocations
@@ -57,9 +58,9 @@ namespace GestionLocation
             // 
             // btnFermer
             // 
-            this.btnFermer.Location = new System.Drawing.Point(848, 23);
+            this.btnFermer.Location = new System.Drawing.Point(797, 442);
             this.btnFermer.Name = "btnFermer";
-            this.btnFermer.Size = new System.Drawing.Size(130, 51);
+            this.btnFermer.Size = new System.Drawing.Size(181, 51);
             this.btnFermer.TabIndex = 3;
             this.btnFermer.Text = "Fermer";
             this.btnFermer.UseVisualStyleBackColor = true;
@@ -67,9 +68,9 @@ namespace GestionLocation
             // 
             // btnSaisirPaiement
             // 
-            this.btnSaisirPaiement.Location = new System.Drawing.Point(848, 108);
+            this.btnSaisirPaiement.Location = new System.Drawing.Point(848, 46);
             this.btnSaisirPaiement.Name = "btnSaisirPaiement";
-            this.btnSaisirPaiement.Size = new System.Drawing.Size(130, 59);
+            this.btnSaisirPaiement.Size = new System.Drawing.Size(130, 80);
             this.btnSaisirPaiement.TabIndex = 4;
             this.btnSaisirPaiement.Text = "Saisir un paiement";
             this.btnSaisirPaiement.UseVisualStyleBackColor = true;
@@ -77,7 +78,7 @@ namespace GestionLocation
             // 
             // btnFiltreArchive
             // 
-            this.btnFiltreArchive.Location = new System.Drawing.Point(333, 433);
+            this.btnFiltreArchive.Location = new System.Drawing.Point(20, 442);
             this.btnFiltreArchive.Name = "btnFiltreArchive";
             this.btnFiltreArchive.Size = new System.Drawing.Size(366, 51);
             this.btnFiltreArchive.TabIndex = 5;
@@ -85,11 +86,22 @@ namespace GestionLocation
             this.btnFiltreArchive.UseVisualStyleBackColor = true;
             this.btnFiltreArchive.Click += new System.EventHandler(this.BtnFiltreArchive_Click);
             // 
+            // btnNonRegle
+            // 
+            this.btnNonRegle.Location = new System.Drawing.Point(407, 442);
+            this.btnNonRegle.Name = "btnNonRegle";
+            this.btnNonRegle.Size = new System.Drawing.Size(366, 51);
+            this.btnNonRegle.TabIndex = 6;
+            this.btnNonRegle.Text = "Afficher non réglés";
+            this.btnNonRegle.UseVisualStyleBackColor = true;
+            this.btnNonRegle.Click += new System.EventHandler(this.BtnNonRegle_Click);
+            // 
             // Paiements
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1000, 505);
+            this.Controls.Add(this.btnNonRegle);
             this.Controls.Add(this.btnFiltreArchive);
             this.Controls.Add(this.btnSaisirPaiement);
             this.Controls.Add(this.btnFermer);
@@ -108,5 +120,6 @@ namespace GestionLocation
         private System.Windows.Forms.Button btnFermer;
         private System.Windows.Forms.Button btnSaisirPaiement;
         private System.Windows.Forms.Button btnFiltreArchive;
+        private System.Windows.Forms.Button btnNonRegle;
     }
 }

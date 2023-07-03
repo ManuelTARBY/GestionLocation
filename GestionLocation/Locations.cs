@@ -16,6 +16,7 @@ namespace GestionLocation
 
         private readonly MySqlConnection connexion;
         private MySqlCommand command;
+        private readonly Accueil fenAccueil;
         private string where;
         private string req;
         private readonly Dictionary<string, int> lesId;
@@ -24,10 +25,11 @@ namespace GestionLocation
         /// Constructeur
         /// </summary>
         /// <param name="connexion">Connexion avec laquelle l'utilisateur s'est connecté</param>
-        public Locations(MySqlConnection connexion)
+        public Locations(Accueil fenAccueil)
         {
             InitializeComponent();
-            this.connexion = connexion;
+            this.connexion = fenAccueil.GetConnexion();
+            this.fenAccueil = fenAccueil;
             this.lesId = new Dictionary<string, int>();
             AfficherBiens();
             AfficherLocations();
@@ -303,7 +305,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnAjouter_Click(object sender, EventArgs e)
         {
-            AjoutModifLocations ajoutLocation = new AjoutModifLocations(this, this.connexion, "INSERT INTO");
+            AjoutModifLocations ajoutLocation = new AjoutModifLocations(this, "INSERT INTO");
             ajoutLocation.ShowDialog();
         }
 
@@ -319,7 +321,7 @@ namespace GestionLocation
                 // Récupère l'id de la location sélectionnée
                 int id = lesId[lstLocations.SelectedItem.ToString()];
                 // Crée puis ouvre la fenêtre d'ajout/modif location
-                AjoutModifLocations modifLocataire = new AjoutModifLocations(this, this.connexion, "UPDATE", id);
+                AjoutModifLocations modifLocataire = new AjoutModifLocations(this, "UPDATE", id);
                 modifLocataire.ShowDialog();
             }
             else
@@ -350,6 +352,7 @@ namespace GestionLocation
                     this.req = $"DELETE FROM location WHERE idlocation = \"{id}\"";
                     ExecuteReqIUD();
                     AfficherLocations();
+                    this.fenAccueil.AfficherLocations();
                 }
             }
             else
@@ -375,6 +378,16 @@ namespace GestionLocation
             }
             Paiements fenPaiement = new Paiements(this.connexion, id);
             fenPaiement.Show();
+        }
+
+
+        /// <summary>
+        /// Retourne la fenêtre de type Accueil passée en paramètre du constructeur
+        /// </summary>
+        /// <returns>Instance de la classe accueil ayant ouvert l'instance actuelle de Locations</returns>
+        public Accueil GetFenAccueil()
+        {
+            return this.fenAccueil;
         }
     }
 }

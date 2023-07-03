@@ -56,7 +56,6 @@ namespace GestionLocation
             }
             txtMontantPaye.Text = reader.GetString(3);
             string periode = $"{reader.GetDateTime(4):MMMM yyyy}";
-            //lblPeriode.Text = periode.ToUpper();
             txtMontantDu.Text = reader.GetString(5);
             txtResteAPayer.Text = reader.GetString(6);
             if ((bool)reader["loyerregle"])
@@ -89,7 +88,7 @@ namespace GestionLocation
             // Affiche le locataire + bien
             string ligneUn = $"{locataire} - {bien.ToUpper()}";
             string separation = "";
-            for (int i = 0; i < (ligneUn.Length * 1.5); i++)
+            for (int i = 0; i < (ligneUn.Length * 1.2); i++)
             {
                 separation += "-";
             }

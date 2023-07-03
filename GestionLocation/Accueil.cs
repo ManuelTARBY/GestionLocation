@@ -28,7 +28,7 @@ namespace GestionLocation
         /// <summary>
         /// Met à jour la liste des locations en fonction des critères sélectionnés par l'utilisateur
         /// </summary>
-        private void AfficherLocations()
+        public void AfficherLocations()
         {
             lstLocations.Items.Clear();
             StringBuilder req = new StringBuilder();
@@ -61,7 +61,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnLocations_Click(object sender, EventArgs e)
         {
-            Locations location = new Locations(this.connexion);
+            Locations location = new Locations(this);
             location.ShowDialog();
         }
 

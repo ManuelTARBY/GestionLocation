@@ -18,7 +18,6 @@ namespace GestionLocation
         private MySqlCommand command;
         private string req;
         private int idLocation;
-        //private string[] lesIdP;
         private readonly Dictionary<string, string> lesPaiements;
         private readonly Dictionary<string, int> lesId;
 
@@ -33,7 +32,6 @@ namespace GestionLocation
             this.idLocation = idLocation;
             this.lesPaiements = new Dictionary<string, string>();
             this.lesId = new Dictionary<string, int>();
-            //RecupLocationArchive(false);
             AfficherLocations(false);
             RemplirListePaiements();
             SelectionnerLocation();
@@ -45,17 +43,24 @@ namespace GestionLocation
         /// </summary>
         public void RemplirListePaiements()
         {
-            lstPaiements.Items.Clear();
-            ConstruitReq();
-        }
-
-
-        /// <summary>
-        /// Construit la requête pour récupérer tous les enregistrements de Paiement correspondant
-        /// </summary>
-        public void ConstruitReq()
-        {
-            this.req = $"SELECT * FROM paiement WHERE idlocation = {this.idLocation} ORDER BY idlocation DESC, periodefacturee DESC";
+            // Détermination de la requête
+            if (this.idLocation != 0)
+            {
+                this.req = $"SELECT * FROM paiement WHERE idlocation = {this.idLocation}";
+            }
+            else
+            {
+                if (lstLocations.SelectedItem == null)
+                {
+                    this.req = $"SELECT * FROM paiement WHERE loyerregle = False";
+                }
+                else
+                {
+                    this.idLocation = this.lesId[lstLocations.SelectedItem.ToString()];
+                    this.req = $"SELECT * FROM paiement WHERE loyerregle = False AND idlocation = {this.idLocation}";
+                }
+            }
+            this.req += " ORDER BY periodefacturee";
             // Affiche les enregistrement de la table Paiement et récupère les idpaiement et idlocation dans un dictionnaire
             EnvoiRequeteSelect();
         }
@@ -93,6 +98,7 @@ namespace GestionLocation
         public void EnvoiRequeteSelect()
         {
             this.lesPaiements.Clear();
+            lstPaiements.Items.Clear();
             this.command = new MySqlCommand(this.req, this.connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
@@ -113,8 +119,9 @@ namespace GestionLocation
         /// </summary>
         public void AfficherLocations(bool etat)
         {
-            // Vide le champ liste et le dictionnaire contenant les id
+            // Vide le champ liste, paiements et le dictionnaire contenant les id
             lstLocations.Items.Clear();
+            lstPaiements.Items.Clear();
             lesId.Clear();
             // Construit la requête
             StringBuilder req = new StringBuilder();
@@ -141,27 +148,6 @@ namespace GestionLocation
             else
             {
                 btnFiltreArchive.Text = "Afficher les locations archivées";
-            }
-        }
-
-
-        /// <summary>
-        /// Gère la mise à jour de l'affichage de la liste des paiements
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnMAJ_Click(object sender, EventArgs e)
-        {
-            if (lstLocations.SelectedItem == null)
-            {
-                MessageBox.Show("Veuillez saisir une location pour afficher la liste des mensualités.");
-            }
-            else
-            {
-                // Récupère le nouvel id de location
-                this.idLocation = this.lesId[lstLocations.SelectedItem.ToString()];
-                // Met à jour la liste des paiements
-                RemplirListePaiements();
             }
         }
 
@@ -253,6 +239,26 @@ namespace GestionLocation
             {
                 AfficherLocations(false);
             }
+        }
+
+
+        /// <summary>
+        /// Met à jour la liste des paiements pour n'afficher que ceux qui ne sont pas complets
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnNonRegle_Click(object sender, EventArgs e)
+        {
+            if (lstLocations.SelectedItem != null)
+            {
+                this.req = $"SELECT * FROM paiement WHERE loyerregle = False AND idlocation = {this.lesId[lstLocations.SelectedItem.ToString()]} ORDER BY periodefacturee";
+            }
+            else
+            {
+                this.idLocation = 0;
+                this.req = $"SELECT * FROM paiement WHERE loyerregle = False ORDER BY periodefacturee";
+            }
+            EnvoiRequeteSelect();
         }
     }
 }
