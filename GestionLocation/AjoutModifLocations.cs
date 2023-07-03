@@ -383,7 +383,7 @@ namespace GestionLocation
             int jour;
             string debutLoc = $"{datDebut.Value:yyyy-MM-dd}";
             string finLoc = $"{datFin.Value:yyyy-MM-dd}";
-            string periodeFacturee, moisDebutLoc, anneeDebutLoc, moisFinLoc, anneeFinLoc; // date = dateCpt.ToString();
+            string periodeFacturee, moisDebutLoc, anneeDebutLoc, moisFinLoc, anneeFinLoc;
             DateTime dateCpt = datDebut.Value;
             string date = "01" + dateCpt.ToString().Substring(2);
             dateCpt = DateTime.Parse(date);

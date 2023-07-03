@@ -13,7 +13,7 @@ namespace GestionLocation
 {
     public partial class Paiements : Form
     {
-
+        
         private readonly MySqlConnection connexion;
         private MySqlCommand command;
         private string req;
