@@ -14,7 +14,6 @@ namespace GestionLocation
     public partial class AjoutModifChargeAnnuelle : Form
     {
 
-        private readonly MySqlConnection connexion;
         private MySqlCommand command;
         private readonly string[] leBien;
         private readonly string idCharge;
@@ -22,11 +21,14 @@ namespace GestionLocation
         private readonly string typeReq;
         private readonly ListeCharges fenListeCharges;
 
-        //public AjoutModifChargeAnnuelle(MySqlConnection connexion, string[] leBien, string idCharge = "0")
+        /// <summary>
+        /// Constructeur de la fenêtre AjoutModifChargeAnnuelle
+        /// </summary>
+        /// <param name="fenListeCharges">Instance de la fenêtre ListeCharge</param>
+        /// <param name="idCharge">Id de la charge annuelle</param>
         public AjoutModifChargeAnnuelle(ListeCharges fenListeCharges, string idCharge = "0")
         {
             this.fenListeCharges = fenListeCharges;
-            this.connexion = fenListeCharges.GetConnexion();
             this.leBien = fenListeCharges.GetLeBien();
             this.idCharge = idCharge;
             if (this.idCharge.Equals("0"))
@@ -48,7 +50,7 @@ namespace GestionLocation
         public void RemplirComboFreq()
         {
             this.req = $"SELECT libelle FROM frequencepaiement";
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
             while (!finCurseur)
@@ -82,7 +84,7 @@ namespace GestionLocation
         public string AttribuerIDCharge()
         {
             this.req = $"SELECT MAX(idchargeannuelle) FROM (SELECT idchargeannuelle FROM chargesannuelles) AS req";
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             string idNouv;
@@ -104,7 +106,7 @@ namespace GestionLocation
         public void RecupDonnees()
         {
             this.req = $"SELECT libelle, montantcharge, refFrequence, imputable FROM chargesannuelles WHERE idchargeannuelle = {this.idCharge}";
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             txtLibelle.Text = $"{reader["libelle"]}";
@@ -148,7 +150,7 @@ namespace GestionLocation
                         break;
                 }
                 // Exécute la requête
-                this.command = new MySqlCommand(this.req, this.connexion);
+                this.command = new MySqlCommand(this.req, Global.Connexion);
                 // Prépare la requête
                 this.command.Prepare();
                 // exécution de la requête
@@ -174,7 +176,7 @@ namespace GestionLocation
         {
             // Récupère l'occurrence de la charge
             this.req = $"SELECT occurrence FROM frequencepaiement WHERE libelle = \'{cobFrequence.SelectedItem}\'";
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             int occurrence = (int)(reader["occurrence"]);
@@ -208,7 +210,7 @@ namespace GestionLocation
             // Calcule la charge annuelle du bien
             float charges = 0;
             this.req = $"SELECT chargeannuelle FROM chargesannuelles WHERE idbien = {leBien[0]}";
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
             while (!finCurseur)
@@ -221,7 +223,7 @@ namespace GestionLocation
             // Calcule la charge imputable au locataire du bien
             this.req += " AND imputable = True";
             float chImputables = 0;
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             reader = this.command.ExecuteReader();
             finCurseur = !reader.Read();
             while (!finCurseur)
@@ -234,7 +236,7 @@ namespace GestionLocation
             // Met à jour la table bien
             this.req = $"UPDATE bien SET chargeannuelles = \'{Math.Round(charges, 2)}\', chargesimputables = \'{Math.Round(chImputables / 12, 2)}\' WHERE idbien = {leBien[0]}";
             // Exécute la requête
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             // Prépare la requête
             this.command.Prepare();
             // exécution de la requête

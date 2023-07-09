@@ -14,20 +14,17 @@ namespace GestionLocation
     public partial class FicheBien : Form
     {
 
-        private readonly MySqlConnection connexion;
         private MySqlCommand command;
         private string req;
-        private string[] leBien = new string[2];
+        private readonly string[] leBien = new string[2];
 
         /// <summary>
         /// Constructeur
         /// </summary>
-        /// <param name="connexion">chaîne de connexion à la base de donnée</param>
         /// <param name="id">id du bien</param>
-        public FicheBien(MySqlConnection connexion, int id)
+        public FicheBien(int id)
         {
             InitializeComponent();
-            this.connexion = connexion;
             this.leBien[0] = id.ToString();
             RemplirChamps();
         }
@@ -45,7 +42,7 @@ namespace GestionLocation
         public void RemplirBien()
         {
             this.req = $"SELECT * FROM bien WHERE idbien ={this.leBien[0]}";
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             this.leBien[1] = reader.GetString(1);
@@ -88,16 +85,23 @@ namespace GestionLocation
         public void RemplirLocation()
         {
             this.req = $"SELECT COUNT(idlocation) FROM (SELECT idlocation FROM location WHERE idbien={this.leBien[0]}) AS req";
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             txtNbLoc.Text = reader.GetString(0);
             reader.Close();
             this.req = $"SELECT MIN(debutlocation) FROM (SELECT debutlocation FROM location WHERE idbien={this.leBien[0]}) AS req";
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             reader = this.command.ExecuteReader();
             reader.Read();
-            txtPremiereLoc.Text = $"{reader.GetDateTime(0):d}";
+            try 
+            {
+                txtPremiereLoc.Text = $"{reader.GetDateTime(0):d}";
+            }
+            catch
+            {
+                txtPremiereLoc.Text = "-";
+            }
             reader.Close();
         }
 
@@ -165,7 +169,7 @@ namespace GestionLocation
         /// <returns>Chaîne de connexion de la fenêtre</returns>
         public MySqlConnection GetConnexion()
         {
-            return this.connexion;
+            return Global.Connexion;
         }
     }
 }

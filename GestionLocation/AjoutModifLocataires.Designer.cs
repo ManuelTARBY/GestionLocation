@@ -246,7 +246,7 @@ namespace GestionLocation
             this.datDateNaissance.Name = "datDateNaissance";
             this.datDateNaissance.Size = new System.Drawing.Size(210, 26);
             this.datDateNaissance.TabIndex = 6;
-            this.datDateNaissance.Value = new System.DateTime(1900, 1, 1, 0, 0, 0, 0);
+            this.datDateNaissance.Value = new System.DateTime(1990, 1, 1, 0, 0, 0, 0);
             // 
             // AjoutModifLocataires
             // 

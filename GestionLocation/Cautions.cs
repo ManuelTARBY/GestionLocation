@@ -14,7 +14,6 @@ namespace GestionLocation
     public partial class Cautions : Form
     {
 
-        private readonly MySqlConnection connexion;
         private MySqlCommand command;
         private string req;
 
@@ -22,9 +21,8 @@ namespace GestionLocation
         /// Constructeur Cautions
         /// </summary>
         /// <param name="connexion">Connexion SQL appelant la fenêtre</param>
-        public Cautions(MySqlConnection connexion)
+        public Cautions()
         {
-            this.connexion = connexion;
             InitializeComponent();
             RemplirLstCautions();
         }
@@ -36,7 +34,7 @@ namespace GestionLocation
         {
             lstCautions.Items.Clear();
             ConstruitReqListeCautions();
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             /* lecture de la première ligne du curseur (finCurseur passe à false en fin de
             curseur) */
@@ -95,7 +93,7 @@ namespace GestionLocation
             else
             {
                 // Requête pour récupérer la valeur de locatairearchive pour le bien passé en paramètre
-                this.command = new MySqlCommand($"SELECT cautionarchivee FROM caution WHERE nomcompletcaution = \"{lstCautions.SelectedItem}\"", this.connexion);
+                this.command = new MySqlCommand($"SELECT cautionarchivee FROM caution WHERE nomcompletcaution = \"{lstCautions.SelectedItem}\"", Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
                 reader.Read();
                 this.req = $"UPDATE caution SET cautionarchivee = {!(bool)reader["cautionarchivee"]} WHERE nomcompletcaution = \"{lstCautions.SelectedItem}\"";
@@ -112,7 +110,7 @@ namespace GestionLocation
         /// </summary>
         private void ExecuteReqIUD()
         {
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             // préparation de la requête
             this.command.Prepare();
             // exécution de la requête
@@ -133,7 +131,7 @@ namespace GestionLocation
             else
             {
                 this.req = $"SELECT idcaution FROM caution WHERE nomcompletcaution = \"{lstCautions.SelectedItem}\"";
-                this.command = new MySqlCommand(this.req, this.connexion);
+                this.command = new MySqlCommand(this.req, Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
                 reader.Read();
                 int id = reader.GetInt32(0);
@@ -158,7 +156,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnAjouter_Click(object sender, EventArgs e)
         {
-            AjoutModifCautions modifCaution = new AjoutModifCautions(this, this.connexion, "INSERT INTO");
+            AjoutModifCautions modifCaution = new AjoutModifCautions(this, "INSERT INTO");
             modifCaution.ShowDialog();
         }
 
@@ -173,13 +171,13 @@ namespace GestionLocation
             {
                 // Récupère l'id du locataire sélectionné à l'aide d'une requête Select
                 this.req = $"SELECT idcaution FROM caution WHERE nomcompletcaution = \"{lstCautions.SelectedItem}\"";
-                this.command = new MySqlCommand(this.req, this.connexion);
+                this.command = new MySqlCommand(this.req, Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
                 reader.Read();
                 int id = reader.GetInt32(0);
                 reader.Close();
                 // Crée puis ouvre la fenêtre d'ajout/modif caution
-                AjoutModifCautions modifCaution = new AjoutModifCautions(this, this.connexion, "UPDATE", id);
+                AjoutModifCautions modifCaution = new AjoutModifCautions(this, "UPDATE", id);
                 modifCaution.ShowDialog();
             }
             else
@@ -196,7 +194,7 @@ namespace GestionLocation
         private bool VerifIntegrite(int id)
         {
             this.req = $"SELECT idlocation FROM location WHERE idcaution = {id}";
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             List<string> liste = new List<string>();
             MySqlDataReader reader = this.command.ExecuteReader();
             /* lecture de la première ligne du curseur (finCurseur passe à false en fin de

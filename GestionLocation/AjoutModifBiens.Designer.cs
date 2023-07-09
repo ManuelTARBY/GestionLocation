@@ -81,6 +81,7 @@ namespace GestionLocation
             this.txtLoyerHC.Name = "txtLoyerHC";
             this.txtLoyerHC.Size = new System.Drawing.Size(244, 26);
             this.txtLoyerHC.TabIndex = 2;
+            this.txtLoyerHC.TextChanged += new System.EventHandler(this.TxtLoyerHC_TextChanged);
             // 
             // txtCharges
             // 
@@ -88,6 +89,7 @@ namespace GestionLocation
             this.txtCharges.Name = "txtCharges";
             this.txtCharges.Size = new System.Drawing.Size(244, 26);
             this.txtCharges.TabIndex = 3;
+            this.txtCharges.TextChanged += new System.EventHandler(this.TxtCharges_TextChanged);
             // 
             // txtVille
             // 
@@ -107,6 +109,7 @@ namespace GestionLocation
             // 
             // txtLoyerCC
             // 
+            this.txtLoyerCC.Enabled = false;
             this.txtLoyerCC.Location = new System.Drawing.Point(182, 155);
             this.txtLoyerCC.Name = "txtLoyerCC";
             this.txtLoyerCC.Size = new System.Drawing.Size(244, 26);
@@ -165,7 +168,7 @@ namespace GestionLocation
             this.lblLoyerHC.TabIndex = 15;
             this.lblLoyerHC.Text = "Loyer HC";
             // 
-            // lblAdresse
+            // lblCharges
             // 
             this.lblCharges.AutoSize = true;
             this.lblCharges.Location = new System.Drawing.Point(68, 121);

@@ -15,7 +15,6 @@ namespace GestionLocation
     {
 
         private readonly Cautions fenCaution;
-        private readonly MySqlConnection connexion;
         private readonly string typeReq;
         private readonly int id;
         private string req;
@@ -25,23 +24,21 @@ namespace GestionLocation
         private readonly string[] stringDelimit = { ", " };
 
         /// <summary>
-        /// Constructeur de AjoutModifCaution
+        /// Constructeur de la fenêtre AjoutModifCautions
         /// </summary>
         /// <param name="fenLCaution"></param>
-        /// <param name="connexion"></param>
         /// <param name="typeReq"></param>
         /// <param name="id"></param>
-        public AjoutModifCautions(Cautions fenCaution, MySqlConnection connexion, string typeReq, int id = 0)
+        public AjoutModifCautions(Cautions fenCaution, string typeReq, int id = 0)
         {
             InitializeComponent();
             this.fenCaution = fenCaution;
-            this.connexion = connexion;
             this.typeReq = typeReq;
             this.id = id;
             if (this.id == 0)
             {
                 this.req = "SELECT MAX(req.idcaution) FROM (SELECT idcaution FROM caution) AS req";
-                this.command = new MySqlCommand(this.req, this.connexion);
+                this.command = new MySqlCommand(this.req, Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
                 reader.Read();
                 this.id = reader.GetInt32(0) + 1;
@@ -61,7 +58,7 @@ namespace GestionLocation
         private void AfficheInfo()
         {
             this.req = $"SELECT * FROM caution WHERE idcaution = {this.id}";
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             // affichage des champs récupérés dans la ligne
@@ -128,7 +125,7 @@ namespace GestionLocation
                     ConstruitReqAjout();
                 }
                 // Exécute la requête
-                this.command = new MySqlCommand(this.req, this.connexion);
+                this.command = new MySqlCommand(this.req, Global.Connexion);
                 // préparation de la requête
                 this.command.Prepare();
                 // exécution de la requête
@@ -186,15 +183,6 @@ namespace GestionLocation
             return leNum;
         }
 
-        /// <summary>
-        /// Met une majuscule sur la première lettre d'un mot ou d'une phrase
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns>Chaine de caractère avec une majuscule sur le premier caractère</returns>
-        public string Capitalize(string s)
-        {
-            return s[0].ToString().ToUpper() + s.Substring(1);
-        }
 
         /// <summary>
         /// Récupère et met en forme les noms (tout en majuscule) et prénoms (majuscule sur la première lettre) du formulaire
@@ -207,13 +195,13 @@ namespace GestionLocation
             // Met le nom tout en majuscule
             nomprenom[1] = txtNom.Text.ToUpper();
             // Construit le nom complet (nom + prénom)
-            nomprenom[2] = nomprenom[1] + " " + Capitalize((lesPrenoms[0]));
+            nomprenom[2] = nomprenom[1] + " " + Global.Capitalize((lesPrenoms[0]));
             // Reconstruit la chaîne des prénoms avec une majuscule à chaque prenom
             for (int i = 0; i < lesPrenoms.Length - 1; i++)
             {
-                nomprenom[0] += Capitalize(lesPrenoms[i]) + ", ";
+                nomprenom[0] += Global.Capitalize(lesPrenoms[i]) + ", ";
             }
-            nomprenom[0] += Capitalize(lesPrenoms[lesPrenoms.Length - 1]);
+            nomprenom[0] += Global.Capitalize(lesPrenoms[lesPrenoms.Length - 1]);
             return nomprenom;
         }
     }

@@ -14,17 +14,14 @@ namespace GestionLocation
     public partial class Locataires : Form
     {
 
-        private readonly MySqlConnection connexion;
         private MySqlCommand command;
         private string req;
 
         /// <summary>
         /// Constructeur de Locataires
         /// </summary>
-        /// <param name="connexion">Connexion SQL appelant la fenêtre</param>
-        public Locataires(MySqlConnection connexion)
+        public Locataires()
         {
-            this.connexion = connexion;
             InitializeComponent();
             RemplirLstLocataires();
         }
@@ -35,7 +32,7 @@ namespace GestionLocation
         public void RemplirLstLocataires()
         {
             lstLocataires.Items.Clear();
-            this.command = new MySqlCommand(ConstruitReqListeLocataires(), this.connexion);
+            this.command = new MySqlCommand(ConstruitReqListeLocataires(), Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             /* lecture de la première ligne du curseur (finCurseur passe à false en fin de
             curseur) */
@@ -96,7 +93,7 @@ namespace GestionLocation
             else
             {
                 // Requête pour récupérer la valeur de locatairearchive pour le bien passé en paramètre
-                this.command = new MySqlCommand($"SELECT locatairearchive FROM locataire WHERE nomcompletlocataire = \"{lstLocataires.SelectedItem}\"", this.connexion);
+                this.command = new MySqlCommand($"SELECT locatairearchive FROM locataire WHERE nomcompletlocataire = \"{lstLocataires.SelectedItem}\"", Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
                 reader.Read();
                 this.req = $"UPDATE locataire SET locatairearchive = {!(bool)reader["locatairearchive"]} WHERE nomcompletlocataire = \"{lstLocataires.SelectedItem}\"";
@@ -113,7 +110,7 @@ namespace GestionLocation
         /// </summary>
         private void ExecuteReqIUD()
         {
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             // préparation de la requête
             this.command.Prepare();
             // exécution de la requête
@@ -134,7 +131,7 @@ namespace GestionLocation
             else
             {
                 this.req = $"SELECT idlocataire FROM locataire WHERE nomcompletlocataire = \"{lstLocataires.SelectedItem}\"";
-                this.command = new MySqlCommand(this.req, this.connexion);
+                this.command = new MySqlCommand(this.req, Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
                 reader.Read();
                 int id = reader.GetInt32(0);
@@ -159,7 +156,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnAjouter_Click(object sender, EventArgs e)
         {
-            AjoutModifLocataires modifLocataire = new AjoutModifLocataires(this, this.connexion, "INSERT INTO");
+            AjoutModifLocataires modifLocataire = new AjoutModifLocataires(this, "INSERT INTO");
             modifLocataire.ShowDialog();
         }
 
@@ -174,13 +171,13 @@ namespace GestionLocation
             {
                 // Récupère l'id du locataire sélectionné à l'aide d'une requête Select
                 this.req = $"SELECT idlocataire FROM locataire WHERE nomcompletlocataire = \"{lstLocataires.SelectedItem}\"";
-                this.command = new MySqlCommand(this.req, this.connexion);
+                this.command = new MySqlCommand(this.req, Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
                 reader.Read();
                 int id = reader.GetInt32(0);
                 reader.Close();
                 // Crée puis ouvre la fenêtre d'ajout/modif locataire
-                AjoutModifLocataires modifLocataire = new AjoutModifLocataires(this, this.connexion, "UPDATE", id);
+                AjoutModifLocataires modifLocataire = new AjoutModifLocataires(this, "UPDATE", id);
                 modifLocataire.ShowDialog();
             }
             else
@@ -197,7 +194,7 @@ namespace GestionLocation
         private bool VerifIntegrite(int id)
         {
             this.req = $"SELECT idlocation FROM location WHERE idlocataire = {id}";
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             List<string> liste = new List<string>();
             MySqlDataReader reader = this.command.ExecuteReader();
             /* lecture de la première ligne du curseur (finCurseur passe à false en fin de

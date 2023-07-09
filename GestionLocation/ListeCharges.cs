@@ -14,37 +14,31 @@ namespace GestionLocation
     public partial class ListeCharges : Form
     {
 
-        private readonly MySqlConnection connexion;
         private readonly string[] leBien = new string[2];
         private string req;
         private MySqlCommand command;
+        private readonly Accueil fenAccueil;
         private readonly Dictionary<string, string> lesCharges;
         private readonly FicheBien fenFicheBien;
-        private readonly Accueil fenAccueil;
         private readonly Dictionary<string, string> lesBiens;
         
 
         /// <summary>
         /// Constructeur de ListeCharges
         /// </summary>
-        /// <param name="connexion">Chaîne de connexion à la base de données</param>
-        /// <param name="nombien">Nom du bien</param>
-        //public ListeCharges(MySqlConnection connexion, string[] leBien)
+        /// <param name="fenetre">Instance de la fenêtre ayant appelé le constructeur</param>
         public ListeCharges(Form fenetre)
         {
             // Si le paramètre contient la fenêtre de type FicheBien
-            if (fenetre is FicheBien bien)
+            if (typeof(FicheBien).IsInstanceOfType(fenetre))
             {
-                //this.fenFicheBien = (FicheBien)fenetre;
-                this.fenFicheBien = bien;
-                this.connexion = this.fenFicheBien.GetConnexion();
+                this.fenFicheBien = fenetre as FicheBien;
                 this.leBien = this.fenFicheBien.GetLeBien();
             }
             // Si la fenêtre a été ouverte depuis la fenêtre Accueil (sans bien sélectionné)
             else
             {
-                this.fenAccueil = (Accueil)fenetre;
-                this.connexion = this.fenAccueil.GetConnexion();
+                this.fenAccueil = fenetre as Accueil;
             }
             this.lesCharges = new Dictionary<string, string>();
             this.lesBiens = new Dictionary<string, string>();
@@ -81,7 +75,7 @@ namespace GestionLocation
                 this.req += $"WHERE idbien={this.leBien[0]} ";
             }
             this.req += "ORDER BY libelle";
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
 
@@ -115,7 +109,7 @@ namespace GestionLocation
         /// <returns>Chaîne de connexion</returns>
         public MySqlConnection GetConnexion()
         {
-            return this.connexion;
+            return Global.Connexion;
         }
 
 
@@ -187,7 +181,7 @@ namespace GestionLocation
         /// </summary>
         private void ExecuteReqIUD()
         {
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             // préparation de la requête
             this.command.Prepare();
             // exécution de la requête
@@ -203,7 +197,7 @@ namespace GestionLocation
             // Calcule la charge annuelle du bien
             float charges = 0;
             this.req = $"SELECT chargeannuelle FROM chargesannuelles WHERE idbien = {leBien[0]}";
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
             while (!finCurseur)
@@ -216,7 +210,7 @@ namespace GestionLocation
             // Calcule la charge imputable au locataire du bien
             this.req += " AND imputable = True";
             float chImputables = 0;
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             reader = this.command.ExecuteReader();
             finCurseur = !reader.Read();
             while (!finCurseur)
@@ -250,7 +244,7 @@ namespace GestionLocation
         private void RemplirListeBiens()
         {
             this.req = "SELECT idbien, nombien FROM bien ORDER BY nombien";
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
             while (!finCurseur)

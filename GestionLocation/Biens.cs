@@ -14,17 +14,15 @@ namespace GestionLocation
     public partial class Biens : Form
     {
 
-        private readonly MySqlConnection connexion;
         private MySqlCommand command;
         private string req;
 
         /// <summary>
         /// Constructeur
         /// </summary>
-        public Biens(MySqlConnection connexion)
+        public Biens()
         {
             InitializeComponent();
-            this.connexion = connexion;
             RemplirLstBiens();
         }
 
@@ -34,7 +32,7 @@ namespace GestionLocation
         public void RemplirLstBiens()
         {
             lstBiens.Items.Clear();
-            this.command = new MySqlCommand(ConstruitReqListeBien(), this.connexion);
+            this.command = new MySqlCommand(ConstruitReqListeBien(), Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             /* lecture de la première ligne du curseur (finCurseur passe à false en fin de
             curseur) */
@@ -81,12 +79,12 @@ namespace GestionLocation
             if (lstBiens.SelectedItem != null)
             {
                 this.req = $"SELECT idbien FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"";
-                this.command = new MySqlCommand(this.req, this.connexion);
+                this.command = new MySqlCommand(this.req, Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
                 reader.Read();
                 int id = reader.GetInt32(0);
                 reader.Close();
-                AjoutModifBiens modifBiens = new AjoutModifBiens(this, this.connexion, "UPDATE", id);
+                AjoutModifBiens modifBiens = new AjoutModifBiens(this, "UPDATE", id);
                 modifBiens.ShowDialog();
             }
             else
@@ -102,7 +100,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnAjouter_Click(object sender, EventArgs e)
         {
-            AjoutModifBiens modifBiens = new AjoutModifBiens(this, this.connexion, "INSERT INTO");
+            AjoutModifBiens modifBiens = new AjoutModifBiens(this, "INSERT INTO");
             modifBiens.ShowDialog();
         }
 
@@ -115,7 +113,7 @@ namespace GestionLocation
             else
             {
                 // Requête pour récupérer la valeur de bienarchive pour le bien passé en paramètre
-                this.command = new MySqlCommand($"SELECT bienarchive FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"", this.connexion);
+                this.command = new MySqlCommand($"SELECT bienarchive FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"", Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
                 reader.Read();
                 this.req = $"UPDATE bien SET bienarchive = {!(bool)reader["bienarchive"]} WHERE nombien = \"{lstBiens.SelectedItem}\"";
@@ -155,7 +153,7 @@ namespace GestionLocation
                 if (result == DialogResult.Yes)
                 {
                     this.req = $"SELECT idbien FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"";
-                    this.command = new MySqlCommand(this.req, this.connexion);
+                    this.command = new MySqlCommand(this.req, Global.Connexion);
                     MySqlDataReader reader = this.command.ExecuteReader();
                     reader.Read();
                     int id = reader.GetInt32(0);
@@ -179,7 +177,7 @@ namespace GestionLocation
         /// </summary>
         private void ExecuteReqIUD()
         {
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             // préparation de la requête
             this.command.Prepare();
             // exécution de la requête
@@ -194,7 +192,7 @@ namespace GestionLocation
         private bool VerifIntegrite(int id)
         {
             this.req = $"SELECT idlocation FROM location WHERE idbien = {id}";
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             List<string> liste = new List<string>();
             MySqlDataReader reader = this.command.ExecuteReader();
             /* lecture de la première ligne du curseur (finCurseur passe à false en fin de
@@ -235,14 +233,14 @@ namespace GestionLocation
             else
             {
                 this.req = $"SELECT * FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"";
-                this.command = new MySqlCommand(this.req, this.connexion);
+                this.command = new MySqlCommand(this.req, Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
                 reader.Read();
                 int id = reader.GetInt32(0);
                 reader.Close();
                 
                 // Crée la fenêtre de fiche du bien à ouvrir et l'ouvre avec la connexion et le tableau des données du bien en paramètres
-                FicheBien modifBiens = new FicheBien(this.connexion, id);
+                FicheBien modifBiens = new FicheBien(id);
                 modifBiens.ShowDialog();
             }
         }

@@ -14,7 +14,6 @@ namespace GestionLocation
     public partial class AjoutModifBiens : Form
     {
 
-        private readonly MySqlConnection connexion;
         private MySqlCommand command;
         private readonly Biens leBien;
         private string req;
@@ -22,17 +21,22 @@ namespace GestionLocation
         private readonly string typeReq;
         private readonly string[] rubBiens = {"idbien", "nombien", "loyerhc", "charges", "loyercc", "adressebien", "cpbien", "villebien", "bienarchive"};
 
-        public AjoutModifBiens(Biens fenBien, MySqlConnection connexion, string typeReq, int id = 0)
+        /// <summary>
+        /// Consstructeur de la fenêtre AjoutModifBiens
+        /// </summary>
+        /// <param name="fenBien">Instance de la fenêtre Biens</param>
+        /// <param name="typeReq">Type de requête (ajout ou modif)</param>
+        /// <param name="id">Id du bien</param>
+        public AjoutModifBiens(Biens fenBien, string typeReq, int id = 0)
         {
             InitializeComponent();
             this.leBien = fenBien;
             this.id = id;
-            this.connexion = connexion;
             this.typeReq = typeReq;
             if (this.id == 0)
             {
                 this.req = "SELECT MAX(req.idbien) FROM (SELECT idbien FROM bien) AS req";
-                this.command = new MySqlCommand(this.req, this.connexion);
+                this.command = new MySqlCommand(this.req, Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
                 reader.Read();
                 this.id = reader.GetInt32(0) + 1;
@@ -52,7 +56,7 @@ namespace GestionLocation
         private void AfficheInfo(int id)
         {
             this.req = $"SELECT * FROM bien WHERE idbien = {id}";
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             // affichage des champs récupérés dans la ligne
@@ -82,11 +86,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnValider_Click(object sender, EventArgs e)
         {
-            if (!ChampsRenseignes())
-            {
-                MessageBox.Show("Veuillez remplir tous les champs pour pouvoir valider la saisie.");
-            }
-            else
+            if (ChampsRenseignes())
             {
                 if (this.typeReq.Equals("UPDATE"))
                 {
@@ -99,7 +99,7 @@ namespace GestionLocation
                     ConstruitReqAjout();
                 }
                 // Exécute la requête
-                this.command = new MySqlCommand(this.req, this.connexion);
+                this.command = new MySqlCommand(this.req, Global.Connexion);
                 // préparation de la requête
                 this.command.Prepare();
                 // exécution de la requête
@@ -118,10 +118,32 @@ namespace GestionLocation
             if (txtNom.Text.Equals("") || txtLoyerHC.Text.Equals("") || txtCharges.Text.Equals("") || txtLoyerCC.Text.Equals("")
                 || txtAdresse.Text.Equals("") || txtCp.Text.Equals("") || txtVille.Text.Equals(""))
             {
+                MessageBox.Show("Veuillez remplir tous les champs pour pouvoir valider la saisie.");
                 return false;
             }
             else
             {
+                try
+                {
+                    float prix = float.Parse(txtLoyerHC.Text);
+                }
+                catch
+                {
+                    MessageBox.Show("Erreur de saisie pour le montant du loyer hors charges.");
+                    txtLoyerHC.Focus();
+                    return false;
+                }
+
+                try
+                {
+                    float prix = float.Parse(txtCharges.Text);
+                }
+                catch
+                {
+                    MessageBox.Show("Erreur de saisie pour le montant des charges.");
+                    txtCharges.Focus();
+                    return false;
+                }
                 return true;
             }
         }
@@ -134,7 +156,7 @@ namespace GestionLocation
             this.req = $"{this.typeReq} bien SET ";
             this.req += $"idbien = {this.id}, nombien = \"{txtNom.Text}\", loyerHC = \"{txtLoyerHC.Text}\", " +
                 $"charges = \"{txtCharges.Text}\", loyerCC = \"{txtLoyerCC.Text}\", adressebien = \"{txtAdresse.Text}\", " +
-                $"cpbien = \"{txtCp.Text}\", villebien = \"{txtVille.Text}\", bienarchive = {cbxArchive.Checked} WHERE idbien = {this.id}";
+                $"cpbien = \"{txtCp.Text}\", villebien = \"{txtVille.Text.ToUpper()}\", bienarchive = {cbxArchive.Checked} WHERE idbien = {this.id}";
         }
 
         /// <summary>
@@ -148,7 +170,40 @@ namespace GestionLocation
                 this.req += $"{rubBiens[i]}, ";
             }
             this.req += $"{rubBiens[8]}) VALUES ({this.id}, \"{txtNom.Text}\", \"{txtLoyerHC.Text}\", \"{txtCharges.Text}\", " +
-                $"\"{txtLoyerCC.Text}\", \"{txtAdresse.Text}\", \"{txtCp.Text}\", \"{txtVille.Text}\", {cbxArchive.Checked})";
+                $"\"{txtLoyerCC.Text}\", \"{txtAdresse.Text}\", \"{txtCp.Text}\", \"{txtVille.Text.ToUpper()}\", {cbxArchive.Checked})";
+        }
+
+
+        /// <summary>
+        /// Modifie le montant du loyer CC à chaque modification du loyer HC
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TxtLoyerHC_TextChanged(object sender, EventArgs e)
+        {
+            RecalculeLoyerCC();
+        }
+
+
+        /// <summary>
+        /// Recalcule le montant du loyer CC en fonction du contenu des champs LoyerHc et Charges
+        /// </summary>
+        private void RecalculeLoyerCC()
+        {
+            float.TryParse(txtLoyerHC.Text, out float loyerHc);
+            float.TryParse(txtCharges.Text, out float charges);
+            txtLoyerCC.Text = (loyerHc + charges).ToString();
+        }
+
+
+        /// <summary>
+        /// Modifie le montant du loyer CC à chaque modification des charges
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TxtCharges_TextChanged(object sender, EventArgs e)
+        {
+            RecalculeLoyerCC();
         }
     }
 }

@@ -22,9 +22,9 @@ DROP TABLE IF EXISTS bien;
 CREATE TABLE bien (
   idbien int NOT NULL,
   nombien varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  loyerhc int DEFAULT NULL,
-  charges int DEFAULT NULL,
-  loyercc int DEFAULT NULL,
+  loyerhc float(13,2) DEFAULT NULL,
+  charges float(13,2) DEFAULT NULL,
+  loyercc float(13,2) DEFAULT NULL,
   adressebien varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   cpbien varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   villebien varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -66,8 +66,8 @@ CREATE TABLE chargesannuelles (
   idbien int NOT NULL,
   libelle varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   refFrequence varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  montantcharge decimal(13,2) DEFAULT NULL,
-  chargeannuelle decimal(13,2) DEFAULT NULL,
+  montantcharge float(13,2) DEFAULT NULL,
+  chargeannuelle float(13,2) DEFAULT NULL,
   imputable tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -133,7 +133,7 @@ CREATE TABLE location (
   idlocataire int NOT NULL,
   debutlocation date DEFAULT NULL,
   finlocation date DEFAULT NULL,
-  depotgarantie decimal(13,2) DEFAULT NULL,
+  depotgarantie float(13,2) DEFAULT NULL,
   locationarchivee tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -148,13 +148,33 @@ CREATE TABLE paiement (
   idpaiement int NOT NULL,
   idlocation int NOT NULL,
   datepaiement date DEFAULT NULL,
-  montantpaye decimal(13,2) DEFAULT NULL,
+  montantpaye float(13,2) DEFAULT NULL,
   periodefacturee date DEFAULT NULL,
-  montantdu decimal(13,2) DEFAULT NULL,
-  resteapayer decimal(13,2) DEFAULT NULL,
+  montantdu float(13,2) DEFAULT NULL,
+  resteapayer float(13,2) DEFAULT NULL,
   loyerregle tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+--
+-- Structure de la table utilisateur
+--
+
+DROP TABLE IF EXISTS utilisateur;
+CREATE TABLE utilisateur (
+  iduser int NOT NULL,
+  login varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  pwd varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  prenomuser varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  nomuser varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  adresseuser varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  cpuser varchar(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  villeuser varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  emailuser varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  pwdemail varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  adresseserveursmtp varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  port int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 --
@@ -208,6 +228,13 @@ ALTER TABLE location
 ALTER TABLE paiement
   ADD PRIMARY KEY (idpaiement),
   ADD KEY i_fk_paiement_location1 (idlocation);
+
+--
+-- Index pour la table utilisateur
+--
+ALTER TABLE utilisateur
+  ADD PRIMARY KEY (iduser);
+COMMIT;
 
 --
 -- Contraintes pour les tables déchargées

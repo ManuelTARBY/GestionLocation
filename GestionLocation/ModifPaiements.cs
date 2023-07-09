@@ -16,7 +16,6 @@ namespace GestionLocation
 
         private readonly string idPaiement;
         private string req;
-        private readonly MySqlConnection connexion;
         private MySqlCommand command;
         private readonly Paiements fenPaiements;
         
@@ -25,11 +24,10 @@ namespace GestionLocation
         /// </summary>
         /// <param name="connexion">Connexion à la BDD</param>
         /// <param name="idPaiement">id de l'enregistrement de la table Paiement à modifier</param>
-        public ModifPaiements(Paiements fenPaiements, string idPaiement)
+        public ModifPaiements(Paiements fenPaiements)
         {
             this.fenPaiements = fenPaiements;
-            this.connexion = fenPaiements.GetConnexion();
-            this.idPaiement = idPaiement;
+            this.idPaiement = this.fenPaiements.GetIdPaiement();
             InitializeComponent();
             RemplirChamps();
         }
@@ -42,7 +40,7 @@ namespace GestionLocation
         {
             // Construit la requête pour récupérer les informations du paiement à partir de son id
             this.req = $"SELECT * FROM paiement WHERE idpaiement = {this.idPaiement}";
-            this.command = new MySqlCommand(req.ToString(), this.connexion);
+            this.command = new MySqlCommand(req.ToString(), Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             // S'il n'y a pas de date, mettre la date du jour par défaut
@@ -71,7 +69,7 @@ namespace GestionLocation
 
             // Récupère les informations sur le locataire
             this.req = $"SELECT nomcompletlocataire FROM locataire WHERE idlocataire = (SELECT idlocataire FROM location WHERE idlocation = {idLocation})";
-            this.command = new MySqlCommand(req.ToString(), this.connexion);
+            this.command = new MySqlCommand(req.ToString(), Global.Connexion);
             reader = this.command.ExecuteReader();
             reader.Read();
             string locataire = reader["nomcompletlocataire"].ToString();
@@ -79,7 +77,7 @@ namespace GestionLocation
 
             // Récupère les informations sur le bien
             this.req = $"SELECT nombien FROM bien WHERE idbien = (SELECT idbien FROM location WHERE idlocation = {idLocation})";
-            this.command = new MySqlCommand(req.ToString(), this.connexion);
+            this.command = new MySqlCommand(req.ToString(), Global.Connexion);
             reader = this.command.ExecuteReader();
             reader.Read();
             string bien = reader["nombien"].ToString();
@@ -129,16 +127,36 @@ namespace GestionLocation
                 if (float.Parse(resteAPayer) <= 0)
                 {
                     loyerregle = true;
+
                 }
                 // Construit la requête de mise à jour
                 this.req = $"UPDATE paiement SET datepaiement = \'{datPaiement.Value:yyyy-MM-dd}\', montantpaye = \'{txtMontantPaye.Text}\', " +
                     $"resteapayer = \'{resteAPayer.Replace(',', '.')}\', loyerregle = {loyerregle} WHERE idpaiement = {this.idPaiement}";
                 // Exécute la requête d'enregistrement du paiement
-                this.command = new MySqlCommand(this.req, this.connexion);
+                this.command = new MySqlCommand(this.req, Global.Connexion);
                 this.command.Prepare();
                 this.command.ExecuteNonQuery();
                 // Met à jour l'affichage
-                this.fenPaiements.RemplirListePaiements();
+                this.req = fenPaiements.GetRequete();
+                this.fenPaiements.EnvoiReqSelectPaiements();
+                // Si le loyer est réglé, demande si il faut envoyer la quittance par mail au locataire
+                if (loyerregle == true)
+                {
+                    // Demande pour envoi de la quittance de loyer
+                    DialogResult result = MessageBox.Show($"Voulez-vous envoyer une quittance au locataire ?", "Envoi de quittance", MessageBoxButtons.YesNo);
+                    if (result == DialogResult.Yes)
+                    {
+                        // Préparation et envoi de la quittance
+                        if (!fenPaiements.VerifMail().Equals(""))
+                        {
+                            this.fenPaiements.GestionQuittance(this.idPaiement);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Impossible d'envoyer la quittance au locataire, vous n'avez pas renseigné son adresse mail.");
+                        }
+                    }
+                }
                 // Ferme la fenêtre
                 this.Dispose();
             }

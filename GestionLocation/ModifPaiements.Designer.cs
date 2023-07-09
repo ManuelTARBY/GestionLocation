@@ -141,7 +141,7 @@ namespace GestionLocation
             // 
             // btnValider
             // 
-            this.btnValider.Location = new System.Drawing.Point(164, 402);
+            this.btnValider.Location = new System.Drawing.Point(169, 402);
             this.btnValider.Name = "btnValider";
             this.btnValider.Size = new System.Drawing.Size(205, 62);
             this.btnValider.TabIndex = 12;

@@ -35,6 +35,7 @@ namespace GestionLocation
             this.btnSaisirPaiement = new System.Windows.Forms.Button();
             this.btnFiltreArchive = new System.Windows.Forms.Button();
             this.btnNonRegle = new System.Windows.Forms.Button();
+            this.btnEnvoyerQuittance = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lstPaiements
@@ -45,6 +46,7 @@ namespace GestionLocation
             this.lstPaiements.Name = "lstPaiements";
             this.lstPaiements.Size = new System.Drawing.Size(958, 244);
             this.lstPaiements.TabIndex = 0;
+            this.lstPaiements.Click += new System.EventHandler(this.LstPaiements_Click);
             // 
             // lstLocations
             // 
@@ -68,9 +70,9 @@ namespace GestionLocation
             // 
             // btnSaisirPaiement
             // 
-            this.btnSaisirPaiement.Location = new System.Drawing.Point(848, 46);
+            this.btnSaisirPaiement.Location = new System.Drawing.Point(848, 23);
             this.btnSaisirPaiement.Name = "btnSaisirPaiement";
-            this.btnSaisirPaiement.Size = new System.Drawing.Size(130, 80);
+            this.btnSaisirPaiement.Size = new System.Drawing.Size(130, 66);
             this.btnSaisirPaiement.TabIndex = 4;
             this.btnSaisirPaiement.Text = "Saisir un paiement";
             this.btnSaisirPaiement.UseVisualStyleBackColor = true;
@@ -96,11 +98,22 @@ namespace GestionLocation
             this.btnNonRegle.UseVisualStyleBackColor = true;
             this.btnNonRegle.Click += new System.EventHandler(this.BtnNonRegle_Click);
             // 
+            // btnEnvoyerQuittance
+            // 
+            this.btnEnvoyerQuittance.Location = new System.Drawing.Point(848, 101);
+            this.btnEnvoyerQuittance.Name = "btnEnvoyerQuittance";
+            this.btnEnvoyerQuittance.Size = new System.Drawing.Size(130, 66);
+            this.btnEnvoyerQuittance.TabIndex = 7;
+            this.btnEnvoyerQuittance.Text = "Envoyer quittance";
+            this.btnEnvoyerQuittance.UseVisualStyleBackColor = true;
+            this.btnEnvoyerQuittance.Click += new System.EventHandler(this.BtnEnvoyerQuittance_Click);
+            // 
             // Paiements
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1000, 505);
+            this.Controls.Add(this.btnEnvoyerQuittance);
             this.Controls.Add(this.btnNonRegle);
             this.Controls.Add(this.btnFiltreArchive);
             this.Controls.Add(this.btnSaisirPaiement);
@@ -121,5 +134,6 @@ namespace GestionLocation
         private System.Windows.Forms.Button btnSaisirPaiement;
         private System.Windows.Forms.Button btnFiltreArchive;
         private System.Windows.Forms.Button btnNonRegle;
+        private System.Windows.Forms.Button btnEnvoyerQuittance;
     }
 }

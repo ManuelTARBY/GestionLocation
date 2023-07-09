@@ -14,14 +14,40 @@ namespace GestionLocation
     public partial class Accueil : Form
     {
         
-        private readonly MySqlConnection connexion;
         private MySqlCommand command;
+        private readonly Connexion fenConnexion;
+        private readonly string idUser;
         
-        public Accueil(MySqlConnection connexion)
+        /// <summary>
+        /// Constructeur de la fenêtre Accueil
+        /// </summary>
+        /// <param name="fenConnexion">Instance de la fenêtre Connexion</param>
+        public Accueil(Connexion fenConnexion)
         {
             InitializeComponent();
-            this.connexion = connexion;
+            this.fenConnexion = fenConnexion;
+            this.idUser = this.fenConnexion.GetIdUser();
+            Global.Connexion = this.fenConnexion.GetConnexion();
+            RecupInfoUser();
             AfficherLocations();
+        }
+
+
+        /// <summary>
+        /// Met à jour les données sur la session email de l'utilisateur
+        /// </summary>
+        private void RecupInfoUser()
+        {
+            string req = $"SELECT * FROM utilisateur WHERE iduser={this.idUser}";
+            this.command = new MySqlCommand(req, Global.Connexion);
+            MySqlDataReader reader = this.command.ExecuteReader();
+            reader.Read();
+            Global.User = $"{reader.GetString(3)} {reader.GetString(4)}";
+            Global.EmailUser = $"{reader.GetString(8)}";
+            Global.PwdUser = $"{reader.GetString(9)}";
+            Global.ServeurSmtp = $"{reader.GetString(10)}";
+            Global.PortEmail = (int)reader["port"];
+            reader.Close();
         }
 
 
@@ -36,7 +62,7 @@ namespace GestionLocation
             req.AppendLine("FROM location JOIN locataire USING(idlocataire) JOIN bien USING(idbien) JOIN caution USING(idcaution)");
             req.AppendLine("WHERE locationarchivee = 0");
             req.AppendLine("ORDER BY nombien");
-            this.command = new MySqlCommand(req.ToString(), this.connexion);
+            this.command = new MySqlCommand(req.ToString(), Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             /* lecture de la première ligne du curseur (finCurseur passe à false en fin de
             curseur) */
@@ -73,7 +99,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnFermerAppli_Click(object sender, EventArgs e)
         {
-            this.connexion.Close();
+            Global.Connexion.Close();
             Application.Exit();
         }
 
@@ -84,7 +110,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnBiens_Click(object sender, EventArgs e)
         {
-            Biens bien = new Biens(this.connexion);
+            Biens bien = new Biens();
             bien.ShowDialog();
         }
 
@@ -177,7 +203,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnLocataires_Click(object sender, EventArgs e)
         {
-            Locataires locataire = new Locataires(this.connexion);
+            Locataires locataire = new Locataires();
             locataire.ShowDialog();
         }
 
@@ -208,7 +234,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnCautions_Click(object sender, EventArgs e)
         {
-            Cautions fenCaution = new Cautions(this.connexion);
+            Cautions fenCaution = new Cautions();
             fenCaution.ShowDialog();
         }
 
@@ -250,7 +276,7 @@ namespace GestionLocation
         /// <returns>Connexion</returns>
         public MySqlConnection GetConnexion()
         {
-            return this.connexion;
+            return Global.Connexion;
         }
 
 
@@ -283,8 +309,18 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnPaiements_Click(object sender, EventArgs e)
         {
-            Paiements fenPaiements = new Paiements(this.connexion);
+            Paiements fenPaiements = new Paiements(this);
             fenPaiements.Show();
+        }
+
+
+        /// <summary>
+        /// Récupère l'id de l'utilisateur
+        /// </summary>
+        /// <returns>Id de l'utilisateur</returns>
+        public string GetIdUser()
+        {
+            return this.idUser;
         }
     }
 }

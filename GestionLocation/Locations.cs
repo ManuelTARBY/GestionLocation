@@ -14,22 +14,20 @@ namespace GestionLocation
     public partial class Locations : Form
     {
 
-        private readonly MySqlConnection connexion;
         private MySqlCommand command;
         private readonly Accueil fenAccueil;
-        private string where;
-        private string req;
+        private string where, req;
+        private readonly string idUser;
         private readonly Dictionary<string, int> lesId;
 
         /// <summary>
         /// Constructeur
         /// </summary>
-        /// <param name="connexion">Connexion avec laquelle l'utilisateur s'est connecté</param>
         public Locations(Accueil fenAccueil)
         {
             InitializeComponent();
-            this.connexion = fenAccueil.GetConnexion();
             this.fenAccueil = fenAccueil;
+            this.idUser = this.fenAccueil.GetIdUser();
             this.lesId = new Dictionary<string, int>();
             AfficherBiens();
             AfficherLocations();
@@ -58,7 +56,7 @@ namespace GestionLocation
                 return;
             }
             req.AppendLine("ORDER BY nombien");
-            this.command = new MySqlCommand(req.ToString(), this.connexion);
+            this.command = new MySqlCommand(req.ToString(), Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
             while (!finCurseur)
@@ -79,7 +77,7 @@ namespace GestionLocation
         {
             clbBiens.Items.Clear();
             string req = "SELECT nombien FROM bien WHERE bienarchive = 0 ORDER BY nombien";
-            this.command = new MySqlCommand(req, this.connexion);
+            this.command = new MySqlCommand(req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             /* lecture de la première ligne du curseur (finCurseur passe à false en fin de
             curseur) */
@@ -105,7 +103,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnFermerAppli_Click(object sender, EventArgs e)
         {
-            this.connexion.Close();
+            Global.Connexion.Close();
             Application.Exit();
         }
 
@@ -274,7 +272,7 @@ namespace GestionLocation
                 // Récupère l'id de la location sélectionnée
                 int idLocation = lesId[lstLocations.SelectedItem.ToString()];
                 // Requête pour récupérer la valeur de locationarchivee de la location sélectionnée
-                this.command = new MySqlCommand($"SELECT locationarchivee FROM location WHERE idlocation = {idLocation}", this.connexion);
+                this.command = new MySqlCommand($"SELECT locationarchivee FROM location WHERE idlocation = {idLocation}", Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
                 reader.Read();
                 this.req = $"UPDATE location SET locationarchivee = {!(bool)reader["locationarchivee"]} WHERE idlocation = \"{idLocation}\"";
@@ -291,7 +289,7 @@ namespace GestionLocation
         /// </summary>
         private void ExecuteReqIUD()
         {
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             // préparation de la requête
             this.command.Prepare();
             // exécution de la requête
@@ -376,7 +374,7 @@ namespace GestionLocation
                 // Récupère l'id de la location sélectionnée
                 id = lesId[lstLocations.SelectedItem.ToString()];
             }
-            Paiements fenPaiement = new Paiements(this.connexion, id);
+            Paiements fenPaiement = new Paiements(this, id);
             fenPaiement.Show();
         }
 
@@ -388,6 +386,16 @@ namespace GestionLocation
         public Accueil GetFenAccueil()
         {
             return this.fenAccueil;
+        }
+
+
+        /// <summary>
+        /// Retourne l'id de l'utilisateur
+        /// </summary>
+        /// <returns>Id de l'utilisateur</returns>
+        public string GetIdUser()
+        {
+            return this.idUser;
         }
     }
 }

@@ -16,7 +16,6 @@ namespace GestionLocation
     {
 
         private readonly Locataires fenLocataire;
-        private readonly MySqlConnection connexion;
         private readonly string typeReq;
         private readonly int id;
         private string req;
@@ -28,20 +27,18 @@ namespace GestionLocation
         /// Constructeur de AjoutModifLocataire
         /// </summary>
         /// <param name="fenLocataire"></param>
-        /// <param name="connexion"></param>
         /// <param name="typeReq"></param>
         /// <param name="id"></param>
-        public AjoutModifLocataires(Locataires fenLocataire, MySqlConnection connexion, string typeReq, int id = 0)
+        public AjoutModifLocataires(Locataires fenLocataire, string typeReq, int id = 0)
         {
             InitializeComponent();
             this.fenLocataire = fenLocataire;
-            this.connexion = connexion;
             this.typeReq = typeReq;
             this.id = id;
             if (this.id == 0)
             {
                 this.req = "SELECT MAX(req.idlocataire) FROM (SELECT idlocataire FROM locataire) AS req";
-                this.command = new MySqlCommand(this.req, this.connexion);
+                this.command = new MySqlCommand(this.req, Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
                 reader.Read();
                 this.id = reader.GetInt32(0) + 1;
@@ -61,7 +58,7 @@ namespace GestionLocation
         private void AfficheInfo()
         {
             this.req = $"SELECT * FROM locataire WHERE idlocataire = {this.id}";
-            this.command = new MySqlCommand(this.req, this.connexion);
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             // affichage des champs récupérés dans la ligne
@@ -110,7 +107,7 @@ namespace GestionLocation
                     ConstruitReqAjout();
                 }
                 // Exécute la requête
-                this.command = new MySqlCommand(this.req, this.connexion);
+                this.command = new MySqlCommand(this.req, Global.Connexion);
                 // préparation de la requête
                 this.command.Prepare();
                 // exécution de la requête
@@ -143,11 +140,11 @@ namespace GestionLocation
         {
             string[] nomprenom = MiseEnFormeNomPrenom();
             this.req = $"{this.typeReq} locataire SET ";
-            this.req += $"idlocataire = {this.id}, prenomlocataire = \"{nomprenom[0]}\", nomlocataire = \"{nomprenom[1]}\", " +
-                $"adresselocataire = \"{txtAdresse.Text}\", cplocataire = \"{txtCp.Text}\", villelocataire = \"{txtVille.Text.ToUpper()}\", " +
-                $"datenaissancelocataire = \"{datDateNaissance.Value:yyyy-MM-dd}\", lieunaissancelocataire = \"{txtLieuNaissance.Text.ToUpper()}\", " +
-                $"telephonelocataire = \"{EspacerNumTel()}\", emailocataire = \"{txtEmail.Text}\", locatairearchive = {cbxArchive.Checked}, " +
-                $"nomcompletlocataire = \"{nomprenom[2]}\" WHERE idlocataire = {this.id}";
+            this.req += $"idlocataire = {this.id}, prenomlocataire = \'{nomprenom[0]}\', nomlocataire = \'{nomprenom[1]}\', " +
+                $"adresselocataire = \'{txtAdresse.Text}\', cplocataire = \'{txtCp.Text}\', villelocataire = \'{txtVille.Text.ToUpper()}\', " +
+                $"datenaissancelocataire = \'{datDateNaissance.Value:yyyy-MM-dd}\', lieunaissancelocataire = \'{txtLieuNaissance.Text.ToUpper()}\', " +
+                $"telephonelocataire = \'{EspacerNumTel()}\', emailocataire = \'{txtEmail.Text}\', locatairearchive = {cbxArchive.Checked}, " +
+                $"nomcompletlocataire = \'{nomprenom[2]}\' WHERE idlocataire = {this.id}";
         }
 
         /// <summary>
@@ -184,15 +181,6 @@ namespace GestionLocation
             return leNum;
         }
 
-        /// <summary>
-        /// Met une majuscule sur la première lettre d'un mot/d'une phrase
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns>Chaine de caractère avec une majuscule sur le premier caractère</returns>
-        public string Capitalize(string s)
-        {
-            return s[0].ToString().ToUpper() + s.Substring(1);
-        }
 
         /// <summary>
         /// Récupère et met en forme les noms (tout en majuscule) et prénoms (majuscule sur la première lettre) du formulaire
@@ -206,13 +194,13 @@ namespace GestionLocation
             // Met le nom tout en majuscule
             nomprenom[1] = txtNom.Text.ToUpper();
             // Construit le nom complet (nom + prénom)
-            nomprenom[2] = nomprenom[1] + " " + Capitalize((lesPrenoms[0]));
+            nomprenom[2] = nomprenom[1] + " " + Global.Capitalize((lesPrenoms[0]));
             // Reconstruit la chaîne des prénoms avec une majuscule à chaque prenom
             for (int i = 0; i < lesPrenoms.Length - 1; i++)
             {
-                nomprenom[0] += Capitalize(lesPrenoms[i]) + ", ";
+                nomprenom[0] += Global.Capitalize(lesPrenoms[i]) + ", ";
             }
-            nomprenom[0] += Capitalize(lesPrenoms[lesPrenoms.Length - 1]);
+            nomprenom[0] += Global.Capitalize(lesPrenoms[lesPrenoms.Length - 1]);
             return nomprenom;
         }
     }
