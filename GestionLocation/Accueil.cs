@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,6 +31,7 @@ namespace GestionLocation
             Global.Connexion = this.fenConnexion.GetConnexion();
             RecupInfoUser();
             AfficherLocations();
+            CheckDir();
         }
 
 
@@ -321,6 +323,19 @@ namespace GestionLocation
         public string GetIdUser()
         {
             return this.idUser;
+        }
+
+
+        /// <summary>
+        /// Vérifie si les répertoires contenant les quittances et les signatures existent et les crée si besoin
+        /// </summary>
+        public void CheckDir()
+        {
+            // Crée le répertoire des quittances
+            Directory.CreateDirectory(Environment.CurrentDirectory + "/Quittances");
+            
+            // Crée le répertoire des signatures
+            Directory.CreateDirectory(Environment.CurrentDirectory + "/Signature");
         }
     }
 }
