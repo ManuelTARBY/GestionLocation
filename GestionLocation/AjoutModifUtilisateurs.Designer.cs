@@ -49,12 +49,15 @@ namespace GestionLocation
             this.txtServeurSMTP = new System.Windows.Forms.TextBox();
             this.lblPort = new System.Windows.Forms.Label();
             this.txtPort = new System.Windows.Forms.TextBox();
+            this.btnExplorateur = new System.Windows.Forms.Button();
+            this.lblSignature = new System.Windows.Forms.Label();
+            this.txtSignature = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // lblEmail
             // 
             this.lblEmail.AutoSize = true;
-            this.lblEmail.Location = new System.Drawing.Point(65, 239);
+            this.lblEmail.Location = new System.Drawing.Point(65, 215);
             this.lblEmail.Name = "lblEmail";
             this.lblEmail.Size = new System.Drawing.Size(48, 20);
             this.lblEmail.TabIndex = 64;
@@ -62,7 +65,7 @@ namespace GestionLocation
             // 
             // txtEmail
             // 
-            this.txtEmail.Location = new System.Drawing.Point(193, 239);
+            this.txtEmail.Location = new System.Drawing.Point(193, 215);
             this.txtEmail.Name = "txtEmail";
             this.txtEmail.Size = new System.Drawing.Size(244, 26);
             this.txtEmail.TabIndex = 51;
@@ -70,7 +73,7 @@ namespace GestionLocation
             // lblNom
             // 
             this.lblNom.AutoSize = true;
-            this.lblNom.Location = new System.Drawing.Point(64, 108);
+            this.lblNom.Location = new System.Drawing.Point(64, 84);
             this.lblNom.Name = "lblNom";
             this.lblNom.Size = new System.Drawing.Size(42, 20);
             this.lblNom.TabIndex = 59;
@@ -79,7 +82,7 @@ namespace GestionLocation
             // lblVille
             // 
             this.lblVille.AutoSize = true;
-            this.lblVille.Location = new System.Drawing.Point(64, 207);
+            this.lblVille.Location = new System.Drawing.Point(64, 183);
             this.lblVille.Name = "lblVille";
             this.lblVille.Size = new System.Drawing.Size(38, 20);
             this.lblVille.TabIndex = 58;
@@ -88,7 +91,7 @@ namespace GestionLocation
             // lblCp
             // 
             this.lblCp.AutoSize = true;
-            this.lblCp.Location = new System.Drawing.Point(65, 175);
+            this.lblCp.Location = new System.Drawing.Point(65, 151);
             this.lblCp.Name = "lblCp";
             this.lblCp.Size = new System.Drawing.Size(30, 20);
             this.lblCp.TabIndex = 57;
@@ -97,7 +100,7 @@ namespace GestionLocation
             // lblAdresse
             // 
             this.lblAdresse.AutoSize = true;
-            this.lblAdresse.Location = new System.Drawing.Point(65, 143);
+            this.lblAdresse.Location = new System.Drawing.Point(65, 119);
             this.lblAdresse.Name = "lblAdresse";
             this.lblAdresse.Size = new System.Drawing.Size(68, 20);
             this.lblAdresse.TabIndex = 56;
@@ -106,7 +109,7 @@ namespace GestionLocation
             // lblPrenom
             // 
             this.lblPrenom.AutoSize = true;
-            this.lblPrenom.Location = new System.Drawing.Point(64, 78);
+            this.lblPrenom.Location = new System.Drawing.Point(64, 54);
             this.lblPrenom.Name = "lblPrenom";
             this.lblPrenom.Size = new System.Drawing.Size(64, 20);
             this.lblPrenom.TabIndex = 55;
@@ -114,7 +117,7 @@ namespace GestionLocation
             // 
             // txtAdresse
             // 
-            this.txtAdresse.Location = new System.Drawing.Point(193, 143);
+            this.txtAdresse.Location = new System.Drawing.Point(193, 119);
             this.txtAdresse.MaxLength = 100;
             this.txtAdresse.Name = "txtAdresse";
             this.txtAdresse.Size = new System.Drawing.Size(244, 26);
@@ -122,7 +125,7 @@ namespace GestionLocation
             // 
             // txtVille
             // 
-            this.txtVille.Location = new System.Drawing.Point(193, 207);
+            this.txtVille.Location = new System.Drawing.Point(193, 183);
             this.txtVille.MaxLength = 50;
             this.txtVille.Name = "txtVille";
             this.txtVille.Size = new System.Drawing.Size(244, 26);
@@ -130,7 +133,7 @@ namespace GestionLocation
             // 
             // txtCp
             // 
-            this.txtCp.Location = new System.Drawing.Point(193, 175);
+            this.txtCp.Location = new System.Drawing.Point(193, 151);
             this.txtCp.MaxLength = 5;
             this.txtCp.Name = "txtCp";
             this.txtCp.Size = new System.Drawing.Size(244, 26);
@@ -139,21 +142,21 @@ namespace GestionLocation
             // lblID
             // 
             this.lblID.AutoSize = true;
-            this.lblID.Location = new System.Drawing.Point(174, 55);
+            this.lblID.Location = new System.Drawing.Point(174, 31);
             this.lblID.Name = "lblID";
             this.lblID.Size = new System.Drawing.Size(0, 20);
             this.lblID.TabIndex = 54;
             // 
             // txtNom
             // 
-            this.txtNom.Location = new System.Drawing.Point(193, 110);
+            this.txtNom.Location = new System.Drawing.Point(193, 86);
             this.txtNom.Name = "txtNom";
             this.txtNom.Size = new System.Drawing.Size(244, 26);
             this.txtNom.TabIndex = 44;
             // 
             // txtPrenom
             // 
-            this.txtPrenom.Location = new System.Drawing.Point(193, 78);
+            this.txtPrenom.Location = new System.Drawing.Point(193, 54);
             this.txtPrenom.MaxLength = 50;
             this.txtPrenom.Name = "txtPrenom";
             this.txtPrenom.Size = new System.Drawing.Size(244, 26);
@@ -161,10 +164,10 @@ namespace GestionLocation
             // 
             // btnValider
             // 
-            this.btnValider.Location = new System.Drawing.Point(178, 387);
+            this.btnValider.Location = new System.Drawing.Point(193, 410);
             this.btnValider.Name = "btnValider";
-            this.btnValider.Size = new System.Drawing.Size(244, 42);
-            this.btnValider.TabIndex = 55;
+            this.btnValider.Size = new System.Drawing.Size(167, 54);
+            this.btnValider.TabIndex = 57;
             this.btnValider.Text = "Valider";
             this.btnValider.UseVisualStyleBackColor = true;
             this.btnValider.Click += new System.EventHandler(this.BtnValider_Click);
@@ -172,7 +175,7 @@ namespace GestionLocation
             // lblPwdEmail
             // 
             this.lblPwdEmail.AutoSize = true;
-            this.lblPwdEmail.Location = new System.Drawing.Point(65, 271);
+            this.lblPwdEmail.Location = new System.Drawing.Point(65, 247);
             this.lblPwdEmail.Name = "lblPwdEmail";
             this.lblPwdEmail.Size = new System.Drawing.Size(105, 20);
             this.lblPwdEmail.TabIndex = 66;
@@ -180,7 +183,7 @@ namespace GestionLocation
             // 
             // txtPwdEmail
             // 
-            this.txtPwdEmail.Location = new System.Drawing.Point(193, 271);
+            this.txtPwdEmail.Location = new System.Drawing.Point(193, 247);
             this.txtPwdEmail.Name = "txtPwdEmail";
             this.txtPwdEmail.PasswordChar = '*';
             this.txtPwdEmail.Size = new System.Drawing.Size(244, 26);
@@ -189,7 +192,7 @@ namespace GestionLocation
             // lblAdresseSmtp
             // 
             this.lblAdresseSmtp.AutoSize = true;
-            this.lblAdresseSmtp.Location = new System.Drawing.Point(65, 303);
+            this.lblAdresseSmtp.Location = new System.Drawing.Point(65, 279);
             this.lblAdresseSmtp.Name = "lblAdresseSmtp";
             this.lblAdresseSmtp.Size = new System.Drawing.Size(115, 20);
             this.lblAdresseSmtp.TabIndex = 68;
@@ -198,7 +201,7 @@ namespace GestionLocation
             // txtServeurSMTP
             // 
             this.txtServeurSMTP.Enabled = false;
-            this.txtServeurSMTP.Location = new System.Drawing.Point(193, 303);
+            this.txtServeurSMTP.Location = new System.Drawing.Point(193, 279);
             this.txtServeurSMTP.Name = "txtServeurSMTP";
             this.txtServeurSMTP.Size = new System.Drawing.Size(244, 26);
             this.txtServeurSMTP.TabIndex = 53;
@@ -206,7 +209,7 @@ namespace GestionLocation
             // lblPort
             // 
             this.lblPort.AutoSize = true;
-            this.lblPort.Location = new System.Drawing.Point(65, 335);
+            this.lblPort.Location = new System.Drawing.Point(65, 311);
             this.lblPort.Name = "lblPort";
             this.lblPort.Size = new System.Drawing.Size(38, 20);
             this.lblPort.TabIndex = 70;
@@ -215,16 +218,46 @@ namespace GestionLocation
             // txtPort
             // 
             this.txtPort.Enabled = false;
-            this.txtPort.Location = new System.Drawing.Point(193, 335);
+            this.txtPort.Location = new System.Drawing.Point(193, 311);
             this.txtPort.Name = "txtPort";
             this.txtPort.Size = new System.Drawing.Size(112, 26);
             this.txtPort.TabIndex = 54;
+            // 
+            // btnExplorateur
+            // 
+            this.btnExplorateur.Location = new System.Drawing.Point(193, 344);
+            this.btnExplorateur.Name = "btnExplorateur";
+            this.btnExplorateur.Size = new System.Drawing.Size(42, 35);
+            this.btnExplorateur.TabIndex = 55;
+            this.btnExplorateur.Text = "...";
+            this.btnExplorateur.UseVisualStyleBackColor = true;
+            this.btnExplorateur.Click += new System.EventHandler(this.BtnExplorateur_Click);
+            // 
+            // lblSignature
+            // 
+            this.lblSignature.AutoSize = true;
+            this.lblSignature.Location = new System.Drawing.Point(65, 351);
+            this.lblSignature.Name = "lblSignature";
+            this.lblSignature.Size = new System.Drawing.Size(78, 20);
+            this.lblSignature.TabIndex = 72;
+            this.lblSignature.Text = "Signature";
+            // 
+            // txtSignature
+            // 
+            this.txtSignature.Enabled = false;
+            this.txtSignature.Location = new System.Drawing.Point(241, 348);
+            this.txtSignature.Name = "txtSignature";
+            this.txtSignature.Size = new System.Drawing.Size(196, 26);
+            this.txtSignature.TabIndex = 56;
             // 
             // AjoutModifUtilisateurs
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(540, 476);
+            this.Controls.Add(this.txtSignature);
+            this.Controls.Add(this.lblSignature);
+            this.Controls.Add(this.btnExplorateur);
             this.Controls.Add(this.lblPort);
             this.Controls.Add(this.txtPort);
             this.Controls.Add(this.lblAdresseSmtp);
@@ -273,5 +306,8 @@ namespace GestionLocation
         private System.Windows.Forms.TextBox txtServeurSMTP;
         private System.Windows.Forms.Label lblPort;
         private System.Windows.Forms.TextBox txtPort;
+        private System.Windows.Forms.Button btnExplorateur;
+        private System.Windows.Forms.Label lblSignature;
+        private System.Windows.Forms.TextBox txtSignature;
     }
 }

@@ -92,8 +92,9 @@ namespace GestionLocation
             this.lblCptEssai.AutoSize = true;
             this.lblCptEssai.Location = new System.Drawing.Point(399, 238);
             this.lblCptEssai.Name = "lblCptEssai";
-            this.lblCptEssai.Size = new System.Drawing.Size(0, 20);
+            this.lblCptEssai.Size = new System.Drawing.Size(90, 20);
             this.lblCptEssai.TabIndex = 5;
+            this.lblCptEssai.Text = "Nb d\'essais";
             // 
             // Connexion
             // 

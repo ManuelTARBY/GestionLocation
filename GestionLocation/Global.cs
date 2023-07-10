@@ -3,6 +3,7 @@ using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Util;
 using Google.Apis.Util.Store;
 using MailKit.Net.Imap;
+using MailKit.Net.Smtp;
 using MailKit.Security;
 using MySql.Data.MySqlClient;
 using System;

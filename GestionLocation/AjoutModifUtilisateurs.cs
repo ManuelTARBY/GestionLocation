@@ -26,16 +26,16 @@ namespace GestionLocation
             InitializeComponent();
             this.infos = infos;
             this.fenConnexion = fenConnexion;
-            lblID.Text = infos[0];
-            txtPrenom.Text = infos[3];
-            txtNom.Text = infos[4];
-            txtAdresse.Text = infos[5];
-            txtCp.Text = infos[6];
-            txtVille.Text = infos[7];
-            txtEmail.Text = infos[8];
-            txtPwdEmail.Text = infos[9];
-            txtServeurSMTP.Text = infos[10];
-            txtPort.Text = infos[11];
+            lblID.Text = infos[1];
+            txtPrenom.Text = infos[4];
+            txtNom.Text = infos[5];
+            txtAdresse.Text = infos[6];
+            txtCp.Text = infos[7];
+            txtVille.Text = infos[8];
+            txtEmail.Text = infos[9];
+            txtPwdEmail.Text = infos[10];
+            txtServeurSMTP.Text = infos[11];
+            txtPort.Text = infos[12];
         }
 
 
@@ -52,7 +52,7 @@ namespace GestionLocation
                 string messagerie = ChercherMessagerie();
                 if (ChercherInfosClientMail(messagerie))
                 {
-                    if (this.infos[this.infos.Length - 1].Equals("INSERT INTO"))
+                    if (this.infos[0].Equals("INSERT INTO"))
                     {
                         ConstruitReqAjout();
                     }
@@ -62,9 +62,9 @@ namespace GestionLocation
                     }
                     EnvoiReqCUD();
                     // Ouvre la fenêtre accueil
-                    this.fenConnexion.SetIdUser(this.infos[0]);
+                    this.fenConnexion.SetIdUser(this.infos[1]);
                     Accueil fenAccueil = new Accueil(this.fenConnexion);
-                    fenAccueil.Show();
+                    fenAccueil.ShowDialog();
                     this.Dispose();
                 }
             }
@@ -221,7 +221,7 @@ namespace GestionLocation
         /// </summary>
         public void ConstruitReqAjout()
         {
-            this.req = $"{this.infos[this.infos.Length - 1]} utilisateur (iduser, login, pwd, prenomuser, nomuser, adresseuser, cpuser, villeuser, emailuser, " +
+            this.req = $"{this.infos[0]} utilisateur (iduser, login, pwd, prenomuser, nomuser, adresseuser, cpuser, villeuser, emailuser, " +
                 $"pwdemail, adresseserveursmtp, port, clientid, clientsecret) " +
                 $"VALUES ({lblID.Text}, \'{infos[1]}\', \'{infos[2]}\', \'{Capitalize(txtPrenom.Text)}\', \'{txtNom.Text.ToUpper()}\', " +
                 $"\'{txtAdresse.Text}\', \'{txtCp.Text}\', \'{txtVille.Text.ToUpper()}\', \'{txtEmail.Text}\', \'{txtPwdEmail.Text}\', " +
@@ -248,6 +248,11 @@ namespace GestionLocation
             this.command.Prepare();
             // exécution de la requête
             this.command.ExecuteNonQuery();
+        }
+
+        private void BtnExplorateur_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(@"C:\Windows");
         }
 
 

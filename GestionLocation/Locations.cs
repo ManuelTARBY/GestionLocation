@@ -375,7 +375,7 @@ namespace GestionLocation
                 id = lesId[lstLocations.SelectedItem.ToString()];
             }
             Paiements fenPaiement = new Paiements(this, id);
-            fenPaiement.Show();
+            fenPaiement.ShowDialog();
         }
 
 

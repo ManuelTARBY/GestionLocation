@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using MailKit.Security;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -311,7 +312,7 @@ namespace GestionLocation
         private void BtnPaiements_Click(object sender, EventArgs e)
         {
             Paiements fenPaiements = new Paiements(this);
-            fenPaiements.Show();
+            fenPaiements.ShowDialog();
         }
 
 

@@ -193,7 +193,7 @@ namespace GestionLocation
                 // Récupère l'id de la location
                 //this.idLocation = ;
                 ModifPaiements fenModifPaiement = new ModifPaiements(this);
-                fenModifPaiement.Show();
+                fenModifPaiement.ShowDialog();
             }
         }
 
@@ -605,18 +605,17 @@ namespace GestionLocation
             email.To.Add(new MailboxAddress(this.leLocataire, this.emailLocataire));
             email.Subject = $"Votre quittance de loyer de {laPeriode}";
 
-            Font fGras = new Font(iTextSharp.text.Font.FontFamily.HELVETICA, 11f, iTextSharp.text.Font.BOLD, new BaseColor(0, 0, 0));
-            var bailleur = new Phrase(this.leBailleur, fGras);
             // Ajoute la pièce jointe
             var builder = new BodyBuilder
             {
                 // Corps du message
                 TextBody = $"Bonjour,\n" +
                 $"Veuillez trouver, ci-jointe, votre quittance de loyer de {laPeriode}.\n\n\n" +
-                $"Cordialement,\n{bailleur.Content}"
+                $"Cordialement,\n{this.leBailleur}"
             };
             // Chemin de la pièce jointe
             string chemin = Environment.CurrentDirectory + $"/Quittances/{this.leLocataire} - {this.laPeriode}.pdf";
+            // Crée la pièce jointe
             var pj = new MimePart()
             {
                 Content = new MimeContent(File.OpenRead(chemin)),
@@ -626,12 +625,11 @@ namespace GestionLocation
             };
             builder.Attachments.Add(pj);
             email.Body = builder.ToMessageBody();
-            
 
+            // Crée la session SMTP pour l'envoi
             var smtp = new MailKit.Net.Smtp.SmtpClient();
             smtp.Connect(Global.ServeurSmtp, Global.PortEmail, SecureSocketOptions.StartTls);
             smtp.Authenticate(Global.EmailUser, Global.PwdUser);
-
             try
             {
                 // Envoi le mail
@@ -639,13 +637,16 @@ namespace GestionLocation
                 // Envoi un message de confirmation à l'utilisateur
                 MessageBox.Show("Quittance envoyée avec succès !");
             }
+            // Si exception levée
             catch
             {
                 MessageBox.Show("Erreur lors de l'envoi de la quittance.");
             }
             pj.Dispose();
+            // Fermeture de la session SMTP
             smtp.Disconnect(true);
         }
+
 
         /// <summary>
         /// Récupère l'id de la location dont le paiement est sélectionné

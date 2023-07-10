@@ -52,7 +52,8 @@ namespace GestionLocation
                         if (!this.idUser.Equals(""))
                         {
                             Accueil accueil = new Accueil(this);
-                            accueil.Show();
+                            this.Visible = false;
+                            accueil.ShowDialog();
                         }
                         // Sinon, ouvre la fenêtre de création d'utilisateur
                         else
@@ -60,17 +61,17 @@ namespace GestionLocation
                             MessageBox.Show("Vous devez créer un utilisateur.");
                             this.req = $"SELECT COUNT(iduser) FROM utilisateur";
                             this.command = new MySqlCommand(this.req, Global.Connexion);
-                            // Création du tableau contenant tous les champs de la table Utilisateur + le type de requête à l'indice 14
-                            string[] infos = { "", txtId.Text, txtPwd.Text, "", "", "", "", "", "", "", "", "", "", "", "INSERT INTO" };
+                            // Création du tableau contenant tous les champs de la table Utilisateur + le type de requête à l'indice 0
+                            string[] infos = { "INSERT INTO", "", txtId.Text, txtPwd.Text, "", "", "", "", "", "", "", "", "", "", "" };
                             MySqlDataReader reader = this.command.ExecuteReader();
                             reader.Read();
-                            int result = int.Parse(reader.GetString(0)) + 1;
+                            int result = int.Parse(reader.GetString(1)) + 1;
                             reader.Close();
                             infos[0] = result.ToString();
                             AjoutModifUtilisateurs fenUtilisateur = new AjoutModifUtilisateurs(infos, this);
-                            fenUtilisateur.Show();
+                            this.Visible = false;
+                            fenUtilisateur.ShowDialog();
                         }
-                        this.Visible = false;
                     }
                     else
                     {

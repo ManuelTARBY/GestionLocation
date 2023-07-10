@@ -17,7 +17,6 @@ namespace GestionLocation
         private readonly string[] leBien = new string[2];
         private string req;
         private MySqlCommand command;
-        private readonly Accueil fenAccueil;
         private readonly Dictionary<string, string> lesCharges;
         private readonly FicheBien fenFicheBien;
         private readonly Dictionary<string, string> lesBiens;
@@ -35,11 +34,6 @@ namespace GestionLocation
                 this.fenFicheBien = fenetre as FicheBien;
                 this.leBien = this.fenFicheBien.GetLeBien();
             }
-            // Si la fenêtre a été ouverte depuis la fenêtre Accueil (sans bien sélectionné)
-            else
-            {
-                this.fenAccueil = fenetre as Accueil;
-            }
             this.lesCharges = new Dictionary<string, string>();
             this.lesBiens = new Dictionary<string, string>();
             InitializeComponent();
@@ -55,7 +49,7 @@ namespace GestionLocation
         public void AfficheTitre()
         {
             string titre = "Liste des charges";
-            if (/*this.fenFicheBien != null || */this.leBien[1] != null) { 
+            if (this.leBien[1] != null) { 
                 titre += $" - {this.leBien[1].ToUpper()}";
             }
             lblNomBien.Text = titre;
