@@ -24,6 +24,7 @@ namespace GestionLocation
         public Connexion()
         {
             InitializeComponent();
+            CheckDir();
             lblCptEssai.Text = $"Essai : 1/{essaiMax}";
         }
 
@@ -205,6 +206,19 @@ namespace GestionLocation
         public string GetIdUser()
         {
             return this.idUser;
+        }
+
+
+        /// <summary>
+        /// Vérifie si les répertoires contenant les quittances et les signatures existent et les crée si besoin
+        /// </summary>
+        public void CheckDir()
+        {
+            // Crée le répertoire des quittances
+            Directory.CreateDirectory(Environment.CurrentDirectory + "/Quittances");
+
+            // Crée le répertoire des signatures
+            Directory.CreateDirectory(Environment.CurrentDirectory + "/Signature");
         }
     }
 }

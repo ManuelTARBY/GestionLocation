@@ -600,6 +600,8 @@ namespace GestionLocation
             // Construit l'email
             var email = new MimeMessage();
             email.From.Add(new MailboxAddress(Global.User, Global.EmailUser));
+            // Bailleur en Cci du mail
+            email.Bcc.Add(new MailboxAddress(Global.User, Global.EmailUser));
             email.To.Add(new MailboxAddress(this.leLocataire, this.emailLocataire));
             email.Subject = $"Votre quittance de loyer de {laPeriode}";
 
