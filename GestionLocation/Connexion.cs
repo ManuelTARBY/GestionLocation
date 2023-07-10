@@ -17,7 +17,7 @@ namespace GestionLocation
         // Stocke la chaine de connexion à la BDD
         private string chaineConnexion;
         // Compteur de tentatives de connexion
-        private int cptEssai = 0;
+        private int cptEssai = 1;
         private MySqlCommand command;
         private string idUser, req;
 
@@ -42,7 +42,6 @@ namespace GestionLocation
             {
                 if (this.cptEssai < essaiMax)
                 {
-                    this.cptEssai++;
                     GenererChaineConnexion();
                     // Teste la connexion à la BDD
                     if (ConnexionSql())
@@ -62,20 +61,21 @@ namespace GestionLocation
                             this.req = $"SELECT COUNT(iduser) FROM utilisateur";
                             this.command = new MySqlCommand(this.req, Global.Connexion);
                             // Création du tableau contenant tous les champs de la table Utilisateur + le type de requête à l'indice 0
-                            string[] infos = { "INSERT INTO", "", txtId.Text, txtPwd.Text, "", "", "", "", "", "", "", "", "", "", "" };
                             MySqlDataReader reader = this.command.ExecuteReader();
                             reader.Read();
-                            int result = int.Parse(reader.GetString(1)) + 1;
+                            int result = int.Parse(reader.GetString(0)) + 1;
                             reader.Close();
-                            infos[0] = result.ToString();
+                            string[] infos = { "INSERT INTO", "", txtId.Text, txtPwd.Text, "", "", "", "", "", "", "", "", "", "", "" };
+                            infos[1] = result.ToString();
                             AjoutModifUtilisateurs fenUtilisateur = new AjoutModifUtilisateurs(infos, this);
-                            this.Visible = false;
                             fenUtilisateur.ShowDialog();
                         }
                     }
                     else
                     {
                         lblErreur.Text = "La tentative de connexion a échoué";
+                        this.cptEssai++;
+                        lblCptEssai.Text = $"Essai : {this.cptEssai}/{essaiMax}";
                     }
                 }
                 else
@@ -83,7 +83,6 @@ namespace GestionLocation
                     MessageBox.Show("Nombre de tentatives maximum atteint.");
                     Application.Exit();
                 }
-                lblCptEssai.Text = $"Essai : {this.cptEssai + 1}/{essaiMax}";
             }
             else
             {

@@ -64,8 +64,9 @@ namespace GestionLocation
                     // Ouvre la fenêtre accueil
                     this.fenConnexion.SetIdUser(this.infos[1]);
                     Accueil fenAccueil = new Accueil(this.fenConnexion);
-                    fenAccueil.ShowDialog();
+                    this.fenConnexion.Visible = false;
                     this.Dispose();
+                    fenAccueil.ShowDialog();
                 }
             }
         }
@@ -223,7 +224,7 @@ namespace GestionLocation
         {
             this.req = $"{this.infos[0]} utilisateur (iduser, login, pwd, prenomuser, nomuser, adresseuser, cpuser, villeuser, emailuser, " +
                 $"pwdemail, adresseserveursmtp, port, clientid, clientsecret) " +
-                $"VALUES ({lblID.Text}, \'{infos[1]}\', \'{infos[2]}\', \'{Capitalize(txtPrenom.Text)}\', \'{txtNom.Text.ToUpper()}\', " +
+                $"VALUES ({lblID.Text}, \'{infos[2]}\', \'{infos[3]}\', \'{Capitalize(txtPrenom.Text)}\', \'{txtNom.Text.ToUpper()}\', " +
                 $"\'{txtAdresse.Text}\', \'{txtCp.Text}\', \'{txtVille.Text.ToUpper()}\', \'{txtEmail.Text}\', \'{txtPwdEmail.Text}\', " +
                 $"\'{this.adresseSmtp}\', \'{this.port}\', \'{""}\' , \'{""}\')";
         }
