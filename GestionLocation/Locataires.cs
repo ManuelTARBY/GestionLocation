@@ -130,21 +130,27 @@ namespace GestionLocation
             }
             else
             {
-                this.req = $"SELECT idlocataire FROM locataire WHERE nomcompletlocataire = \"{lstLocataires.SelectedItem}\"";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                MySqlDataReader reader = this.command.ExecuteReader();
-                reader.Read();
-                int id = reader.GetInt32(0);
-                reader.Close();
-                if (VerifIntegrite(id) == true)
+                // Demande confirmation de suppression du bien
+                DialogResult result = MessageBox.Show($"Êtes-vous sûr de vouloir supprimer le locataire : {lstLocataires.SelectedItem} ?", "Confirmer suppression", MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
                 {
-                    this.req = $"DELETE FROM locataire WHERE nomcompletlocataire = \"{lstLocataires.SelectedItem}\"";
-                    ExecuteReqIUD();
-                    RemplirLstLocataires();
-                }
-                else
-                {
-                    MessageBox.Show("Ce locataire est relié à une ou plusieurs locations. Vous ne pouvez pas le supprimer.");
+                    this.req = $"SELECT idlocataire FROM locataire WHERE nomcompletlocataire = \"{lstLocataires.SelectedItem}\"";
+                    this.command = new MySqlCommand(this.req, Global.Connexion);
+                    MySqlDataReader reader = this.command.ExecuteReader();
+                    reader.Read();
+                    int id = reader.GetInt32(0);
+                    reader.Close();
+                    if (VerifIntegrite(id) == true)
+                    {
+                        this.req = $"DELETE FROM locataire WHERE nomcompletlocataire = \"{lstLocataires.SelectedItem}\"";
+                        ExecuteReqIUD();
+                        RemplirLstLocataires();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Ce locataire est relié à une ou plusieurs locations. Pour pouvoir le supprimer, vous devez d'abord " +
+                            "supprimer les locations auxquelles il est rattachées.");
+                    }
                 }
             }
         }
