@@ -130,21 +130,26 @@ namespace GestionLocation
             }
             else
             {
-                this.req = $"SELECT idcaution FROM caution WHERE nomcompletcaution = \"{lstCautions.SelectedItem}\"";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                MySqlDataReader reader = this.command.ExecuteReader();
-                reader.Read();
-                int id = reader.GetInt32(0);
-                reader.Close();
-                if (VerifIntegrite(id) == true)
+                // Demande confirmation de suppression du bien
+                DialogResult result = MessageBox.Show($"Êtes-vous sûr de vouloir supprimer la caution : {lstCautions.SelectedItem} ?", "Confirmer suppression", MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
                 {
-                    this.req = $"DELETE FROM caution WHERE nomcompletcaution = \"{lstCautions.SelectedItem}\"";
-                    ExecuteReqIUD();
-                    RemplirLstCautions();
-                }
-                else
-                {
-                    MessageBox.Show("Cette caution est reliée à une ou plusieurs locations. Vous ne pouvez pas la supprimer.");
+                    this.req = $"SELECT idcaution FROM caution WHERE nomcompletcaution = \"{lstCautions.SelectedItem}\"";
+                    this.command = new MySqlCommand(this.req, Global.Connexion);
+                    MySqlDataReader reader = this.command.ExecuteReader();
+                    reader.Read();
+                    int id = reader.GetInt32(0);
+                    reader.Close();
+                    if (VerifIntegrite(id) == true)
+                    {
+                        this.req = $"DELETE FROM caution WHERE nomcompletcaution = \"{lstCautions.SelectedItem}\"";
+                        ExecuteReqIUD();
+                        RemplirLstCautions();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Cette caution est reliée à une ou plusieurs locations. Vous ne pouvez pas la supprimer.");
+                    }
                 }
             }
         }
