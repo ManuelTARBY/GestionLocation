@@ -324,5 +324,65 @@ namespace GestionLocation
         {
             return this.idUser;
         }
+
+
+        /// <summary>
+        /// Gère le survol du bouton Utilisateur
+        /// </summary>
+        /// <param name="sender">Bouton survolé</param>
+        /// <param name="e"></param>
+        private void BtnUser_MouseEnter(object sender, EventArgs e)
+        {
+            SurvolEntree((Button)sender);
+        }
+
+
+        /// <summary>
+        /// Gère la sortie de survol du bouton Utilisateur
+        /// </summary>
+        /// <param name="sender">Bouton concerné</param>
+        /// <param name="e"></param>
+        private void BtnUser_MouseLeave(object sender, EventArgs e)
+        {
+            SurvolSortie((Button)sender);
+        }
+
+
+        /// <summary>
+        /// Ouvre la fenêtre AjoutModifUtilisateurs
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnUser_Click(object sender, EventArgs e)
+        {
+            string[] infos = RecupInfosUser(this.idUser);
+            infos[0] = "UPDATE utilisateur SET";
+            AjoutModifUtilisateurs fenUser = new AjoutModifUtilisateurs(infos, this.fenConnexion);
+            this.Visible = false;
+            fenUser.ShowDialog();
+            this.Visible = true;
+        }
+
+
+        /// <summary>
+        /// Récupère dans un tableau les infos concernant l'utilisateur à partir de son ID
+        /// </summary>
+        /// <param name="idUser">ID de l'utilsiateur</param>
+        /// <returns>Tableau contenant les infos sur l'utilisateur</returns>
+        public string[] RecupInfosUser(string idUser)
+        {
+            string[] infos = new string[13];
+            infos[1] = idUser;
+            string req = $"SELECT * FROM utilisateur WHERE iduser = {this.idUser}";
+            this.command = new MySqlCommand(req, Global.Connexion);
+            MySqlDataReader reader = this.command.ExecuteReader();
+            reader.Read();
+            for (int i = 1; i < infos.Length - 1; i++)
+            {
+                infos[i + 1] = reader.GetString(i);
+            }
+            reader.Close();
+            return infos;
+        }
     }
 }

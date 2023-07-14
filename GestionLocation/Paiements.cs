@@ -10,14 +10,6 @@ using System.Diagnostics;
 using System.Globalization;
 using MimeKit;
 using MailKit.Security;
-using MimeKit.Text;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Auth.OAuth2.Flows;
-using Google.Apis.Util.Store;
-using System.Threading;
-using System.Threading.Tasks;
-using Google.Apis.Util;
-using MailKit.Net.Imap;
 using Developpez.Dotnet;
 
 namespace GestionLocation
@@ -406,7 +398,7 @@ namespace GestionLocation
             string totalRecu = $"{reader.GetString(3)}";
             reader.Close();
             string strPeriodeFacturee = periodeFactureeComp.ToString("d", CultureInfo.CreateSpecificCulture("fr-FR"));
-            string strDatePaiement = datePaiement.ToString("d", CultureInfo.CreateSpecificCulture("fr-FR"));
+            string strDatePaiement = datePaiement.ToShortDateString();
             if (strDatePaiement.Equals("01/01/0001"))
             {
                 strDatePaiement = "-";
@@ -416,7 +408,7 @@ namespace GestionLocation
             // Génère le chemin vers le fichier
             string cheminFichier = Environment.CurrentDirectory + $"/Quittances/{this.leLocataire} - {this.laPeriode}.pdf";
             // Crée le document
-            Document quittance = new Document(PageSize.A4);
+            Document quittance = new Document(PageSize.A4) ;
             // Permet de travailler sur le document
             PdfWriter.GetInstance(quittance, new FileStream(cheminFichier, FileMode.Create));
             quittance.Open();
@@ -486,13 +478,12 @@ namespace GestionLocation
             quittance.Add(locationDeux);
 
             // Contenu de la quittance
-            string periodeDebut = $"{strPeriodeFacturee}";
             string[] laPeriode = strPeriodeFacturee.Split('/');
             int nbJours = DateTime.DaysInMonth(int.Parse(laPeriode[2]), int.Parse(laPeriode[1]));
             string periodeFin = $"{nbJours}/{laPeriode[1]}/{laPeriode[2]}";
             if (strPeriodeFacturee.Equals($"{debutLoc}"))
             {
-                periodeDebut = debutLoc;
+                strPeriodeFacturee = debutLoc;
             }
             else if (strPeriodeFacturee.Substring(3).Equals($"{finLoc.Substring(3)}"))
             {
@@ -509,7 +500,7 @@ namespace GestionLocation
             string blocContenu = $"\nJe soussigné {this.leBailleur} propriétaire du logement désigné ci-dessus, déclare avoir reçu de " +
                 $"{this.leLocataire} la somme de {totalRecu.Replace(',', '.')}€ ({NumberConverter.Spell(int.Parse(recu[0]))} euros" +
                 $"{centimes}) au titre du paiement du loyer et des charges pour la " +
-                $"période du {periodeDebut} au {periodeFin} et lui en donne quittance sous réserve de tous mes droits.\n\n";
+                $"période du {strPeriodeFacturee} au {periodeFin} et lui en donne quittance sous réserve de tous mes droits.\n\n";
             Paragraph contenu = new Paragraph(blocContenu, fItalique)
             {
                 Alignment = Element.ALIGN_JUSTIFIED
@@ -650,12 +641,17 @@ namespace GestionLocation
                 // Envoi le mail
                 smtp.Send(email);
                 // Envoi un message de confirmation à l'utilisateur
-                MessageBox.Show("Quittance envoyée avec succès !");
+                MessageBox.Show("Quittance envoyée avec succès !", "Mail envoyée", MessageBoxButtons.OK);
             }
             // Si exception levée
             catch
             {
-                MessageBox.Show("Erreur lors de l'envoi de la quittance.");
+                var result = MessageBox.Show("Erreur lors de l'envoi de la quittance !", "Erreur lors de l'envoi du mail", MessageBoxButtons.AbortRetryIgnore);
+                if (result == DialogResult.Retry)
+                {
+                    smtp.Disconnect(true);
+                    EnvoyerQuittance();
+                }
             }
             pj.Dispose();
             // Fermeture de la session SMTP

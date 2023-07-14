@@ -1,12 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GestionLocation
@@ -25,8 +18,8 @@ namespace GestionLocation
         {
             InitializeComponent();
             this.infos = infos;
-            this.fenConnexion = fenConnexion;
             lblID.Text = infos[1];
+            this.fenConnexion = fenConnexion;
             txtPrenom.Text = infos[4];
             txtNom.Text = infos[5];
             txtAdresse.Text = infos[6];
@@ -62,7 +55,10 @@ namespace GestionLocation
                     }
                     EnvoiReqCUD();
                     // Ouvre la fenêtre accueil
-                    this.fenConnexion.SetIdUser(this.infos[1]);
+                    if (this.fenConnexion != null)
+                    {
+                        this.fenConnexion.SetIdUser(this.infos[1]);
+                    }
                     Accueil fenAccueil = new Accueil(this.fenConnexion);
                     this.fenConnexion.Visible = false;
                     this.Dispose();
@@ -235,7 +231,11 @@ namespace GestionLocation
         /// </summary>
         public void ConstruitReqModif()
         {
-
+            this.req = $"{this.infos[0]} login = \'{this.infos[2]}\', pwd = \'{this.infos[3]}\', prenomuser = \'{Capitalize(txtPrenom.Text)}\', " +
+                $"nomuser = \'{txtNom.Text.ToUpper()}\', adresseuser = \'{txtAdresse.Text}\', cpuser = \'{txtCp.Text}\', " +
+                $"villeuser = \'{txtVille.Text.ToUpper()}\', emailuser = \'{txtEmail.Text}\', pwdemail = \'{txtPwdEmail.Text}\', " +
+                $"adresseserveursmtp = \'{this.adresseSmtp}\', port = \'{this.port}\', clientid = \'{""}\' , clientsecret = \'{""}\' " +
+                $"WHERE iduser = {this.infos[1]}";
         }
 
 

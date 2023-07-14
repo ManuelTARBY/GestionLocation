@@ -40,6 +40,7 @@ namespace GestionLocation
             this.btnCautions = new System.Windows.Forms.Button();
             this.btnCharges = new System.Windows.Forms.Button();
             this.btnPaiements = new System.Windows.Forms.Button();
+            this.btnUser = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lstLocations
@@ -112,7 +113,7 @@ namespace GestionLocation
             // 
             // btnCautions
             // 
-            this.btnCautions.Location = new System.Drawing.Point(530, 23);
+            this.btnCautions.Location = new System.Drawing.Point(364, 107);
             this.btnCautions.Name = "btnCautions";
             this.btnCautions.Size = new System.Drawing.Size(136, 66);
             this.btnCautions.TabIndex = 12;
@@ -146,11 +147,24 @@ namespace GestionLocation
             this.btnPaiements.MouseEnter += new System.EventHandler(this.BtnPaiements_MouseEnter);
             this.btnPaiements.MouseLeave += new System.EventHandler(this.BtnPaiements_MouseLeave);
             // 
+            // btnUser
+            // 
+            this.btnUser.Location = new System.Drawing.Point(528, 23);
+            this.btnUser.Name = "btnUser";
+            this.btnUser.Size = new System.Drawing.Size(136, 66);
+            this.btnUser.TabIndex = 15;
+            this.btnUser.Text = "Utilisateur";
+            this.btnUser.UseVisualStyleBackColor = true;
+            this.btnUser.Click += new System.EventHandler(this.BtnUser_Click);
+            this.btnUser.MouseEnter += new System.EventHandler(this.BtnUser_MouseEnter);
+            this.btnUser.MouseLeave += new System.EventHandler(this.BtnUser_MouseLeave);
+            // 
             // Accueil
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1006, 411);
+            this.Controls.Add(this.btnUser);
             this.Controls.Add(this.btnPaiements);
             this.Controls.Add(this.btnCharges);
             this.Controls.Add(this.btnCautions);
@@ -178,5 +192,6 @@ namespace GestionLocation
         private System.Windows.Forms.Button btnCautions;
         private System.Windows.Forms.Button btnCharges;
         private System.Windows.Forms.Button btnPaiements;
+        private System.Windows.Forms.Button btnUser;
     }
 }
