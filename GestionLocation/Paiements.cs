@@ -18,6 +18,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Google.Apis.Util;
 using MailKit.Net.Imap;
+using Developpez.Dotnet;
 
 namespace GestionLocation
 {
@@ -484,7 +485,7 @@ namespace GestionLocation
             };
             quittance.Add(locationDeux);
 
-            // Déclaration contenu
+            // Contenu de la quittance
             string periodeDebut = $"{strPeriodeFacturee}";
             string[] laPeriode = strPeriodeFacturee.Split('/');
             int nbJours = DateTime.DaysInMonth(int.Parse(laPeriode[2]), int.Parse(laPeriode[1]));
@@ -497,8 +498,17 @@ namespace GestionLocation
             {
                 periodeFin = finLoc;
             }
+            // Séparer les euros et les centimes
+            string[] recu = totalRecu.Split(',');
+            string centimes = "";
+            if (recu.Length > 1)
+            {
+            centimes = $" et {NumberConverter.Spell(int.Parse(recu[1]))} centimes";
+
+            }
             string blocContenu = $"\nJe soussigné {this.leBailleur} propriétaire du logement désigné ci-dessus, déclare avoir reçu de " +
-                $"{this.leLocataire} la somme de {totalRecu.Replace(',', '.')} euros au titre du paiement du loyer et des charges pour la " +
+                $"{this.leLocataire} la somme de {totalRecu.Replace(',', '.')}€ ({NumberConverter.Spell(int.Parse(recu[0]))} euros" +
+                $"{centimes}) au titre du paiement du loyer et des charges pour la " +
                 $"période du {periodeDebut} au {periodeFin} et lui en donne quittance sous réserve de tous mes droits.\n\n";
             Paragraph contenu = new Paragraph(blocContenu, fItalique)
             {
@@ -575,7 +585,7 @@ namespace GestionLocation
             quittance.Add(sign);
 
             // Encart pied de page
-            quittance.Add(new Phrase("\n\n\n\n\n\n\n\n\n"));
+            quittance.Add(new Phrase("\n\n\n\n\n\n\n\n"));
             string messagePied = "Cette quittance annule tous les reçus qui auraient pu être établis précédemment en cas de paiement partiel du " +
                 "montant du présent terme. Elle est à conserver pendant trois ans par le locataire (loi n° 89-462 du 6 juillet 1989 : art. 7-1).";
             Paragraph piedPage = new Paragraph(messagePied, fPiedPage)
@@ -633,7 +643,7 @@ namespace GestionLocation
             try
             {
                 // Envoi le mail
-                smtp.Send(email);
+                //smtp.Send(email);
                 // Envoi un message de confirmation à l'utilisateur
                 MessageBox.Show("Quittance envoyée avec succès !");
             }
