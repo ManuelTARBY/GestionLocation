@@ -610,18 +610,22 @@ namespace GestionLocation
             // Construit l'email
             var email = new MimeMessage();
             email.From.Add(new MailboxAddress(Global.User, Global.EmailUser));
-            // Bailleur en Cci du mail
-            email.Bcc.Add(new MailboxAddress(Global.User, Global.EmailUser));
             email.To.Add(new MailboxAddress(this.leLocataire, this.emailLocataire));
             email.Subject = $"Votre quittance de loyer de {laPeriode}";
-
-            // Ajoute la pièce jointe
-            var builder = new BodyBuilder
+            // Bailleur en Cci du mail
+            email.Bcc.Add(new MailboxAddress(Global.User, Global.EmailUser));
+            string de = "de ";
+            // Si le mois concerné par la quittance commence par une voyelle
+            if (laPeriode[0].Equals('a') || laPeriode[0].Equals('o'))
+            {
+                de = "d'";
+            }
+                var builder = new BodyBuilder
             {
                 // Corps du message
-                TextBody = $"Bonjour,\n" +
-                $"Veuillez trouver, ci-jointe, votre quittance de loyer de {laPeriode}.\n\n\n" +
-                $"Cordialement,\n{this.leBailleur}"
+                HtmlBody = "<p>Bonjour,<br /></p>" +
+                $"<p>Veuillez trouver, ci-jointe, votre quittance de loyer {de}{laPeriode}.<br /><br /></p>" +
+                $"<p>Cordialement,<br /><strong>{this.leBailleur}</strong></p>"
             };
             // Chemin de la pièce jointe
             string chemin = Environment.CurrentDirectory + $"/Quittances/{this.leLocataire} - {this.laPeriode}.pdf";
@@ -633,6 +637,7 @@ namespace GestionLocation
                 ContentTransferEncoding = ContentEncoding.Base64,
                 FileName = Path.GetFileName(chemin)
             };
+            // Ajoute la pièce jointe
             builder.Attachments.Add(pj);
             email.Body = builder.ToMessageBody();
 
@@ -643,7 +648,7 @@ namespace GestionLocation
             try
             {
                 // Envoi le mail
-                //smtp.Send(email);
+                smtp.Send(email);
                 // Envoi un message de confirmation à l'utilisateur
                 MessageBox.Show("Quittance envoyée avec succès !");
             }
