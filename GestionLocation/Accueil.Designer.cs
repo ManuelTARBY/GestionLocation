@@ -89,7 +89,7 @@ namespace GestionLocation
             // btnBiens
             // 
             this.btnBiens.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnBiens.Location = new System.Drawing.Point(199, 23);
+            this.btnBiens.Location = new System.Drawing.Point(this.btnLocations.Location.X + this.btnLocations.Width + 28, this.btnLocations.Location.Y);
             this.btnBiens.Name = "btnBiens";
             this.btnBiens.Size = new System.Drawing.Size(136, 66);
             this.btnBiens.TabIndex = 10;
@@ -101,7 +101,7 @@ namespace GestionLocation
             // 
             // btnLocataires
             // 
-            this.btnLocataires.Location = new System.Drawing.Point(364, 23);
+            this.btnLocataires.Location = new System.Drawing.Point(this.btnBiens.Location.X + this.btnBiens.Width + 28, this.btnLocations.Location.Y);
             this.btnLocataires.Name = "btnLocataires";
             this.btnLocataires.Size = new System.Drawing.Size(136, 66);
             this.btnLocataires.TabIndex = 11;
@@ -113,7 +113,7 @@ namespace GestionLocation
             // 
             // btnCautions
             // 
-            this.btnCautions.Location = new System.Drawing.Point(364, 107);
+            this.btnCautions.Location = new System.Drawing.Point(this.btnLocataires.Location.X, this.btnLocations.Location.Y + this.btnLocations.Height + 20);
             this.btnCautions.Name = "btnCautions";
             this.btnCautions.Size = new System.Drawing.Size(136, 66);
             this.btnCautions.TabIndex = 12;
@@ -125,7 +125,7 @@ namespace GestionLocation
             // 
             // btnCharges
             // 
-            this.btnCharges.Location = new System.Drawing.Point(199, 107);
+            this.btnCharges.Location = new System.Drawing.Point(this.btnBiens.Location.X, this.btnLocations.Location.Y + this.btnLocations.Height + 20);
             this.btnCharges.Name = "btnCharges";
             this.btnCharges.Size = new System.Drawing.Size(136, 66);
             this.btnCharges.TabIndex = 13;
@@ -137,7 +137,7 @@ namespace GestionLocation
             // 
             // btnPaiements
             // 
-            this.btnPaiements.Location = new System.Drawing.Point(35, 107);
+            this.btnPaiements.Location = new System.Drawing.Point(this.btnLocations.Location.X, this.btnLocations.Location.Y + this.btnLocations.Height + 20);
             this.btnPaiements.Name = "btnPaiements";
             this.btnPaiements.Size = new System.Drawing.Size(136, 66);
             this.btnPaiements.TabIndex = 14;
@@ -149,7 +149,7 @@ namespace GestionLocation
             // 
             // btnUser
             // 
-            this.btnUser.Location = new System.Drawing.Point(528, 23);
+            this.btnUser.Location = new System.Drawing.Point(this.btnLocataires.Location.X + this.btnLocataires.Width + 28, this.btnLocations.Location.Y);
             this.btnUser.Name = "btnUser";
             this.btnUser.Size = new System.Drawing.Size(136, 66);
             this.btnUser.TabIndex = 15;

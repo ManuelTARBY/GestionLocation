@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
+using System.IO;
 using System.Windows.Forms;
 
 namespace GestionLocation
@@ -54,11 +55,9 @@ namespace GestionLocation
                         ConstruitReqModif();
                     }
                     EnvoiReqCUD();
+                    // Modifie l'iduser (n'a d'effet qu'en cas de création d'un utilisateur)
+                    this.fenConnexion.SetIdUser(this.infos[1]);
                     // Ouvre la fenêtre accueil
-                    if (this.fenConnexion != null)
-                    {
-                        this.fenConnexion.SetIdUser(this.infos[1]);
-                    }
                     Accueil fenAccueil = new Accueil(this.fenConnexion);
                     this.fenConnexion.Visible = false;
                     this.Dispose();
@@ -134,6 +133,11 @@ namespace GestionLocation
                 txtPort.Focus();
                 return false;
             }*/
+            else if (txtSignature.Text.Equals(""))
+            {
+                MessageBox.Show("Veuillez choisir une signature.");
+                return false;
+            }
             else
             {
                 /*try
@@ -251,9 +255,15 @@ namespace GestionLocation
             this.command.ExecuteNonQuery();
         }
 
+
+        /// <summary>
+        /// Gère le clic sur le bouton pour sélectionner la signature
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnExplorateur_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start(@"C:\Windows");
+            RecupSignature();
         }
 
 
@@ -265,6 +275,27 @@ namespace GestionLocation
         public string Capitalize(string s)
         {
             return s[0].ToString().ToUpper() + s.Substring(1).ToLower();
+        }
+
+
+        /// <summary>
+        /// Récupère la signature de l'utilisateur et copie le fichier dans le répertoire "Signature" de l'application
+        /// </summary>
+        public void RecupSignature()
+        {
+            OpenFileDialog open = new OpenFileDialog();
+            string ext;
+            // Boucle tant qu'aucun fichier png n'a été sélectionné
+            do
+            {
+                MessageBox.Show("Veuillez choisir un fichier png.");
+                open.ShowDialog();
+                txtSignature.Text = open.FileName;
+                ext = txtSignature.Text.Substring(txtSignature.Text.Length - 4, 4);
+            } while (txtSignature.Text.Equals("") || !ext.Equals(".png"));
+            string dest = $"{Environment.CurrentDirectory}/Signature/{Capitalize(txtPrenom.Text)} {txtNom.Text.ToUpper()}.png";
+            // Place le fichier dans le répertoire de l'application
+            File.Copy(txtSignature.Text, dest, true);
         }
     }
 }

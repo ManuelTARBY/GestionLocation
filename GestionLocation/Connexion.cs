@@ -1,13 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GestionLocation
@@ -21,11 +14,16 @@ namespace GestionLocation
         private MySqlCommand command;
         private string idUser, req;
 
+
+        /// <summary>
+        /// Constructeur de Connexion
+        /// </summary>
         public Connexion()
         {
             InitializeComponent();
             CheckDir();
             lblCptEssai.Text = $"Essai : 1/{essaiMax}";
+            this.AcceptButton = btnConnexion;
         }
 
 
@@ -47,9 +45,10 @@ namespace GestionLocation
                     if (ConnexionSql())
                     {
                         RecupIdUser();
-                        // Si l'id a été trouvé dans la table Utilisateur de la BDD
+                        // Si l'id de l'utilisateur a été trouvé dans la table Utilisateur de la BDD
                         if (!this.idUser.Equals(""))
                         {
+                            // Ouvre la fenêtre Accueil
                             Accueil accueil = new Accueil(this);
                             this.Visible = false;
                             accueil.ShowDialog();
@@ -67,6 +66,7 @@ namespace GestionLocation
                             reader.Close();
                             string[] infos = { "INSERT INTO", "", txtId.Text, txtPwd.Text, "", "", "", "", "", "", "", "", "", "", "" };
                             infos[1] = result.ToString();
+                            // Ouvre la fenêtre AjoutModifUtilisateurs
                             AjoutModifUtilisateurs fenUtilisateur = new AjoutModifUtilisateurs(infos, this);
                             fenUtilisateur.ShowDialog();
                         }
@@ -117,7 +117,7 @@ namespace GestionLocation
         /// </summary>
         private void GenererChaineConnexion()
         {
-            this.chaineConnexion = $"server={adresseserveur};user id={txtId.Text};password={txtPwd.Text};Convert Zero Datetime=True;Convert Zero Datetime=True;Allow Zero Datetime=true;database=gestionlocation";
+            this.chaineConnexion = $"server={adresseserveur};user id={txtId.Text};password={txtPwd.Text};Convert Zero Datetime=True;Convert Zero Datetime=True;Allow Zero Datetime=true;SslMode=none;database=gestionlocation";
         }
 
 
@@ -127,13 +127,14 @@ namespace GestionLocation
         /// <returns>True si la connexion la connexion a pu être faite, False dans le cas contraire</returns>
         private bool ConnexionSql()
         {
-            Global.Connexion = new MySqlConnection(this.chaineConnexion);
             try
             {
+                Global.Connexion = new MySqlConnection(this.chaineConnexion);
                 Global.Connexion.Open();
             }
-            catch
+            catch(MySqlException e)
             {
+                MessageBox.Show(e.Message);
                 return false;
             }
             return true;

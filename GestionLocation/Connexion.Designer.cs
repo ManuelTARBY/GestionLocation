@@ -108,6 +108,7 @@ namespace GestionLocation
             this.Controls.Add(this.txtId);
             this.Controls.Add(this.btnConnexion);
             this.MaximumSize = new System.Drawing.Size(630, 334);
+            this.MinimumSize = new System.Drawing.Size(630, 334);
             this.Name = "Connexion";
             this.Text = "Connexion";
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Connexion_KeyPress);

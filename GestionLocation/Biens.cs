@@ -34,19 +34,12 @@ namespace GestionLocation
             lstBiens.Items.Clear();
             this.command = new MySqlCommand(ConstruitReqListeBien(), Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
-            /* lecture de la première ligne du curseur (finCurseur passe à false en fin de
-            curseur) */
-            bool finCurseur = !reader.Read();
             // boucle tant que la ligne lue contient quelque chose
-            // (donc tant que la fin du curseur n'est pas atteinte)
-            while (!finCurseur)
+            while (reader.Read())
             {
                 // affichage des champs récupérés dans la ligne
                 lstBiens.Items.Add($"{reader["NomBien"]}");
-                // lecture de la ligne suivante dans le curseur
-                finCurseur = !reader.Read();
             }
-            // fermeture du curseur
             reader.Close();
         }
 
@@ -76,7 +69,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnModifier_Click(object sender, EventArgs e)
         {
-            if (lstBiens.SelectedItem != null)
+            if (lstBiens.SelectedIndex > -1)
             {
                 this.req = $"SELECT idbien FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"";
                 this.command = new MySqlCommand(this.req, Global.Connexion);
@@ -106,7 +99,7 @@ namespace GestionLocation
 
         private void BtnArchiverDesarchiver_Click(object sender, EventArgs e)
         {
-            if (lstBiens.SelectedItem == null)
+            if (lstBiens.SelectedIndex == -1)
             {
                 MessageBox.Show("Veuillez saisir un bien dans la liste.");
             }
@@ -142,7 +135,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnSupprimer_Click(object sender, EventArgs e)
         {
-            if (lstBiens.SelectedItem == null)
+            if (lstBiens.SelectedIndex == -1)
             {
                 MessageBox.Show("Veuillez saisir un bien dans la liste pour pouvoir le supprimer.");
             }
@@ -158,6 +151,7 @@ namespace GestionLocation
                     reader.Read();
                     int id = reader.GetInt32(0);
                     reader.Close();
+                    // Si la suppression ne génère pas de problème d'intégrité
                     if (VerifIntegrite(id) == true)
                     {
                         this.req = $"DELETE FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"";
@@ -166,7 +160,8 @@ namespace GestionLocation
                     }
                     else
                     {
-                        MessageBox.Show("Ce bien est relié à une ou plusieurs locations. Vous ne pouvez pas le supprimer.");
+                        MessageBox.Show("Ce bien est relié à une ou plusieurs locations. Pour pouvoir le supprimer, vous devez d'abord supprimer" +
+                            " ces locations.");
                     }
                 }
             }
@@ -195,16 +190,10 @@ namespace GestionLocation
             this.command = new MySqlCommand(this.req, Global.Connexion);
             List<string> liste = new List<string>();
             MySqlDataReader reader = this.command.ExecuteReader();
-            /* lecture de la première ligne du curseur (finCurseur passe à false en fin de
-            curseur) */
-            bool finCurseur = !reader.Read();
             // boucle tant que la ligne lue contient quelque chose
-            // (donc tant que la fin du curseur n'est pas atteinte)
-            while (!finCurseur)
+            while (reader.Read())
             {
                 liste.Add($"{reader["idlocation"]}");
-                // lecture de la ligne suivante dans le curseur
-                finCurseur = !reader.Read();
             }
             // fermeture du curseur
             reader.Close();
@@ -226,7 +215,7 @@ namespace GestionLocation
         private void BtnFicheBien_Click(object sender, EventArgs e)
         {
             // Si aucun bien n'est sélectionné
-            if (lstBiens.SelectedItem == null)
+            if (lstBiens.SelectedIndex == -1)
             {
                 MessageBox.Show("Veuillez sélectionner un bien pour pouvoir afficher sa fiche.");
             }
