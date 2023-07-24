@@ -136,7 +136,7 @@ namespace GestionLocation
                 // En pourcentage
                 txtSeuilRenta.Text = $"{Math.Round(renta, 1)} %";
                 // En jours
-                int rentaJours = (int)(365 * renta);
+                int rentaJours = (int)(365 * renta / 100);
                 txtSeuilRentaJours.Text = $"{rentaJours}";
             }
         }

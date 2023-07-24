@@ -1,12 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GestionLocation
@@ -17,9 +11,8 @@ namespace GestionLocation
         private readonly string[] leBien = new string[2];
         private string req;
         private MySqlCommand command;
-        private readonly Dictionary<string, string> lesCharges;
+        private readonly Dictionary<string, string> lesCharges, lesBiens, chargeBien;
         private readonly FicheBien fenFicheBien;
-        private readonly Dictionary<string, string> lesBiens;
         
 
         /// <summary>
@@ -36,6 +29,7 @@ namespace GestionLocation
             }
             this.lesCharges = new Dictionary<string, string>();
             this.lesBiens = new Dictionary<string, string>();
+            this.chargeBien = new Dictionary<string, string>();
             InitializeComponent();
             RemplirListeBiens();
             RecupListeCharges();
@@ -63,7 +57,8 @@ namespace GestionLocation
             // Vide la liste
             lstCharges.Items.Clear();
             this.lesCharges.Clear();
-            this.req = $"SELECT idchargeannuelle, libelle, montantcharge, refFrequence FROM chargesannuelles ";
+            this.chargeBien.Clear();
+            this.req = $"SELECT idchargeannuelle, idbien, libelle, montantcharge, refFrequence FROM chargesannuelles ";
             if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
             {
                 this.req += $"WHERE idbien={this.leBien[0]} ";
@@ -72,14 +67,16 @@ namespace GestionLocation
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
-
+            string ligneCharge;
             while (!finCurseur)
             {
                 // Remplit la listbox
-                lstCharges.Items.Add($"{reader["libelle"]} || Montant : {reader["montantcharge"]} € || Fréquence : {reader["refFrequence"]}");
+                ligneCharge = $"{reader["libelle"]} || Montant : {reader["montantcharge"]} € || Fréquence : {reader["refFrequence"]}";
+                lstCharges.Items.Add(ligneCharge);
                 // Remplit le dictionnaire avec le contenu du listbox: idchargesannuelles
-                lesCharges.Add(lstCharges.Items[lstCharges.Items.Count - 1].ToString(), reader.GetString(0));
-               // lesCharges.Add($"{reader["libelle"]} || Montant : {reader["montantcharge"]} € || Fréquence : {reader["refFrequence"]}", reader.GetString(0));
+                //lesCharges.Add(lstCharges.Items[lstCharges.Items.Count - 1].ToString(), reader.GetString(0));
+                lesCharges.Add(ligneCharge, reader.GetString(0));
+                chargeBien.Add(ligneCharge, reader.GetString(1));
                 finCurseur = !reader.Read();
             }
             reader.Close();
@@ -92,8 +89,17 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnAjouter_Click(object sender, EventArgs e)
         {
-            AjoutModifChargeAnnuelle fenCharge = new AjoutModifChargeAnnuelle(this);
-            fenCharge.ShowDialog();
+            if (lstBiens.SelectedItem == null)
+            {
+                MessageBox.Show("Veuillez sélectionner le bien concerné par la charge.");
+            }
+            else
+            {
+                this.leBien[0] = lesBiens[lstBiens.SelectedItem.ToString()];
+                this.leBien[1] = lstBiens.SelectedItem.ToString();
+                AjoutModifChargeAnnuelle fenCharge = new AjoutModifChargeAnnuelle(this);
+                fenCharge.ShowDialog();
+            }
         }
 
 
@@ -129,6 +135,7 @@ namespace GestionLocation
             }
             else
             {
+                RecupDonneesBien();
                 AjoutModifChargeAnnuelle fenCharge = new AjoutModifChargeAnnuelle(this, lesCharges[lstCharges.SelectedItem.ToString()]);
                 fenCharge.ShowDialog();
             }
@@ -162,11 +169,14 @@ namespace GestionLocation
                 {
                     this.req = $"DELETE FROM chargesannuelles WHERE idchargeannuelle = \"{lesCharges[lstCharges.SelectedItem.ToString()]}\"";
                     ExecuteReqIUD();
+                    MajChargesDuBien();
+                    RecupListeCharges();
+                    if (this.fenFicheBien != null)
+                    {
+                        this.fenFicheBien.RemplirChamps();
+                    }
                 }
             }
-            MajChargesDuBien();
-            RecupListeCharges();
-            this.fenFicheBien.RemplirChamps();
         }
 
 
@@ -190,7 +200,7 @@ namespace GestionLocation
         {
             // Calcule la charge annuelle du bien
             float charges = 0;
-            this.req = $"SELECT chargeannuelle FROM chargesannuelles WHERE idbien = {leBien[0]}";
+            this.req = $"SELECT chargeannuelle FROM chargesannuelles WHERE idbien = {chargeBien[lstCharges.SelectedItem.ToString()]}";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
@@ -243,7 +253,7 @@ namespace GestionLocation
             bool finCurseur = !reader.Read();
             while (!finCurseur)
             {
-                lesBiens.Add(reader.GetString(0), reader.GetString(1));
+                lesBiens.Add(reader.GetString(1), reader.GetString(0));
                 lstBiens.Items.Add(reader["nombien"].ToString());
                 finCurseur = !reader.Read();
             }
@@ -273,7 +283,8 @@ namespace GestionLocation
             else
             {
                 this.leBien[1] = lstBiens.SelectedItem.ToString();
-                RetrouverID();
+                this.leBien[0] = lesBiens[lstBiens.SelectedItem.ToString()];
+                //RetrouverID();
                 RecupListeCharges();
                 AfficheTitre();
             }
@@ -282,16 +293,15 @@ namespace GestionLocation
         /// <summary>
         /// Retrouve l'id d'un bien à partir de son nom
         /// </summary>
-        public void RetrouverID()
+        public void RecupDonneesBien()
         {
-            // Parcourt le dictionnaire des biens
-            foreach (var cle in lesBiens)
-            {
-                if (cle.Value.Equals(this.leBien[1]))
-                {
-                    this.leBien[0] = cle.Key;
-                }
-            }
+            this.leBien[0] = chargeBien[lstCharges.SelectedItem.ToString()];
+            this.req = $"SELECT * FROM bien WHERE idbien = {this.leBien[0]}";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            MySqlDataReader reader = this.command.ExecuteReader();
+            reader.Read();
+            this.leBien[1] = reader.GetString(1);
+            reader.Close();
         }
     }
 }

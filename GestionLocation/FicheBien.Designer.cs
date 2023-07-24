@@ -250,9 +250,9 @@ namespace GestionLocation
             this.lblSeuilRentaJours.AutoSize = true;
             this.lblSeuilRentaJours.Location = new System.Drawing.Point(386, 171);
             this.lblSeuilRentaJours.Name = "lblSeuilRentaJours";
-            this.lblSeuilRentaJours.Size = new System.Drawing.Size(196, 20);
+            this.lblSeuilRentaJours.Size = new System.Drawing.Size(187, 20);
             this.lblSeuilRentaJours.TabIndex = 23;
-            this.lblSeuilRentaJours.Text = "Seuile de rentabilité (jours)";
+            this.lblSeuilRentaJours.Text = "Seuil de rentabilité (jours)";
             // 
             // btnListeCharges
             // 

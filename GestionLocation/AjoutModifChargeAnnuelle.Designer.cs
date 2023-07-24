@@ -141,6 +141,7 @@ namespace GestionLocation
             this.btnFermer.TabIndex = 11;
             this.btnFermer.Text = "Fermer";
             this.btnFermer.UseVisualStyleBackColor = true;
+            this.btnFermer.Click += new System.EventHandler(this.BtnFermer_Click);
             // 
             // txtBien
             // 
