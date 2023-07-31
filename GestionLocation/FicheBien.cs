@@ -1,12 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GestionLocation
@@ -18,8 +11,9 @@ namespace GestionLocation
         private string req;
         private readonly string[] leBien = new string[2];
 
+
         /// <summary>
-        /// Constructeur
+        /// Constructeur de FicheBien
         /// </summary>
         /// <param name="id">id du bien</param>
         public FicheBien(int id)
@@ -30,11 +24,15 @@ namespace GestionLocation
         }
 
 
+        /// <summary>
+        /// Remplit tous les champs de la fenêtre
+        /// </summary>
         public void RemplirChamps()
         {
             RemplirBien();
             RemplirLocation();
         }
+
 
         /// <summary>
         /// Remplit les champs de la fenêtre avec les données issues de la table Bien
@@ -79,6 +77,7 @@ namespace GestionLocation
             reader.Close();
         }
 
+
         /// <summary>
         /// Remplit les champs de la fenêtre issus de la table Location
         /// </summary>
@@ -105,6 +104,7 @@ namespace GestionLocation
             reader.Close();
         }
 
+
         /// <summary>
         /// Gère le clic sur le bouton fermer
         /// </summary>
@@ -114,6 +114,7 @@ namespace GestionLocation
         {
             this.Dispose();
         }
+
 
         /// <summary>
         /// Gère le calcul du seuil de rentabilité
@@ -141,6 +142,7 @@ namespace GestionLocation
             }
         }
 
+
         /// <summary>
         /// Ouvre la page qui liste toutes les charges propres au bien
         /// </summary>
@@ -160,16 +162,6 @@ namespace GestionLocation
         public string[] GetLeBien()
         {
             return this.leBien;
-        }
-
-
-        /// <summary>
-        /// Renvoie la chaîne de connexion de la fenêtre
-        /// </summary>
-        /// <returns>Chaîne de connexion de la fenêtre</returns>
-        public MySqlConnection GetConnexion()
-        {
-            return Global.Connexion;
         }
     }
 }

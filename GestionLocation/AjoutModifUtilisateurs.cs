@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
@@ -121,18 +122,18 @@ namespace GestionLocation
                 txtPwdEmail.Focus();
                 return false;
             }
-/*            else if (txtServeurSMTP.Text.Equals(""))
-            {
-                MessageBox.Show("Veuillez remplir le champ adresse serveur SMTP svp.");
-                txtServeurSMTP.Focus();
-                return false;
-            }
-            else if (txtPort.Text.Equals(""))
-            {
-                MessageBox.Show("Veuillez remplir le champ port svp.");
-                txtPort.Focus();
-                return false;
-            }*/
+            /*            else if (txtServeurSMTP.Text.Equals(""))
+                        {
+                            MessageBox.Show("Veuillez remplir le champ adresse serveur SMTP svp.");
+                            txtServeurSMTP.Focus();
+                            return false;
+                        }
+                        else if (txtPort.Text.Equals(""))
+                        {
+                            MessageBox.Show("Veuillez remplir le champ port svp.");
+                            txtPort.Focus();
+                            return false;
+                        }*/
             else if (txtSignature.Text.Equals(""))
             {
                 MessageBox.Show("Veuillez choisir une signature.");
@@ -144,13 +145,13 @@ namespace GestionLocation
                 {
                     int port = int.Parse(txtPort.Text);*/
                 return true;
-/*                }
-                catch
-                {
-                    MessageBox.Show("Veuillez saisir une valeur correcte pour le champ port svp.");
-                    txtPort.Focus();
-                    return false;
-                }*/
+                /*                }
+                                catch
+                                {
+                                    MessageBox.Show("Veuillez saisir une valeur correcte pour le champ port svp.");
+                                    txtPort.Focus();
+                                    return false;
+                                }*/
             }
         }
 
@@ -201,7 +202,9 @@ namespace GestionLocation
                 case "sfr":
                     this.adresseSmtp = "smtp.sfr.fr";
                     break;
-                case "live": case "outlook": case "hotmail":
+                case "live":
+                case "outlook":
+                case "hotmail":
                     this.adresseSmtp = "smtp.office365.com";
                     break;
                 case "yahoo":
@@ -224,7 +227,7 @@ namespace GestionLocation
         {
             this.req = $"{this.infos[0]} utilisateur (iduser, login, pwd, prenomuser, nomuser, adresseuser, cpuser, villeuser, emailuser, " +
                 $"pwdemail, adresseserveursmtp, port, clientid, clientsecret) " +
-                $"VALUES ({lblID.Text}, \'{infos[2]}\', \'{infos[3]}\', \'{Capitalize(txtPrenom.Text)}\', \'{txtNom.Text.ToUpper()}\', " +
+                $"VALUES ({lblID.Text}, \'{infos[2]}\', \'{infos[3]}\', \'{Global.Capitalize(txtPrenom.Text)}\', \'{txtNom.Text.ToUpper()}\', " +
                 $"\'{txtAdresse.Text}\', \'{txtCp.Text}\', \'{txtVille.Text.ToUpper()}\', \'{txtEmail.Text}\', \'{txtPwdEmail.Text}\', " +
                 $"\'{this.adresseSmtp}\', \'{this.port}\', \'{""}\' , \'{""}\')";
         }
@@ -235,7 +238,7 @@ namespace GestionLocation
         /// </summary>
         public void ConstruitReqModif()
         {
-            this.req = $"{this.infos[0]} login = \'{this.infos[2]}\', pwd = \'{this.infos[3]}\', prenomuser = \'{Capitalize(txtPrenom.Text)}\', " +
+            this.req = $"{this.infos[0]} login = \'{this.infos[2]}\', pwd = \'{this.infos[3]}\', prenomuser = \'{Global.Capitalize(txtPrenom.Text)}\', " +
                 $"nomuser = \'{txtNom.Text.ToUpper()}\', adresseuser = \'{txtAdresse.Text}\', cpuser = \'{txtCp.Text}\', " +
                 $"villeuser = \'{txtVille.Text.ToUpper()}\', emailuser = \'{txtEmail.Text}\', pwdemail = \'{txtPwdEmail.Text}\', " +
                 $"adresseserveursmtp = \'{this.adresseSmtp}\', port = \'{this.port}\', clientid = \'{""}\' , clientsecret = \'{""}\' " +
@@ -268,24 +271,13 @@ namespace GestionLocation
 
 
         /// <summary>
-        /// Met une majuscule sur la première lettre d'un mot ou d'une phrase
-        /// </summary>
-        /// <param name="s">Chaîne concernée par la mise en forme</param>
-        /// <returns>Chaine de caractère avec une majuscule sur le premier caractère</returns>
-        public string Capitalize(string s)
-        {
-            return s[0].ToString().ToUpper() + s.Substring(1).ToLower();
-        }
-
-
-        /// <summary>
         /// Récupère la signature de l'utilisateur et copie le fichier dans le répertoire "Signature" de l'application
         /// </summary>
         public void RecupSignature()
         {
             OpenFileDialog open = new OpenFileDialog();
             string ext;
-            // Boucle tant qu'aucun fichier png n'a été sélectionné
+            // Boucle tant que le fichier sélectionné n'est pas au format png ou qu'aucun fichier n'a été sélectionné
             do
             {
                 MessageBox.Show("Veuillez choisir un fichier png.");
@@ -293,9 +285,28 @@ namespace GestionLocation
                 txtSignature.Text = open.FileName;
                 ext = txtSignature.Text.Substring(txtSignature.Text.Length - 4, 4);
             } while (txtSignature.Text.Equals("") || !ext.Equals(".png"));
-            string dest = $"{Environment.CurrentDirectory}/Signature/{Capitalize(txtPrenom.Text)} {txtNom.Text.ToUpper()}.png";
+            // Retaille l'image
+            Image signature = ResizeImg();
             // Place le fichier dans le répertoire de l'application
-            File.Copy(txtSignature.Text, dest, true);
+            string dest = $"{Environment.CurrentDirectory}/Signature/{Global.Capitalize(txtPrenom.Text)} {txtNom.Text.ToUpper()}.png";
+            signature.Save(dest);
+        }
+
+
+        /// <summary>
+        /// Redimensionne une image
+        /// </summary>
+        /// <returns>Image redimensionnée</returns>
+        public Image ResizeImg()
+        {
+            Image img = Image.FromFile(txtSignature.Text);
+            Bitmap imgbitmap = new Bitmap(img);
+            // Calcule le rapport entre la hauteur de l'image d'origine et la hauteur maximum de l'image
+            float rapport = (float)imgbitmap.Height / Global.HeightMaxSignature;
+            // Calcule la nouvelle longueur de l'image
+            int newWidth = (int)(imgbitmap.Width / rapport);
+            Image signature = new Bitmap(imgbitmap, new Size(newWidth, Global.HeightMaxSignature));
+            return signature;
         }
     }
 }

@@ -109,6 +109,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnValider_Click(object sender, EventArgs e)
         {
+            // Modifie le format du montant payé
             string strMontant = txtMontantPaye.Text.Replace('.', ',');
             bool reussi = float.TryParse(strMontant, out float montant);
             // Si le contenu du champ du montant payé est incorrect

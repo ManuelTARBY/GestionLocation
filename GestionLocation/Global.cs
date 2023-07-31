@@ -24,6 +24,7 @@ namespace GestionLocation
         private static int port;
         private static string serveurSmtp;
         private static string user;
+        public static int HeightMaxSignature = 420;
 
 
         /// <summary>

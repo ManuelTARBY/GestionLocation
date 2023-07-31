@@ -129,7 +129,7 @@ namespace GestionLocation
             if (VerifChamps())
             {
                 float annu = CalculerMontantAnnuel();
-                // Prépare la requête
+                // Prépare la requête d'ajout ou de modification de l'enregistrement de ChargesAnnuelles
                 switch (this.typeReq)
                 {
                     case "INSERT":
@@ -147,7 +147,7 @@ namespace GestionLocation
                 this.command = new MySqlCommand(this.req, Global.Connexion);
                 // Prépare la requête
                 this.command.Prepare();
-                // exécution de la requête
+                // Exécute la requête
                 this.command.ExecuteNonQuery();
                 this.fenListeCharges.RecupListeCharges();
                 // Met à jour la liste des charges pour le bien
@@ -217,7 +217,7 @@ namespace GestionLocation
             }
             reader.Close();
 
-            // Calcule la charge imputable au locataire du bien
+            // Calcule la charge imputable au locataire pour le bien
             this.req += " AND imputable = True";
             float chImputables = 0;
             this.command = new MySqlCommand(this.req, Global.Connexion);
@@ -231,7 +231,7 @@ namespace GestionLocation
             reader.Close();
 
             // Met à jour la table bien
-            this.req = $"UPDATE bien SET chargeannuelles = \'{Math.Round(charges, 2)}\', chargesimputables = \'{Math.Round(chImputables / 12, 2)}\' WHERE idbien = {leBien[0]}";
+            this.req = $"UPDATE bien SET chargeannuelles = \'{Math.Round(charges)}\', chargesimputables = \'{Math.Round(chImputables / 12)}\' WHERE idbien = {leBien[0]}";
             // Exécute la requête
             this.command = new MySqlCommand(this.req, Global.Connexion);
             // Prépare la requête

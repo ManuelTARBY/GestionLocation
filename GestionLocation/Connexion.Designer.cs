@@ -34,12 +34,15 @@ namespace GestionLocation
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Connexion));
             this.btnConnexion = new System.Windows.Forms.Button();
             this.txtId = new System.Windows.Forms.TextBox();
             this.txtPwd = new System.Windows.Forms.TextBox();
             this.lblPresentation = new System.Windows.Forms.Label();
             this.lblErreur = new System.Windows.Forms.Label();
             this.lblCptEssai = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // btnConnexion
@@ -96,22 +99,35 @@ namespace GestionLocation
             this.lblCptEssai.TabIndex = 5;
             this.lblCptEssai.Text = "Nb d\'essais";
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(28, 54);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(275, 204);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 6;
+            this.pictureBox1.TabStop = false;
+            // 
             // Connexion
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(608, 278);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.lblCptEssai);
             this.Controls.Add(this.lblErreur);
             this.Controls.Add(this.lblPresentation);
             this.Controls.Add(this.txtPwd);
             this.Controls.Add(this.txtId);
             this.Controls.Add(this.btnConnexion);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(630, 334);
             this.MinimumSize = new System.Drawing.Size(630, 334);
             this.Name = "Connexion";
             this.Text = "Connexion";
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Connexion_KeyPress);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -125,5 +141,6 @@ namespace GestionLocation
         private System.Windows.Forms.Label lblPresentation;
         private System.Windows.Forms.Label lblErreur;
         private System.Windows.Forms.Label lblCptEssai;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }

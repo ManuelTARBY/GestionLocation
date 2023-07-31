@@ -647,6 +647,7 @@ namespace GestionLocation
             catch
             {
                 var result = MessageBox.Show("Erreur lors de l'envoi de la quittance !", "Erreur lors de l'envoi du mail", MessageBoxButtons.AbortRetryIgnore);
+                // Si l'utilisateur veut retenter l'envoi du mail
                 if (result == DialogResult.Retry)
                 {
                     smtp.Disconnect(true);
