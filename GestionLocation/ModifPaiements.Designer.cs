@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Windows.Forms;
 
 namespace GestionLocation
@@ -67,6 +68,7 @@ namespace GestionLocation
             this.datPaiement.Name = "datPaiement";
             this.datPaiement.Size = new System.Drawing.Size(195, 26);
             this.datPaiement.TabIndex = 3;
+            this.datPaiement.Value = new System.DateTime(2023, 7, 1, 0, 0, 0, 0);
             // 
             // lblDatePaiement
             // 

@@ -1,12 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GestionLocation
@@ -26,9 +19,9 @@ namespace GestionLocation
         /// <param name="idPaiement">id de l'enregistrement de la table Paiement à modifier</param>
         public ModifPaiements(Paiements fenPaiements)
         {
+            InitializeComponent();
             this.fenPaiements = fenPaiements;
             this.idPaiement = this.fenPaiements.GetIdPaiement();
-            InitializeComponent();
             RemplirChamps();
         }
 
@@ -140,7 +133,7 @@ namespace GestionLocation
                 // Met à jour l'affichage
                 this.req = fenPaiements.GetRequete();
                 this.fenPaiements.EnvoiReqSelectPaiements();
-                // Si le loyer est réglé, demande si il faut envoyer la quittance par mail au locataire
+                // Si le loyer est réglé, demande s'il faut envoyer la quittance par mail au locataire
                 if (loyerregle == true)
                 {
                     // Demande pour envoi de la quittance de loyer

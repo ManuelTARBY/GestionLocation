@@ -38,17 +38,28 @@ namespace GestionLocation
             this.rdbLocataireNonArchive = new System.Windows.Forms.RadioButton();
             this.btnArchiver = new System.Windows.Forms.Button();
             this.lstLocataires = new System.Windows.Forms.ListBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.gbrLocataireArchive.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSupprimer
             // 
+            this.btnSupprimer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSupprimer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
             this.btnSupprimer.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSupprimer.ForeColor = System.Drawing.SystemColors.Control;
-            this.btnSupprimer.Location = new System.Drawing.Point(306, 18);
+            this.btnSupprimer.Location = new System.Drawing.Point(295, 3);
             this.btnSupprimer.Name = "btnSupprimer";
-            this.btnSupprimer.Size = new System.Drawing.Size(132, 48);
+            this.btnSupprimer.Size = new System.Drawing.Size(143, 32);
             this.btnSupprimer.TabIndex = 13;
             this.btnSupprimer.Text = "Supprimer";
             this.btnSupprimer.UseVisualStyleBackColor = false;
@@ -56,9 +67,12 @@ namespace GestionLocation
             // 
             // btnModifier
             // 
-            this.btnModifier.Location = new System.Drawing.Point(168, 18);
+            this.btnModifier.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnModifier.Location = new System.Drawing.Point(149, 3);
             this.btnModifier.Name = "btnModifier";
-            this.btnModifier.Size = new System.Drawing.Size(132, 48);
+            this.btnModifier.Size = new System.Drawing.Size(140, 32);
             this.btnModifier.TabIndex = 9;
             this.btnModifier.Text = "Modifier";
             this.btnModifier.UseVisualStyleBackColor = true;
@@ -66,9 +80,12 @@ namespace GestionLocation
             // 
             // btnAjouter
             // 
-            this.btnAjouter.Location = new System.Drawing.Point(30, 18);
+            this.btnAjouter.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAjouter.Location = new System.Drawing.Point(3, 3);
             this.btnAjouter.Name = "btnAjouter";
-            this.btnAjouter.Size = new System.Drawing.Size(132, 48);
+            this.btnAjouter.Size = new System.Drawing.Size(140, 32);
             this.btnAjouter.TabIndex = 8;
             this.btnAjouter.Text = "Ajouter";
             this.btnAjouter.UseVisualStyleBackColor = true;
@@ -87,9 +104,12 @@ namespace GestionLocation
             // 
             // btnRechercher
             // 
-            this.btnRechercher.Location = new System.Drawing.Point(285, 189);
+            this.btnRechercher.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRechercher.Location = new System.Drawing.Point(3, 99);
             this.btnRechercher.Name = "btnRechercher";
-            this.btnRechercher.Size = new System.Drawing.Size(153, 46);
+            this.btnRechercher.Size = new System.Drawing.Size(165, 66);
             this.btnRechercher.TabIndex = 12;
             this.btnRechercher.Text = "Chercher";
             this.btnRechercher.UseVisualStyleBackColor = true;
@@ -97,11 +117,14 @@ namespace GestionLocation
             // 
             // gbrLocataireArchive
             // 
+            this.gbrLocataireArchive.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.gbrLocataireArchive.Controls.Add(this.rdbLocataireNonArchive);
             this.gbrLocataireArchive.Controls.Add(this.rdbLocataireArchive);
-            this.gbrLocataireArchive.Location = new System.Drawing.Point(285, 85);
+            this.gbrLocataireArchive.Location = new System.Drawing.Point(3, 3);
             this.gbrLocataireArchive.Name = "gbrLocataireArchive";
-            this.gbrLocataireArchive.Size = new System.Drawing.Size(153, 92);
+            this.gbrLocataireArchive.Size = new System.Drawing.Size(165, 90);
             this.gbrLocataireArchive.TabIndex = 11;
             this.gbrLocataireArchive.TabStop = false;
             this.gbrLocataireArchive.Text = "Tri";
@@ -120,9 +143,12 @@ namespace GestionLocation
             // 
             // btnArchiver
             // 
-            this.btnArchiver.Location = new System.Drawing.Point(285, 247);
+            this.btnArchiver.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnArchiver.Location = new System.Drawing.Point(3, 171);
             this.btnArchiver.Name = "btnArchiver";
-            this.btnArchiver.Size = new System.Drawing.Size(153, 62);
+            this.btnArchiver.Size = new System.Drawing.Size(165, 68);
             this.btnArchiver.TabIndex = 10;
             this.btnArchiver.Text = "Archiver / Désarchiver";
             this.btnArchiver.UseVisualStyleBackColor = true;
@@ -130,29 +156,102 @@ namespace GestionLocation
             // 
             // lstLocataires
             // 
+            this.lstLocataires.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lstLocataires.FormattingEnabled = true;
             this.lstLocataires.ItemHeight = 20;
-            this.lstLocataires.Location = new System.Drawing.Point(30, 85);
+            this.lstLocataires.Location = new System.Drawing.Point(3, 3);
             this.lstLocataires.Name = "lstLocataires";
-            this.lstLocataires.Size = new System.Drawing.Size(230, 224);
+            this.lstLocataires.Size = new System.Drawing.Size(258, 224);
             this.lstLocataires.TabIndex = 7;
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel3, 0, 0);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 85F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(447, 298);
+            this.tableLayoutPanel1.TabIndex = 14;
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 60F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
+            this.tableLayoutPanel2.Controls.Add(this.lstLocataires, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel4, 1, 0);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 47);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(441, 248);
+            this.tableLayoutPanel2.TabIndex = 0;
+            // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel3.ColumnCount = 3;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel3.Controls.Add(this.btnAjouter, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.btnSupprimer, 2, 0);
+            this.tableLayoutPanel3.Controls.Add(this.btnModifier, 1, 0);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 1;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(441, 38);
+            this.tableLayoutPanel3.TabIndex = 1;
+            // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel4.ColumnCount = 1;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel4.Controls.Add(this.gbrLocataireArchive, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.btnArchiver, 0, 2);
+            this.tableLayoutPanel4.Controls.Add(this.btnRechercher, 0, 1);
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(267, 3);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 3;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 40F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 30F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 30F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(171, 242);
+            this.tableLayoutPanel4.TabIndex = 8;
             // 
             // Locataires
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(471, 322);
-            this.Controls.Add(this.btnSupprimer);
-            this.Controls.Add(this.btnModifier);
-            this.Controls.Add(this.btnAjouter);
-            this.Controls.Add(this.btnRechercher);
-            this.Controls.Add(this.gbrLocataireArchive);
-            this.Controls.Add(this.btnArchiver);
-            this.Controls.Add(this.lstLocataires);
+            this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "Locataires";
             this.Text = "Locataires";
             this.gbrLocataireArchive.ResumeLayout(false);
             this.gbrLocataireArchive.PerformLayout();
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -168,5 +267,9 @@ namespace GestionLocation
         private System.Windows.Forms.RadioButton rdbLocataireNonArchive;
         private System.Windows.Forms.Button btnArchiver;
         private System.Windows.Forms.ListBox lstLocataires;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
     }
 }

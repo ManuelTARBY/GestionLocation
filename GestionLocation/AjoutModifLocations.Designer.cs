@@ -45,48 +45,71 @@ namespace GestionLocation
             this.lblLocataires = new System.Windows.Forms.Label();
             this.lblCautions = new System.Windows.Forms.Label();
             this.btnFermer = new System.Windows.Forms.Button();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // lstBiens
             // 
+            this.lstBiens.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lstBiens.FormattingEnabled = true;
             this.lstBiens.ItemHeight = 20;
-            this.lstBiens.Location = new System.Drawing.Point(42, 106);
+            this.lstBiens.Location = new System.Drawing.Point(3, 99);
             this.lstBiens.Name = "lstBiens";
-            this.lstBiens.Size = new System.Drawing.Size(133, 124);
+            this.lstBiens.Size = new System.Drawing.Size(154, 104);
             this.lstBiens.TabIndex = 0;
             // 
             // lstLocataires
             // 
+            this.lstLocataires.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lstLocataires.FormattingEnabled = true;
             this.lstLocataires.ItemHeight = 20;
-            this.lstLocataires.Location = new System.Drawing.Point(206, 106);
+            this.lstLocataires.Location = new System.Drawing.Point(163, 99);
             this.lstLocataires.Name = "lstLocataires";
-            this.lstLocataires.Size = new System.Drawing.Size(273, 144);
+            this.lstLocataires.Size = new System.Drawing.Size(314, 104);
             this.lstLocataires.TabIndex = 1;
             // 
             // lstCautions
             // 
+            this.lstCautions.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lstCautions.FormattingEnabled = true;
             this.lstCautions.ItemHeight = 20;
-            this.lstCautions.Location = new System.Drawing.Point(509, 106);
+            this.lstCautions.Location = new System.Drawing.Point(483, 99);
             this.lstCautions.Name = "lstCautions";
-            this.lstCautions.Size = new System.Drawing.Size(271, 144);
+            this.lstCautions.Size = new System.Drawing.Size(315, 104);
             this.lstCautions.TabIndex = 2;
             // 
             // datDebut
             // 
-            this.datDebut.Location = new System.Drawing.Point(206, 47);
+            this.datDebut.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.datDebut.Location = new System.Drawing.Point(163, 35);
+            this.datDebut.MaxDate = new System.DateTime(2023, 8, 12, 0, 0, 0, 0);
+            this.datDebut.MinDate = new System.DateTime(1901, 1, 1, 0, 0, 0, 0);
             this.datDebut.Name = "datDebut";
-            this.datDebut.Size = new System.Drawing.Size(273, 26);
+            this.datDebut.Size = new System.Drawing.Size(314, 26);
             this.datDebut.TabIndex = 3;
+            this.datDebut.Value = new System.DateTime(2023, 8, 12, 0, 0, 0, 0);
             // 
             // datFin
             // 
-            this.datFin.Location = new System.Drawing.Point(509, 47);
+            this.datFin.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.datFin.Location = new System.Drawing.Point(483, 35);
+            this.datFin.MaxDate = new System.DateTime(2023, 8, 12, 0, 0, 0, 0);
+            this.datFin.MinDate = new System.DateTime(1901, 1, 1, 0, 0, 0, 0);
             this.datFin.Name = "datFin";
-            this.datFin.Size = new System.Drawing.Size(271, 26);
+            this.datFin.Size = new System.Drawing.Size(315, 26);
             this.datFin.TabIndex = 4;
+            this.datFin.Value = new System.DateTime(2023, 8, 12, 0, 0, 0, 0);
             // 
             // lblID
             // 
@@ -98,8 +121,9 @@ namespace GestionLocation
             // 
             // lblDebutLoc
             // 
+            this.lblDebutLoc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblDebutLoc.AutoSize = true;
-            this.lblDebutLoc.Location = new System.Drawing.Point(202, 24);
+            this.lblDebutLoc.Location = new System.Drawing.Point(163, 12);
             this.lblDebutLoc.Name = "lblDebutLoc";
             this.lblDebutLoc.Size = new System.Drawing.Size(134, 20);
             this.lblDebutLoc.TabIndex = 29;
@@ -107,8 +131,9 @@ namespace GestionLocation
             // 
             // lblFinLoc
             // 
+            this.lblFinLoc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblFinLoc.AutoSize = true;
-            this.lblFinLoc.Location = new System.Drawing.Point(505, 24);
+            this.lblFinLoc.Location = new System.Drawing.Point(483, 12);
             this.lblFinLoc.Name = "lblFinLoc";
             this.lblFinLoc.Size = new System.Drawing.Size(112, 20);
             this.lblFinLoc.TabIndex = 30;
@@ -116,15 +141,16 @@ namespace GestionLocation
             // 
             // txtDepotGarantie
             // 
-            this.txtDepotGarantie.Location = new System.Drawing.Point(42, 47);
+            this.txtDepotGarantie.Location = new System.Drawing.Point(3, 35);
             this.txtDepotGarantie.Name = "txtDepotGarantie";
             this.txtDepotGarantie.Size = new System.Drawing.Size(133, 26);
             this.txtDepotGarantie.TabIndex = 31;
             // 
             // lblDepotGarantie
             // 
+            this.lblDepotGarantie.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblDepotGarantie.AutoSize = true;
-            this.lblDepotGarantie.Location = new System.Drawing.Point(38, 24);
+            this.lblDepotGarantie.Location = new System.Drawing.Point(3, 12);
             this.lblDepotGarantie.Name = "lblDepotGarantie";
             this.lblDepotGarantie.Size = new System.Drawing.Size(137, 20);
             this.lblDepotGarantie.TabIndex = 32;
@@ -133,7 +159,7 @@ namespace GestionLocation
             // cbxArchive
             // 
             this.cbxArchive.AutoSize = true;
-            this.cbxArchive.Location = new System.Drawing.Point(42, 236);
+            this.cbxArchive.Location = new System.Drawing.Point(3, 226);
             this.cbxArchive.Name = "cbxArchive";
             this.cbxArchive.Size = new System.Drawing.Size(96, 24);
             this.cbxArchive.TabIndex = 33;
@@ -142,9 +168,11 @@ namespace GestionLocation
             // 
             // btnValider
             // 
-            this.btnValider.Location = new System.Drawing.Point(266, 274);
+            this.btnValider.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnValider.Location = new System.Drawing.Point(163, 226);
             this.btnValider.Name = "btnValider";
-            this.btnValider.Size = new System.Drawing.Size(229, 53);
+            this.btnValider.Size = new System.Drawing.Size(314, 53);
             this.btnValider.TabIndex = 34;
             this.btnValider.Text = "Valider";
             this.btnValider.UseVisualStyleBackColor = true;
@@ -152,8 +180,9 @@ namespace GestionLocation
             // 
             // lblBiens
             // 
+            this.lblBiens.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblBiens.AutoSize = true;
-            this.lblBiens.Location = new System.Drawing.Point(38, 85);
+            this.lblBiens.Location = new System.Drawing.Point(3, 76);
             this.lblBiens.Name = "lblBiens";
             this.lblBiens.Size = new System.Drawing.Size(49, 20);
             this.lblBiens.TabIndex = 35;
@@ -161,8 +190,9 @@ namespace GestionLocation
             // 
             // lblLocataires
             // 
+            this.lblLocataires.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblLocataires.AutoSize = true;
-            this.lblLocataires.Location = new System.Drawing.Point(202, 85);
+            this.lblLocataires.Location = new System.Drawing.Point(163, 76);
             this.lblLocataires.Name = "lblLocataires";
             this.lblLocataires.Size = new System.Drawing.Size(83, 20);
             this.lblLocataires.TabIndex = 36;
@@ -170,8 +200,9 @@ namespace GestionLocation
             // 
             // lblCautions
             // 
+            this.lblCautions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblCautions.AutoSize = true;
-            this.lblCautions.Location = new System.Drawing.Point(505, 85);
+            this.lblCautions.Location = new System.Drawing.Point(483, 76);
             this.lblCautions.Name = "lblCautions";
             this.lblCautions.Size = new System.Drawing.Size(72, 20);
             this.lblCautions.TabIndex = 37;
@@ -179,37 +210,62 @@ namespace GestionLocation
             // 
             // btnFermer
             // 
-            this.btnFermer.Location = new System.Drawing.Point(619, 274);
+            this.btnFermer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnFermer.Location = new System.Drawing.Point(483, 226);
             this.btnFermer.Name = "btnFermer";
-            this.btnFermer.Size = new System.Drawing.Size(161, 53);
+            this.btnFermer.Size = new System.Drawing.Size(315, 53);
             this.btnFermer.TabIndex = 38;
             this.btnFermer.Text = "Fermer";
             this.btnFermer.UseVisualStyleBackColor = true;
             this.btnFermer.Click += new System.EventHandler(this.BtnFermer_Click);
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.ColumnCount = 3;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
+            this.tableLayoutPanel1.Controls.Add(this.lblFinLoc, 2, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnValider, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.lblLocataires, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.btnFermer, 2, 4);
+            this.tableLayoutPanel1.Controls.Add(this.lstLocataires, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.lblDebutLoc, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.datDebut, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.cbxArchive, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.datFin, 2, 1);
+            this.tableLayoutPanel1.Controls.Add(this.lblCautions, 2, 2);
+            this.tableLayoutPanel1.Controls.Add(this.lstCautions, 2, 3);
+            this.tableLayoutPanel1.Controls.Add(this.txtDepotGarantie, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.lblDepotGarantie, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.lstBiens, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.lblBiens, 0, 2);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(15, 7);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 5;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 54.79452F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 45.20548F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(801, 329);
+            this.tableLayoutPanel1.TabIndex = 39;
             // 
             // AjoutModifLocations
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(828, 348);
-            this.Controls.Add(this.btnFermer);
-            this.Controls.Add(this.lblCautions);
-            this.Controls.Add(this.lblLocataires);
-            this.Controls.Add(this.lblBiens);
-            this.Controls.Add(this.btnValider);
-            this.Controls.Add(this.cbxArchive);
-            this.Controls.Add(this.lblDepotGarantie);
-            this.Controls.Add(this.txtDepotGarantie);
-            this.Controls.Add(this.lblFinLoc);
-            this.Controls.Add(this.lblDebutLoc);
+            this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.lblID);
-            this.Controls.Add(this.datFin);
-            this.Controls.Add(this.datDebut);
-            this.Controls.Add(this.lstCautions);
-            this.Controls.Add(this.lstLocataires);
-            this.Controls.Add(this.lstBiens);
             this.Name = "AjoutModifLocations";
             this.Text = "Ajout / Modification d\'une location";
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -233,5 +289,6 @@ namespace GestionLocation
         private System.Windows.Forms.Label lblLocataires;
         private System.Windows.Forms.Label lblCautions;
         private System.Windows.Forms.Button btnFermer;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     }
 }

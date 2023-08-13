@@ -56,6 +56,11 @@ namespace GestionLocation
                         ConstruitReqModif();
                     }
                     EnvoiReqCUD();
+                    // Retaille l'image de la signature
+                    Image signature = ResizeImg();
+                    // Place le fichier dans le répertoire de l'application
+                    string dest = $"{Environment.CurrentDirectory}/Signature/{Global.Capitalize(txtPrenom.Text)} {txtNom.Text.ToUpper()}.png";
+                    signature.Save(dest);
                     // Modifie l'iduser (n'a d'effet qu'en cas de création d'un utilisateur)
                     this.fenConnexion.SetIdUser(this.infos[1]);
                     // Ouvre la fenêtre accueil
@@ -285,11 +290,6 @@ namespace GestionLocation
                 txtSignature.Text = open.FileName;
                 ext = txtSignature.Text.Substring(txtSignature.Text.Length - 4, 4);
             } while (txtSignature.Text.Equals("") || !ext.Equals(".png"));
-            // Retaille l'image
-            Image signature = ResizeImg();
-            // Place le fichier dans le répertoire de l'application
-            string dest = $"{Environment.CurrentDirectory}/Signature/{Global.Capitalize(txtPrenom.Text)} {txtNom.Text.ToUpper()}.png";
-            signature.Save(dest);
         }
 
 

@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace GestionLocation
@@ -45,7 +46,7 @@ namespace GestionLocation
             reader.Read();
             this.leBien[1] = reader.GetString(1);
             // Remplissage des champs récupérés dans la ligne
-            lblNomBien.Text = $"{reader.GetString(1).ToUpper()}   --   {reader.GetString(5)} {reader.GetString(6)} {reader.GetString(7).ToUpper()}";
+            lblNomBien.Text = $"{reader.GetString(1).ToUpper()}   -   {reader.GetString(5)} {reader.GetString(6)} {reader.GetString(7).ToUpper()}";
             txtLoyerHC.Text = $"{reader.GetString(2)} €";
             txtCharges.Text = $"{reader.GetString(3)} €";
             txtLoyerCC.Text = $"{reader.GetString(4)} €";
@@ -83,25 +84,59 @@ namespace GestionLocation
         /// </summary>
         public void RemplirLocation()
         {
-            this.req = $"SELECT COUNT(idlocation) FROM (SELECT idlocation FROM location WHERE idbien={this.leBien[0]}) AS req";
+            // Calcule le nombre de locations
+            CalculNbLoc();
+            
+            // Calcule le début d'exploitation
+            CalculDebutExploit();
+            
+            // Calcule la fin d'exploitation
+            CalculFinExploit();
+            
+            // Calcule la durée d'exploitation
+            CalculDureeExploit();
+            
+            // Récupération des durées de location
+            this.req = $"SELECT * FROM location WHERE idbien={this.leBien[0]}";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
-            reader.Read();
-            txtNbLoc.Text = reader.GetString(0);
-            reader.Close();
-            this.req = $"SELECT MIN(debutlocation) FROM (SELECT debutlocation FROM location WHERE idbien={this.leBien[0]}) AS req";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            reader = this.command.ExecuteReader();
-            reader.Read();
-            try 
+            List<int> lesDureesDeLoc = new List<int>();
+            while (reader.Read())
             {
-                txtPremiereLoc.Text = $"{reader.GetDateTime(0):d}";
-            }
-            catch
-            {
-                txtPremiereLoc.Text = "-";
+                DateTime debutLoc = DateTime.ParseExact($"{reader.GetDateTime(4):d}", "d", null);
+                DateTime finLoc = DateTime.ParseExact($"{reader.GetDateTime(5):d}", "d", null);
+                lesDureesDeLoc.Add(finLoc.Subtract(debutLoc).Days + 1);
             }
             reader.Close();
+            // Calcul des durées mini, moyenne et maxi de location
+            int dureeTotaleDeLoc = 0, dureeMini = 10000, dureeMaxi = 0;
+            foreach (int duree in lesDureesDeLoc)
+            {
+                dureeTotaleDeLoc += duree;
+                dureeMini = Math.Min(dureeMini, duree);
+                dureeMaxi = Math.Max(dureeMaxi, duree);
+            }
+            // Conversion et affichage des valeurs
+            txtDureeMoyenneLoc.Text = ConvertJoursVersMois(dureeTotaleDeLoc / int.Parse(txtNbLoc.Text));
+            txtDureeMiniLoc.Text = ConvertJoursVersMois(dureeMini);
+            txtDureeMaxiLoc.Text = ConvertJoursVersMois(dureeMaxi);
+
+            // Calcul de la vacance locative
+            float vacanceJours = int.Parse(txtDureeExploitEnJours.Text) - dureeTotaleDeLoc;
+            float vacancePrc = (float)Math.Round(vacanceJours / int.Parse(txtDureeExploitEnJours.Text) * 100, 1);
+            txtVacanceLocative.Text = $"{vacancePrc} %";
+        }
+
+
+        /// <summary>
+        /// Convertit un nombre de jours en mois
+        /// </summary>
+        /// <param name="jours">Nombre de jours à convertir</param>
+        /// <returns>Durée équivalente en mois</returns>
+        public string ConvertJoursVersMois(int jours)
+        {
+            double mois = Math.Round((jours / 30.42), 1);
+            return mois.ToString();
         }
 
 
@@ -113,6 +148,76 @@ namespace GestionLocation
         private void BtnFermer_Click(object sender, EventArgs e)
         {
             this.Dispose();
+        }
+
+
+        /// <summary>
+        /// Remplit le champ relatif au nombre de locations du bien
+        /// </summary>
+        public void CalculNbLoc()
+        {
+            this.req = $"SELECT COUNT(idlocation) FROM (SELECT idlocation FROM location WHERE idbien={this.leBien[0]}) AS req";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            MySqlDataReader reader = this.command.ExecuteReader();
+            reader.Read();
+            txtNbLoc.Text = reader.GetString(0);
+            reader.Close();
+        }
+
+
+        /// <summary>
+        /// Remplit le champ relatif au début d'exploitation du bien
+        /// </summary>
+        public void CalculDebutExploit()
+        {
+            this.req = $"SELECT MIN(debutlocation) FROM (SELECT debutlocation FROM location WHERE idbien={this.leBien[0]}) AS req";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            MySqlDataReader reader = this.command.ExecuteReader();
+            reader.Read();
+            try
+            {
+                txtDebutExploit.Text = $"{reader.GetDateTime(0):d}";
+            }
+            catch
+            {
+                txtDebutExploit.Text = "-";
+            }
+            reader.Close();
+        }
+
+
+        /// <summary>
+        /// Remplit le champ relatif à la fin d'exploitation du bien
+        /// </summary>
+        public void CalculFinExploit()
+        {
+            this.req = $"SELECT MAX(finlocation) FROM (SELECT finlocation FROM location WHERE idbien={this.leBien[0]}) AS req";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            MySqlDataReader reader = this.command.ExecuteReader();
+            reader.Read();
+            try
+            {
+                txtFinExploit.Text = $"{reader.GetDateTime(0):d}";
+            }
+            catch
+            {
+                txtDebutExploit.Text = "-";
+            }
+            reader.Close();
+        }
+
+
+        /// <summary>
+        /// Remplit les champs relatifs aux durées d'exploitation pour le bien
+        /// </summary>
+        public void CalculDureeExploit()
+        {
+            DateTime debutExploit = DateTime.ParseExact(txtDebutExploit.Text, "d", null);
+            DateTime finExploit = DateTime.ParseExact(txtFinExploit.Text, "d", null);
+            TimeSpan dureeExploit = finExploit.Subtract(debutExploit);
+            txtDureeExploitEnJours.Text = dureeExploit.Days.ToString();
+            double exploitAnnees = (double)(dureeExploit.TotalDays / 365);
+            txtDureeExploitEnAnnees.Text = Math.Round(exploitAnnees, 1).ToString();
         }
 
 

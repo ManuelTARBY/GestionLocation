@@ -306,6 +306,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ReqCreationTables.txt" />
+    <Content Include="Modifs.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

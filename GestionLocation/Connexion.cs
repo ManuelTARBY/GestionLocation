@@ -74,7 +74,7 @@ namespace GestionLocation
                     }
                     else
                     {
-                        lblErreur.Text = "La tentative de connexion a échoué";
+                        lblErreur.Text = "La connexion a échoué";
                         this.cptEssai++;
                         lblCptEssai.Text = $"Essai : {this.cptEssai}/{essaiMax}";
                     }
@@ -118,7 +118,7 @@ namespace GestionLocation
         /// </summary>
         private void GenererChaineConnexion()
         {
-            this.chaineConnexion = $"server={adresseserveur};user id={txtId.Text};password={txtPwd.Text};Convert Zero Datetime=True;Convert Zero Datetime=True;Allow Zero Datetime=true;SslMode=none;database=gestionlocation";
+            this.chaineConnexion = $"server=localhost;user id={txtId.Text};password={txtPwd.Text};Convert Zero Datetime=True;Convert Zero Datetime=True;Allow Zero Datetime=true;SslMode=none;database=gestionlocation";
         }
 
 

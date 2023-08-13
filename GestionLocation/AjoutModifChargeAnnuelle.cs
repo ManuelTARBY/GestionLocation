@@ -63,11 +63,11 @@ namespace GestionLocation
             txtBien.Text = this.leBien[1];
             if (this.idCharge.Equals("0"))
             {
-                lblID.Text = AttribuerIDCharge();
+                lblID.Text = $"N°{AttribuerIDCharge()}";
             }
             else
             {
-                lblID.Text = this.idCharge;
+                lblID.Text = $"N°{this.idCharge}";
                 RecupDonnees();
             }
         }

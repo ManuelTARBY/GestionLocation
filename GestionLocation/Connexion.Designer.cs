@@ -57,15 +57,16 @@ namespace GestionLocation
             // 
             // txtId
             // 
-            this.txtId.Location = new System.Drawing.Point(352, 76);
+            this.txtId.Location = new System.Drawing.Point(352, 85);
             this.txtId.Name = "txtId";
             this.txtId.Size = new System.Drawing.Size(198, 26);
             this.txtId.TabIndex = 1;
+            this.txtId.Text = "manu";
             this.txtId.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtId_KeyPress);
             // 
             // txtPwd
             // 
-            this.txtPwd.Location = new System.Drawing.Point(352, 118);
+            this.txtPwd.Location = new System.Drawing.Point(352, 127);
             this.txtPwd.Name = "txtPwd";
             this.txtPwd.PasswordChar = '*';
             this.txtPwd.Size = new System.Drawing.Size(198, 26);
@@ -85,7 +86,7 @@ namespace GestionLocation
             // lblErreur
             // 
             this.lblErreur.AutoSize = true;
-            this.lblErreur.Location = new System.Drawing.Point(53, 80);
+            this.lblErreur.Location = new System.Drawing.Point(353, 47);
             this.lblErreur.Name = "lblErreur";
             this.lblErreur.Size = new System.Drawing.Size(0, 20);
             this.lblErreur.TabIndex = 4;

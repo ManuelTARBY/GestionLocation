@@ -43,8 +43,8 @@ namespace GestionLocation
             this.lblArchive = new System.Windows.Forms.Label();
             this.txtNbLoc = new System.Windows.Forms.TextBox();
             this.lblNbLoc = new System.Windows.Forms.Label();
-            this.txtPremiereLoc = new System.Windows.Forms.TextBox();
-            this.lblPremiereMiseEnLoc = new System.Windows.Forms.Label();
+            this.txtDebutExploit = new System.Windows.Forms.TextBox();
+            this.lblDebutExploit = new System.Windows.Forms.Label();
             this.btnFermer = new System.Windows.Forms.Button();
             this.txtArchive = new System.Windows.Forms.TextBox();
             this.txtChargesImputables = new System.Windows.Forms.TextBox();
@@ -52,158 +52,225 @@ namespace GestionLocation
             this.txtSeuilRentaJours = new System.Windows.Forms.TextBox();
             this.lblSeuilRentaJours = new System.Windows.Forms.Label();
             this.btnListeCharges = new System.Windows.Forms.Button();
+            this.lblFinExploit = new System.Windows.Forms.Label();
+            this.txtFinExploit = new System.Windows.Forms.TextBox();
+            this.txtDureeMoyenneLoc = new System.Windows.Forms.TextBox();
+            this.txtDureeMiniLoc = new System.Windows.Forms.TextBox();
+            this.lblDureeMoyenneLoc = new System.Windows.Forms.Label();
+            this.txtDureeMaxiLoc = new System.Windows.Forms.TextBox();
+            this.lblDureeMiniLoc = new System.Windows.Forms.Label();
+            this.lblDureeMaxiLoc = new System.Windows.Forms.Label();
+            this.txtDureeExploitEnAnnees = new System.Windows.Forms.TextBox();
+            this.lblDureeExploitEnAnnees = new System.Windows.Forms.Label();
+            this.lblDureeExploitEnJours = new System.Windows.Forms.Label();
+            this.txtDureeExploitEnJours = new System.Windows.Forms.TextBox();
+            this.txtVacanceLocative = new System.Windows.Forms.TextBox();
+            this.lblVacanceLocative = new System.Windows.Forms.Label();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblNomBien
             // 
+            this.lblNomBien.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lblNomBien.AutoSize = true;
-            this.lblNomBien.Location = new System.Drawing.Point(91, 48);
+            this.lblNomBien.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblNomBien.Location = new System.Drawing.Point(3, 0);
             this.lblNomBien.Name = "lblNomBien";
-            this.lblNomBien.Size = new System.Drawing.Size(98, 20);
+            this.lblNomBien.Size = new System.Drawing.Size(684, 62);
             this.lblNomBien.TabIndex = 0;
             this.lblNomBien.Text = "Nom du bien";
             this.lblNomBien.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // txtLoyerHC
             // 
-            this.txtLoyerHC.Location = new System.Drawing.Point(155, 90);
+            this.txtLoyerHC.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.txtLoyerHC.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtLoyerHC.Location = new System.Drawing.Point(172, 15);
             this.txtLoyerHC.Name = "txtLoyerHC";
             this.txtLoyerHC.ReadOnly = true;
-            this.txtLoyerHC.Size = new System.Drawing.Size(86, 26);
+            this.txtLoyerHC.Size = new System.Drawing.Size(95, 26);
             this.txtLoyerHC.TabIndex = 2;
             this.txtLoyerHC.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // txtCharges
             // 
-            this.txtCharges.Location = new System.Drawing.Point(155, 129);
+            this.txtCharges.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.txtCharges.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtCharges.Location = new System.Drawing.Point(172, 72);
             this.txtCharges.Name = "txtCharges";
             this.txtCharges.ReadOnly = true;
-            this.txtCharges.Size = new System.Drawing.Size(86, 26);
+            this.txtCharges.Size = new System.Drawing.Size(95, 26);
             this.txtCharges.TabIndex = 3;
             this.txtCharges.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // txtLoyerCC
             // 
-            this.txtLoyerCC.Location = new System.Drawing.Point(155, 205);
+            this.txtLoyerCC.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.txtLoyerCC.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtLoyerCC.Location = new System.Drawing.Point(172, 187);
             this.txtLoyerCC.Name = "txtLoyerCC";
             this.txtLoyerCC.ReadOnly = true;
-            this.txtLoyerCC.Size = new System.Drawing.Size(86, 26);
+            this.txtLoyerCC.Size = new System.Drawing.Size(95, 26);
             this.txtLoyerCC.TabIndex = 4;
             this.txtLoyerCC.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // txtChargesAnnuelles
             // 
-            this.txtChargesAnnuelles.Location = new System.Drawing.Point(259, 90);
+            this.txtChargesAnnuelles.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.txtChargesAnnuelles.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtChargesAnnuelles.Location = new System.Drawing.Point(382, 15);
             this.txtChargesAnnuelles.Name = "txtChargesAnnuelles";
             this.txtChargesAnnuelles.ReadOnly = true;
-            this.txtChargesAnnuelles.Size = new System.Drawing.Size(110, 26);
+            this.txtChargesAnnuelles.Size = new System.Drawing.Size(122, 26);
             this.txtChargesAnnuelles.TabIndex = 5;
             this.txtChargesAnnuelles.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // lblLoyerHC
             // 
+            this.lblLoyerHC.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblLoyerHC.AutoSize = true;
-            this.lblLoyerHC.Location = new System.Drawing.Point(66, 93);
+            this.lblLoyerHC.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblLoyerHC.Location = new System.Drawing.Point(91, 18);
             this.lblLoyerHC.Name = "lblLoyerHC";
             this.lblLoyerHC.Size = new System.Drawing.Size(75, 20);
             this.lblLoyerHC.TabIndex = 6;
             this.lblLoyerHC.Text = "Loyer HC";
+            this.lblLoyerHC.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // lblCharges
             // 
+            this.lblCharges.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblCharges.AutoSize = true;
-            this.lblCharges.Location = new System.Drawing.Point(72, 132);
+            this.lblCharges.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblCharges.Location = new System.Drawing.Point(97, 75);
             this.lblCharges.Name = "lblCharges";
             this.lblCharges.Size = new System.Drawing.Size(69, 20);
             this.lblCharges.TabIndex = 7;
             this.lblCharges.Text = "Charges";
+            this.lblCharges.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // lblLoyerCC
             // 
+            this.lblLoyerCC.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblLoyerCC.AutoSize = true;
-            this.lblLoyerCC.Location = new System.Drawing.Point(67, 208);
+            this.lblLoyerCC.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblLoyerCC.Location = new System.Drawing.Point(92, 190);
             this.lblLoyerCC.Name = "lblLoyerCC";
             this.lblLoyerCC.Size = new System.Drawing.Size(74, 20);
             this.lblLoyerCC.TabIndex = 8;
             this.lblLoyerCC.Text = "Loyer CC";
+            this.lblLoyerCC.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // lblChargesAnnuelles
             // 
+            this.lblChargesAnnuelles.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblChargesAnnuelles.AutoSize = true;
-            this.lblChargesAnnuelles.Location = new System.Drawing.Point(386, 93);
+            this.lblChargesAnnuelles.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblChargesAnnuelles.Location = new System.Drawing.Point(510, 18);
             this.lblChargesAnnuelles.Name = "lblChargesAnnuelles";
             this.lblChargesAnnuelles.Size = new System.Drawing.Size(141, 20);
             this.lblChargesAnnuelles.TabIndex = 9;
             this.lblChargesAnnuelles.Text = "Charges annuelles";
+            this.lblChargesAnnuelles.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblSeuilRenta
             // 
+            this.lblSeuilRenta.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblSeuilRenta.AutoSize = true;
-            this.lblSeuilRenta.Location = new System.Drawing.Point(386, 132);
+            this.lblSeuilRenta.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSeuilRenta.Location = new System.Drawing.Point(510, 65);
             this.lblSeuilRenta.Name = "lblSeuilRenta";
-            this.lblSeuilRenta.Size = new System.Drawing.Size(167, 20);
+            this.lblSeuilRenta.Size = new System.Drawing.Size(143, 40);
             this.lblSeuilRenta.TabIndex = 10;
             this.lblSeuilRenta.Text = "Seuil de rentabilité (%)";
+            this.lblSeuilRenta.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtSeuilRenta
             // 
-            this.txtSeuilRenta.Location = new System.Drawing.Point(259, 129);
+            this.txtSeuilRenta.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.txtSeuilRenta.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtSeuilRenta.Location = new System.Drawing.Point(382, 72);
             this.txtSeuilRenta.Name = "txtSeuilRenta";
             this.txtSeuilRenta.ReadOnly = true;
-            this.txtSeuilRenta.Size = new System.Drawing.Size(110, 26);
+            this.txtSeuilRenta.Size = new System.Drawing.Size(122, 26);
             this.txtSeuilRenta.TabIndex = 11;
             this.txtSeuilRenta.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // lblArchive
             // 
+            this.lblArchive.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblArchive.AutoSize = true;
-            this.lblArchive.Location = new System.Drawing.Point(80, 245);
+            this.lblArchive.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblArchive.Location = new System.Drawing.Point(510, 190);
             this.lblArchive.Name = "lblArchive";
             this.lblArchive.Size = new System.Drawing.Size(61, 20);
             this.lblArchive.TabIndex = 13;
             this.lblArchive.Text = "Archivé";
+            this.lblArchive.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtNbLoc
             // 
-            this.txtNbLoc.Location = new System.Drawing.Point(259, 242);
+            this.txtNbLoc.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.txtNbLoc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtNbLoc.Location = new System.Drawing.Point(172, 102);
             this.txtNbLoc.Name = "txtNbLoc";
             this.txtNbLoc.ReadOnly = true;
-            this.txtNbLoc.Size = new System.Drawing.Size(110, 26);
+            this.txtNbLoc.Size = new System.Drawing.Size(122, 26);
             this.txtNbLoc.TabIndex = 14;
             this.txtNbLoc.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // lblNbLoc
             // 
+            this.lblNbLoc.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblNbLoc.AutoSize = true;
-            this.lblNbLoc.Location = new System.Drawing.Point(386, 245);
+            this.lblNbLoc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblNbLoc.Location = new System.Drawing.Point(48, 105);
             this.lblNbLoc.Name = "lblNbLoc";
-            this.lblNbLoc.Size = new System.Drawing.Size(154, 20);
+            this.lblNbLoc.Size = new System.Drawing.Size(118, 20);
             this.lblNbLoc.TabIndex = 15;
-            this.lblNbLoc.Text = "Nombre de locations";
+            this.lblNbLoc.Text = "Nb de locations";
+            this.lblNbLoc.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // txtPremiereLoc
+            // txtDebutExploit
             // 
-            this.txtPremiereLoc.Location = new System.Drawing.Point(259, 205);
-            this.txtPremiereLoc.Name = "txtPremiereLoc";
-            this.txtPremiereLoc.ReadOnly = true;
-            this.txtPremiereLoc.Size = new System.Drawing.Size(110, 26);
-            this.txtPremiereLoc.TabIndex = 16;
-            this.txtPremiereLoc.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txtDebutExploit.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.txtDebutExploit.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtDebutExploit.Location = new System.Drawing.Point(172, 10);
+            this.txtDebutExploit.Name = "txtDebutExploit";
+            this.txtDebutExploit.ReadOnly = true;
+            this.txtDebutExploit.Size = new System.Drawing.Size(122, 26);
+            this.txtDebutExploit.TabIndex = 16;
+            this.txtDebutExploit.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // lblPremiereMiseEnLoc
+            // lblDebutExploit
             // 
-            this.lblPremiereMiseEnLoc.AutoSize = true;
-            this.lblPremiereMiseEnLoc.Location = new System.Drawing.Point(386, 208);
-            this.lblPremiereMiseEnLoc.Name = "lblPremiereMiseEnLoc";
-            this.lblPremiereMiseEnLoc.Size = new System.Drawing.Size(190, 20);
-            this.lblPremiereMiseEnLoc.TabIndex = 17;
-            this.lblPremiereMiseEnLoc.Text = "Première mise en location";
+            this.lblDebutExploit.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.lblDebutExploit.AutoSize = true;
+            this.lblDebutExploit.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDebutExploit.Location = new System.Drawing.Point(17, 13);
+            this.lblDebutExploit.Name = "lblDebutExploit";
+            this.lblDebutExploit.Size = new System.Drawing.Size(149, 20);
+            this.lblDebutExploit.TabIndex = 17;
+            this.lblDebutExploit.Text = "Début d\'exploitation";
+            this.lblDebutExploit.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // btnFermer
             // 
-            this.btnFermer.Location = new System.Drawing.Point(477, 297);
+            this.btnFermer.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnFermer.Location = new System.Drawing.Point(381, 5);
             this.btnFermer.Name = "btnFermer";
-            this.btnFermer.Size = new System.Drawing.Size(99, 58);
+            this.btnFermer.Size = new System.Drawing.Size(264, 47);
             this.btnFermer.TabIndex = 18;
             this.btnFermer.Text = "Fermer";
             this.btnFermer.UseVisualStyleBackColor = true;
@@ -211,91 +278,381 @@ namespace GestionLocation
             // 
             // txtArchive
             // 
-            this.txtArchive.Location = new System.Drawing.Point(155, 242);
+            this.txtArchive.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.txtArchive.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtArchive.Location = new System.Drawing.Point(382, 187);
             this.txtArchive.Name = "txtArchive";
             this.txtArchive.ReadOnly = true;
-            this.txtArchive.Size = new System.Drawing.Size(86, 26);
+            this.txtArchive.Size = new System.Drawing.Size(122, 26);
             this.txtArchive.TabIndex = 19;
             this.txtArchive.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // txtChargesImputables
             // 
-            this.txtChargesImputables.Location = new System.Drawing.Point(155, 168);
+            this.txtChargesImputables.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.txtChargesImputables.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtChargesImputables.Location = new System.Drawing.Point(172, 129);
             this.txtChargesImputables.Name = "txtChargesImputables";
             this.txtChargesImputables.ReadOnly = true;
-            this.txtChargesImputables.Size = new System.Drawing.Size(86, 26);
+            this.txtChargesImputables.Size = new System.Drawing.Size(95, 26);
             this.txtChargesImputables.TabIndex = 20;
             this.txtChargesImputables.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // lblChargesImputables
             // 
+            this.lblChargesImputables.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblChargesImputables.AutoSize = true;
-            this.lblChargesImputables.Location = new System.Drawing.Point(53, 171);
+            this.lblChargesImputables.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblChargesImputables.Location = new System.Drawing.Point(78, 132);
             this.lblChargesImputables.Name = "lblChargesImputables";
             this.lblChargesImputables.Size = new System.Drawing.Size(88, 20);
             this.lblChargesImputables.TabIndex = 21;
             this.lblChargesImputables.Text = "Imputables";
+            this.lblChargesImputables.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // txtSeuilRentaJours
             // 
-            this.txtSeuilRentaJours.Location = new System.Drawing.Point(259, 168);
+            this.txtSeuilRentaJours.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.txtSeuilRentaJours.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtSeuilRentaJours.Location = new System.Drawing.Point(382, 129);
             this.txtSeuilRentaJours.Name = "txtSeuilRentaJours";
             this.txtSeuilRentaJours.ReadOnly = true;
-            this.txtSeuilRentaJours.Size = new System.Drawing.Size(110, 26);
+            this.txtSeuilRentaJours.Size = new System.Drawing.Size(122, 26);
             this.txtSeuilRentaJours.TabIndex = 22;
             this.txtSeuilRentaJours.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // lblSeuilRentaJours
             // 
+            this.lblSeuilRentaJours.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblSeuilRentaJours.AutoSize = true;
-            this.lblSeuilRentaJours.Location = new System.Drawing.Point(386, 171);
+            this.lblSeuilRentaJours.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSeuilRentaJours.Location = new System.Drawing.Point(510, 122);
             this.lblSeuilRentaJours.Name = "lblSeuilRentaJours";
-            this.lblSeuilRentaJours.Size = new System.Drawing.Size(187, 20);
+            this.lblSeuilRentaJours.Size = new System.Drawing.Size(143, 40);
             this.lblSeuilRentaJours.TabIndex = 23;
             this.lblSeuilRentaJours.Text = "Seuil de rentabilité (jours)";
+            this.lblSeuilRentaJours.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // btnListeCharges
             // 
-            this.btnListeCharges.Location = new System.Drawing.Point(155, 309);
+            this.btnListeCharges.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnListeCharges.Location = new System.Drawing.Point(52, 5);
             this.btnListeCharges.Name = "btnListeCharges";
-            this.btnListeCharges.Size = new System.Drawing.Size(213, 46);
+            this.btnListeCharges.Size = new System.Drawing.Size(238, 47);
             this.btnListeCharges.TabIndex = 24;
             this.btnListeCharges.Text = "Liste des charges";
             this.btnListeCharges.UseVisualStyleBackColor = true;
             this.btnListeCharges.Click += new System.EventHandler(this.BtnListeCharges_Click);
             // 
+            // lblFinExploit
+            // 
+            this.lblFinExploit.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lblFinExploit.AutoSize = true;
+            this.lblFinExploit.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFinExploit.Location = new System.Drawing.Point(510, 13);
+            this.lblFinExploit.Name = "lblFinExploit";
+            this.lblFinExploit.Size = new System.Drawing.Size(127, 20);
+            this.lblFinExploit.TabIndex = 28;
+            this.lblFinExploit.Text = "Fin d\'exploitation";
+            this.lblFinExploit.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // txtFinExploit
+            // 
+            this.txtFinExploit.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.txtFinExploit.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtFinExploit.Location = new System.Drawing.Point(382, 10);
+            this.txtFinExploit.Name = "txtFinExploit";
+            this.txtFinExploit.ReadOnly = true;
+            this.txtFinExploit.Size = new System.Drawing.Size(122, 26);
+            this.txtFinExploit.TabIndex = 27;
+            this.txtFinExploit.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // txtDureeMoyenneLoc
+            // 
+            this.txtDureeMoyenneLoc.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.txtDureeMoyenneLoc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtDureeMoyenneLoc.Location = new System.Drawing.Point(382, 102);
+            this.txtDureeMoyenneLoc.Name = "txtDureeMoyenneLoc";
+            this.txtDureeMoyenneLoc.ReadOnly = true;
+            this.txtDureeMoyenneLoc.Size = new System.Drawing.Size(122, 26);
+            this.txtDureeMoyenneLoc.TabIndex = 30;
+            this.txtDureeMoyenneLoc.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // txtDureeMiniLoc
+            // 
+            this.txtDureeMiniLoc.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.txtDureeMiniLoc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtDureeMiniLoc.Location = new System.Drawing.Point(172, 148);
+            this.txtDureeMiniLoc.Name = "txtDureeMiniLoc";
+            this.txtDureeMiniLoc.ReadOnly = true;
+            this.txtDureeMiniLoc.Size = new System.Drawing.Size(122, 26);
+            this.txtDureeMiniLoc.TabIndex = 29;
+            this.txtDureeMiniLoc.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // lblDureeMoyenneLoc
+            // 
+            this.lblDureeMoyenneLoc.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lblDureeMoyenneLoc.AutoSize = true;
+            this.lblDureeMoyenneLoc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDureeMoyenneLoc.Location = new System.Drawing.Point(510, 95);
+            this.lblDureeMoyenneLoc.Name = "lblDureeMoyenneLoc";
+            this.lblDureeMoyenneLoc.Size = new System.Drawing.Size(148, 40);
+            this.lblDureeMoyenneLoc.TabIndex = 31;
+            this.lblDureeMoyenneLoc.Text = "Durée moyenne de location (mois)";
+            this.lblDureeMoyenneLoc.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // txtDureeMaxiLoc
+            // 
+            this.txtDureeMaxiLoc.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.txtDureeMaxiLoc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtDureeMaxiLoc.Location = new System.Drawing.Point(382, 148);
+            this.txtDureeMaxiLoc.Name = "txtDureeMaxiLoc";
+            this.txtDureeMaxiLoc.ReadOnly = true;
+            this.txtDureeMaxiLoc.Size = new System.Drawing.Size(122, 26);
+            this.txtDureeMaxiLoc.TabIndex = 32;
+            this.txtDureeMaxiLoc.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // lblDureeMiniLoc
+            // 
+            this.lblDureeMiniLoc.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.lblDureeMiniLoc.AutoSize = true;
+            this.lblDureeMiniLoc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDureeMiniLoc.Location = new System.Drawing.Point(55, 141);
+            this.lblDureeMiniLoc.Name = "lblDureeMiniLoc";
+            this.lblDureeMiniLoc.Size = new System.Drawing.Size(111, 40);
+            this.lblDureeMiniLoc.TabIndex = 33;
+            this.lblDureeMiniLoc.Text = "Durée mini de location (mois)";
+            this.lblDureeMiniLoc.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // lblDureeMaxiLoc
+            // 
+            this.lblDureeMaxiLoc.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lblDureeMaxiLoc.AutoSize = true;
+            this.lblDureeMaxiLoc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDureeMaxiLoc.Location = new System.Drawing.Point(510, 141);
+            this.lblDureeMaxiLoc.Name = "lblDureeMaxiLoc";
+            this.lblDureeMaxiLoc.Size = new System.Drawing.Size(115, 40);
+            this.lblDureeMaxiLoc.TabIndex = 34;
+            this.lblDureeMaxiLoc.Text = "Durée maxi de location (mois)";
+            this.lblDureeMaxiLoc.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // txtDureeExploitEnAnnees
+            // 
+            this.txtDureeExploitEnAnnees.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.txtDureeExploitEnAnnees.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtDureeExploitEnAnnees.Location = new System.Drawing.Point(172, 56);
+            this.txtDureeExploitEnAnnees.Name = "txtDureeExploitEnAnnees";
+            this.txtDureeExploitEnAnnees.ReadOnly = true;
+            this.txtDureeExploitEnAnnees.Size = new System.Drawing.Size(122, 26);
+            this.txtDureeExploitEnAnnees.TabIndex = 35;
+            this.txtDureeExploitEnAnnees.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // lblDureeExploitEnAnnees
+            // 
+            this.lblDureeExploitEnAnnees.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.lblDureeExploitEnAnnees.AutoSize = true;
+            this.lblDureeExploitEnAnnees.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDureeExploitEnAnnees.Location = new System.Drawing.Point(48, 49);
+            this.lblDureeExploitEnAnnees.Name = "lblDureeExploitEnAnnees";
+            this.lblDureeExploitEnAnnees.Size = new System.Drawing.Size(118, 40);
+            this.lblDureeExploitEnAnnees.TabIndex = 36;
+            this.lblDureeExploitEnAnnees.Text = "Durée d\'exploit. (années)";
+            this.lblDureeExploitEnAnnees.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // lblDureeExploitEnJours
+            // 
+            this.lblDureeExploitEnJours.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lblDureeExploitEnJours.AutoSize = true;
+            this.lblDureeExploitEnJours.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDureeExploitEnJours.Location = new System.Drawing.Point(510, 49);
+            this.lblDureeExploitEnJours.Name = "lblDureeExploitEnJours";
+            this.lblDureeExploitEnJours.Size = new System.Drawing.Size(122, 40);
+            this.lblDureeExploitEnJours.TabIndex = 37;
+            this.lblDureeExploitEnJours.Text = "Durée d\'exploit. (jours)";
+            this.lblDureeExploitEnJours.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // txtDureeExploitEnJours
+            // 
+            this.txtDureeExploitEnJours.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.txtDureeExploitEnJours.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtDureeExploitEnJours.Location = new System.Drawing.Point(382, 56);
+            this.txtDureeExploitEnJours.Name = "txtDureeExploitEnJours";
+            this.txtDureeExploitEnJours.ReadOnly = true;
+            this.txtDureeExploitEnJours.Size = new System.Drawing.Size(122, 26);
+            this.txtDureeExploitEnJours.TabIndex = 38;
+            this.txtDureeExploitEnJours.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // txtVacanceLocative
+            // 
+            this.txtVacanceLocative.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.txtVacanceLocative.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtVacanceLocative.Location = new System.Drawing.Point(382, 194);
+            this.txtVacanceLocative.Name = "txtVacanceLocative";
+            this.txtVacanceLocative.ReadOnly = true;
+            this.txtVacanceLocative.Size = new System.Drawing.Size(122, 26);
+            this.txtVacanceLocative.TabIndex = 40;
+            this.txtVacanceLocative.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // lblVacanceLocative
+            // 
+            this.lblVacanceLocative.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lblVacanceLocative.AutoSize = true;
+            this.lblVacanceLocative.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblVacanceLocative.Location = new System.Drawing.Point(510, 197);
+            this.lblVacanceLocative.Name = "lblVacanceLocative";
+            this.lblVacanceLocative.Size = new System.Drawing.Size(157, 20);
+            this.lblVacanceLocative.TabIndex = 41;
+            this.lblVacanceLocative.Text = "Vacance locative (%)";
+            this.lblVacanceLocative.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.lblNomBien, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel3, 0, 1);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 3;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 80F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(690, 628);
+            this.tableLayoutPanel1.TabIndex = 42;
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Controls.Add(this.btnListeCharges, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.btnFermer, 1, 0);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 567);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(684, 58);
+            this.tableLayoutPanel2.TabIndex = 0;
+            // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel3.ColumnCount = 1;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel3.Controls.Add(this.tableLayoutPanel4, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.tableLayoutPanel5, 0, 2);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 65);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 3;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 47.5F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 5F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 47.5F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(684, 496);
+            this.tableLayoutPanel3.TabIndex = 1;
+            // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel4.ColumnCount = 4;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel4.Controls.Add(this.lblLoyerHC, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblCharges, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.lblChargesImputables, 0, 2);
+            this.tableLayoutPanel4.Controls.Add(this.lblLoyerCC, 0, 3);
+            this.tableLayoutPanel4.Controls.Add(this.txtLoyerHC, 1, 0);
+            this.tableLayoutPanel4.Controls.Add(this.txtCharges, 1, 1);
+            this.tableLayoutPanel4.Controls.Add(this.txtChargesImputables, 1, 2);
+            this.tableLayoutPanel4.Controls.Add(this.txtLoyerCC, 1, 3);
+            this.tableLayoutPanel4.Controls.Add(this.txtChargesAnnuelles, 2, 0);
+            this.tableLayoutPanel4.Controls.Add(this.txtSeuilRentaJours, 2, 2);
+            this.tableLayoutPanel4.Controls.Add(this.txtSeuilRenta, 2, 1);
+            this.tableLayoutPanel4.Controls.Add(this.txtArchive, 2, 3);
+            this.tableLayoutPanel4.Controls.Add(this.lblChargesAnnuelles, 3, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblSeuilRenta, 3, 1);
+            this.tableLayoutPanel4.Controls.Add(this.lblSeuilRentaJours, 3, 2);
+            this.tableLayoutPanel4.Controls.Add(this.lblArchive, 3, 3);
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 4;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(678, 229);
+            this.tableLayoutPanel4.TabIndex = 0;
+            // 
+            // tableLayoutPanel5
+            // 
+            this.tableLayoutPanel5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel5.ColumnCount = 4;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel5.Controls.Add(this.lblDebutExploit, 0, 0);
+            this.tableLayoutPanel5.Controls.Add(this.lblVacanceLocative, 3, 4);
+            this.tableLayoutPanel5.Controls.Add(this.lblDureeExploitEnAnnees, 0, 1);
+            this.tableLayoutPanel5.Controls.Add(this.lblDureeMaxiLoc, 3, 3);
+            this.tableLayoutPanel5.Controls.Add(this.lblDureeExploitEnJours, 3, 1);
+            this.tableLayoutPanel5.Controls.Add(this.lblDureeMoyenneLoc, 3, 2);
+            this.tableLayoutPanel5.Controls.Add(this.txtVacanceLocative, 2, 4);
+            this.tableLayoutPanel5.Controls.Add(this.lblNbLoc, 0, 2);
+            this.tableLayoutPanel5.Controls.Add(this.txtDureeExploitEnJours, 2, 1);
+            this.tableLayoutPanel5.Controls.Add(this.lblFinExploit, 3, 0);
+            this.tableLayoutPanel5.Controls.Add(this.lblDureeMiniLoc, 0, 3);
+            this.tableLayoutPanel5.Controls.Add(this.txtDureeMaxiLoc, 2, 3);
+            this.tableLayoutPanel5.Controls.Add(this.txtDebutExploit, 1, 0);
+            this.tableLayoutPanel5.Controls.Add(this.txtDureeExploitEnAnnees, 1, 1);
+            this.tableLayoutPanel5.Controls.Add(this.txtDureeMoyenneLoc, 2, 2);
+            this.tableLayoutPanel5.Controls.Add(this.txtNbLoc, 1, 2);
+            this.tableLayoutPanel5.Controls.Add(this.txtDureeMiniLoc, 1, 3);
+            this.tableLayoutPanel5.Controls.Add(this.txtFinExploit, 2, 0);
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 262);
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.RowCount = 5;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(678, 231);
+            this.tableLayoutPanel5.TabIndex = 1;
+            // 
             // FicheBien
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(603, 406);
-            this.Controls.Add(this.btnListeCharges);
-            this.Controls.Add(this.lblSeuilRentaJours);
-            this.Controls.Add(this.txtSeuilRentaJours);
-            this.Controls.Add(this.lblChargesImputables);
-            this.Controls.Add(this.txtChargesImputables);
-            this.Controls.Add(this.txtArchive);
-            this.Controls.Add(this.btnFermer);
-            this.Controls.Add(this.lblPremiereMiseEnLoc);
-            this.Controls.Add(this.txtPremiereLoc);
-            this.Controls.Add(this.lblNbLoc);
-            this.Controls.Add(this.txtNbLoc);
-            this.Controls.Add(this.lblArchive);
-            this.Controls.Add(this.txtSeuilRenta);
-            this.Controls.Add(this.lblSeuilRenta);
-            this.Controls.Add(this.lblChargesAnnuelles);
-            this.Controls.Add(this.lblLoyerCC);
-            this.Controls.Add(this.lblCharges);
-            this.Controls.Add(this.lblLoyerHC);
-            this.Controls.Add(this.txtChargesAnnuelles);
-            this.Controls.Add(this.txtLoyerCC);
-            this.Controls.Add(this.txtCharges);
-            this.Controls.Add(this.txtLoyerHC);
-            this.Controls.Add(this.lblNomBien);
+            this.ClientSize = new System.Drawing.Size(714, 652);
+            this.Controls.Add(this.tableLayoutPanel1);
+            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "FicheBien";
             this.Text = "FicheBien";
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel4.PerformLayout();
+            this.tableLayoutPanel5.ResumeLayout(false);
+            this.tableLayoutPanel5.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -315,8 +672,8 @@ namespace GestionLocation
         private System.Windows.Forms.Label lblArchive;
         private System.Windows.Forms.TextBox txtNbLoc;
         private System.Windows.Forms.Label lblNbLoc;
-        private System.Windows.Forms.TextBox txtPremiereLoc;
-        private System.Windows.Forms.Label lblPremiereMiseEnLoc;
+        private System.Windows.Forms.TextBox txtDebutExploit;
+        private System.Windows.Forms.Label lblDebutExploit;
         private System.Windows.Forms.Button btnFermer;
         private System.Windows.Forms.TextBox txtArchive;
         private System.Windows.Forms.TextBox txtChargesImputables;
@@ -324,5 +681,24 @@ namespace GestionLocation
         private System.Windows.Forms.TextBox txtSeuilRentaJours;
         private System.Windows.Forms.Label lblSeuilRentaJours;
         private System.Windows.Forms.Button btnListeCharges;
+        private System.Windows.Forms.Label lblFinExploit;
+        private System.Windows.Forms.TextBox txtFinExploit;
+        private System.Windows.Forms.TextBox txtDureeMoyenneLoc;
+        private System.Windows.Forms.TextBox txtDureeMiniLoc;
+        private System.Windows.Forms.Label lblDureeMoyenneLoc;
+        private System.Windows.Forms.TextBox txtDureeMaxiLoc;
+        private System.Windows.Forms.Label lblDureeMiniLoc;
+        private System.Windows.Forms.Label lblDureeMaxiLoc;
+        private System.Windows.Forms.TextBox txtDureeExploitEnAnnees;
+        private System.Windows.Forms.Label lblDureeExploitEnAnnees;
+        private System.Windows.Forms.Label lblDureeExploitEnJours;
+        private System.Windows.Forms.TextBox txtDureeExploitEnJours;
+        private System.Windows.Forms.TextBox txtVacanceLocative;
+        private System.Windows.Forms.Label lblVacanceLocative;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
     }
 }

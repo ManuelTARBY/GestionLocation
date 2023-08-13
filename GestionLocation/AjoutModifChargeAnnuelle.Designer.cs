@@ -41,12 +41,15 @@ namespace GestionLocation
             this.btnValider = new System.Windows.Forms.Button();
             this.btnFermer = new System.Windows.Forms.Button();
             this.txtBien = new System.Windows.Forms.TextBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblID
             // 
+            this.lblID.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblID.AutoSize = true;
-            this.lblID.Location = new System.Drawing.Point(119, 21);
+            this.lblID.Location = new System.Drawing.Point(158, 10);
             this.lblID.Name = "lblID";
             this.lblID.Size = new System.Drawing.Size(38, 20);
             this.lblID.TabIndex = 0;
@@ -54,8 +57,9 @@ namespace GestionLocation
             // 
             // lblBien
             // 
+            this.lblBien.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblBien.AutoSize = true;
-            this.lblBien.Location = new System.Drawing.Point(119, 59);
+            this.lblBien.Location = new System.Drawing.Point(155, 51);
             this.lblBien.Name = "lblBien";
             this.lblBien.Size = new System.Drawing.Size(41, 20);
             this.lblBien.TabIndex = 2;
@@ -63,8 +67,9 @@ namespace GestionLocation
             // 
             // lblMontant
             // 
+            this.lblMontant.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblMontant.AutoSize = true;
-            this.lblMontant.Location = new System.Drawing.Point(92, 143);
+            this.lblMontant.Location = new System.Drawing.Point(128, 133);
             this.lblMontant.Name = "lblMontant";
             this.lblMontant.Size = new System.Drawing.Size(68, 20);
             this.lblMontant.TabIndex = 3;
@@ -72,8 +77,9 @@ namespace GestionLocation
             // 
             // lblLibelle
             // 
+            this.lblLibelle.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblLibelle.AutoSize = true;
-            this.lblLibelle.Location = new System.Drawing.Point(103, 102);
+            this.lblLibelle.Location = new System.Drawing.Point(142, 92);
             this.lblLibelle.Name = "lblLibelle";
             this.lblLibelle.Size = new System.Drawing.Size(54, 20);
             this.lblLibelle.TabIndex = 4;
@@ -81,23 +87,26 @@ namespace GestionLocation
             // 
             // txtLibelle
             // 
-            this.txtLibelle.Location = new System.Drawing.Point(179, 99);
+            this.txtLibelle.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.txtLibelle.Location = new System.Drawing.Point(202, 90);
             this.txtLibelle.Multiline = true;
             this.txtLibelle.Name = "txtLibelle";
-            this.txtLibelle.Size = new System.Drawing.Size(200, 25);
+            this.txtLibelle.Size = new System.Drawing.Size(193, 25);
             this.txtLibelle.TabIndex = 5;
             // 
             // txtMontant
             // 
-            this.txtMontant.Location = new System.Drawing.Point(179, 140);
+            this.txtMontant.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.txtMontant.Location = new System.Drawing.Point(202, 130);
             this.txtMontant.Name = "txtMontant";
-            this.txtMontant.Size = new System.Drawing.Size(200, 26);
+            this.txtMontant.Size = new System.Drawing.Size(146, 26);
             this.txtMontant.TabIndex = 6;
             // 
             // lblFrequence
             // 
+            this.lblFrequence.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblFrequence.AutoSize = true;
-            this.lblFrequence.Location = new System.Drawing.Point(74, 185);
+            this.lblFrequence.Location = new System.Drawing.Point(110, 174);
             this.lblFrequence.Name = "lblFrequence";
             this.lblFrequence.Size = new System.Drawing.Size(86, 20);
             this.lblFrequence.TabIndex = 7;
@@ -105,18 +114,20 @@ namespace GestionLocation
             // 
             // cobFrequence
             // 
+            this.cobFrequence.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.cobFrequence.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cobFrequence.FormattingEnabled = true;
-            this.cobFrequence.Location = new System.Drawing.Point(179, 182);
+            this.cobFrequence.Location = new System.Drawing.Point(202, 170);
             this.cobFrequence.Name = "cobFrequence";
-            this.cobFrequence.Size = new System.Drawing.Size(200, 28);
+            this.cobFrequence.Size = new System.Drawing.Size(193, 28);
             this.cobFrequence.TabIndex = 8;
             // 
             // cbxImputable
             // 
+            this.cbxImputable.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.cbxImputable.AutoSize = true;
             this.cbxImputable.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.cbxImputable.Location = new System.Drawing.Point(39, 226);
+            this.cbxImputable.Location = new System.Drawing.Point(36, 213);
             this.cbxImputable.Name = "cbxImputable";
             this.cbxImputable.Size = new System.Drawing.Size(160, 24);
             this.cbxImputable.TabIndex = 9;
@@ -125,7 +136,8 @@ namespace GestionLocation
             // 
             // btnValider
             // 
-            this.btnValider.Location = new System.Drawing.Point(52, 282);
+            this.btnValider.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnValider.Location = new System.Drawing.Point(50, 273);
             this.btnValider.Name = "btnValider";
             this.btnValider.Size = new System.Drawing.Size(146, 41);
             this.btnValider.TabIndex = 10;
@@ -135,7 +147,8 @@ namespace GestionLocation
             // 
             // btnFermer
             // 
-            this.btnFermer.Location = new System.Drawing.Point(233, 282);
+            this.btnFermer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnFermer.Location = new System.Drawing.Point(202, 273);
             this.btnFermer.Name = "btnFermer";
             this.btnFermer.Size = new System.Drawing.Size(146, 41);
             this.btnFermer.TabIndex = 11;
@@ -145,34 +158,58 @@ namespace GestionLocation
             // 
             // txtBien
             // 
-            this.txtBien.Location = new System.Drawing.Point(179, 56);
+            this.txtBien.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.txtBien.Location = new System.Drawing.Point(202, 49);
             this.txtBien.Multiline = true;
             this.txtBien.Name = "txtBien";
             this.txtBien.ReadOnly = true;
-            this.txtBien.Size = new System.Drawing.Size(200, 25);
+            this.txtBien.Size = new System.Drawing.Size(193, 25);
             this.txtBien.TabIndex = 12;
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.btnFermer, 1, 6);
+            this.tableLayoutPanel1.Controls.Add(this.cobFrequence, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.lblFrequence, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.txtMontant, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.btnValider, 0, 6);
+            this.tableLayoutPanel1.Controls.Add(this.cbxImputable, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.lblMontant, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.lblID, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.lblBien, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.lblLibelle, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.txtLibelle, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.txtBien, 1, 1);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 7;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 22F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(398, 317);
+            this.tableLayoutPanel1.TabIndex = 13;
             // 
             // AjoutModifChargeAnnuelle
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(422, 341);
-            this.Controls.Add(this.txtBien);
-            this.Controls.Add(this.btnFermer);
-            this.Controls.Add(this.btnValider);
-            this.Controls.Add(this.cbxImputable);
-            this.Controls.Add(this.cobFrequence);
-            this.Controls.Add(this.lblFrequence);
-            this.Controls.Add(this.txtMontant);
-            this.Controls.Add(this.txtLibelle);
-            this.Controls.Add(this.lblLibelle);
-            this.Controls.Add(this.lblMontant);
-            this.Controls.Add(this.lblBien);
-            this.Controls.Add(this.lblID);
+            this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "AjoutModifChargeAnnuelle";
             this.Text = "ChargeAnnuelle";
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -190,5 +227,6 @@ namespace GestionLocation
         private System.Windows.Forms.Button btnValider;
         private System.Windows.Forms.Button btnFermer;
         private System.Windows.Forms.TextBox txtBien;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     }
 }
