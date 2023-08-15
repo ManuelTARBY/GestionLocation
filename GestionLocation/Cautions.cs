@@ -24,6 +24,7 @@ namespace GestionLocation
         public Cautions()
         {
             InitializeComponent();
+            this.Text = "Cautions";
             RemplirLstCautions();
         }
 

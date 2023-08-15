@@ -57,9 +57,9 @@ namespace GestionLocation
             this.btnSupprimer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
             this.btnSupprimer.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSupprimer.ForeColor = System.Drawing.SystemColors.Control;
-            this.btnSupprimer.Location = new System.Drawing.Point(295, 3);
+            this.btnSupprimer.Location = new System.Drawing.Point(297, 3);
             this.btnSupprimer.Name = "btnSupprimer";
-            this.btnSupprimer.Size = new System.Drawing.Size(143, 47);
+            this.btnSupprimer.Size = new System.Drawing.Size(141, 47);
             this.btnSupprimer.TabIndex = 20;
             this.btnSupprimer.Text = "Supprimer";
             this.btnSupprimer.UseVisualStyleBackColor = false;
@@ -70,9 +70,9 @@ namespace GestionLocation
             this.btnModifier.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnModifier.Location = new System.Drawing.Point(149, 3);
+            this.btnModifier.Location = new System.Drawing.Point(150, 3);
             this.btnModifier.Name = "btnModifier";
-            this.btnModifier.Size = new System.Drawing.Size(140, 47);
+            this.btnModifier.Size = new System.Drawing.Size(141, 47);
             this.btnModifier.TabIndex = 16;
             this.btnModifier.Text = "Modifier";
             this.btnModifier.UseVisualStyleBackColor = true;
@@ -85,7 +85,7 @@ namespace GestionLocation
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAjouter.Location = new System.Drawing.Point(3, 3);
             this.btnAjouter.Name = "btnAjouter";
-            this.btnAjouter.Size = new System.Drawing.Size(140, 47);
+            this.btnAjouter.Size = new System.Drawing.Size(141, 47);
             this.btnAjouter.TabIndex = 15;
             this.btnAjouter.Text = "Ajouter";
             this.btnAjouter.UseVisualStyleBackColor = true;

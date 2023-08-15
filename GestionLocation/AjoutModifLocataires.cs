@@ -32,6 +32,7 @@ namespace GestionLocation
         public AjoutModifLocataires(Locataires fenLocataire, string typeReq, int id = 0)
         {
             InitializeComponent();
+            this.Text = "Ajout/Modification d'un locataire";
             this.fenLocataire = fenLocataire;
             this.typeReq = typeReq;
             this.id = id;

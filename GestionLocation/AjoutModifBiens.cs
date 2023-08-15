@@ -23,6 +23,7 @@ namespace GestionLocation
         public AjoutModifBiens(Biens fenBien, string typeReq, int id = 0)
         {
             InitializeComponent();
+            this.Text = "Ajout/Modification d'un bien";
             this.leBien = fenBien;
             this.id = id;
             this.typeReq = typeReq;

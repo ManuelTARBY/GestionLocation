@@ -15,10 +15,15 @@ namespace GestionLocation
         private readonly string[] infos;
         private readonly Connexion fenConnexion;
 
-        // Constructeur de la fenêtreAjoutModifUtilisateur
+        /// <summary>
+        /// Constructeur de la fenêtreAjoutModifUtilisateur
+        /// </summary>
+        /// <param name="infos">Contient le type de requête (ajout ou modif)</param>
+        /// <param name="fenConnexion">Instance de la classe Connexion</param>
         public AjoutModifUtilisateurs(string[] infos, Connexion fenConnexion)
         {
             InitializeComponent();
+            this.Text = "Ajout/Modification d'un utilisateur";
             this.infos = infos;
             lblID.Text = infos[1];
             this.fenConnexion = fenConnexion;

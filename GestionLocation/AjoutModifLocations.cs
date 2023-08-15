@@ -24,6 +24,7 @@ namespace GestionLocation
         public AjoutModifLocations(Locations fenLocation, string typeReq, int id = 0)
         {
             InitializeComponent();
+            this.Text = "Ajout/Modification d'une location";
             this.fenLocation = fenLocation;
             this.typeReq = typeReq;
             this.id = id;

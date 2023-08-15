@@ -22,6 +22,8 @@ namespace GestionLocation
         /// <param name="idCharge">Id de la charge annuelle</param>
         public AjoutModifChargeAnnuelle(ListeCharges fenListeCharges, string idCharge = "0")
         {
+            InitializeComponent();
+            this.Text = "Ajout/Modification d'une charge";
             this.fenListeCharges = fenListeCharges;
             this.leBien = fenListeCharges.GetLeBien();
             this.idCharge = idCharge;
@@ -33,7 +35,6 @@ namespace GestionLocation
             {
                 this.typeReq = "UPDATE";
             }
-            InitializeComponent();
             RemplirComboFreq();
             RemplirChamps();
         }
@@ -63,11 +64,11 @@ namespace GestionLocation
             txtBien.Text = this.leBien[1];
             if (this.idCharge.Equals("0"))
             {
-                lblID.Text = $"N°{AttribuerIDCharge()}";
+                lblID.Text = $"{AttribuerIDCharge()}";
             }
             else
             {
-                lblID.Text = $"N°{this.idCharge}";
+                lblID.Text = $"{this.idCharge}";
                 RecupDonnees();
             }
         }

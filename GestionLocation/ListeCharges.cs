@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace GestionLocation
@@ -21,16 +22,17 @@ namespace GestionLocation
         /// <param name="fenetre">Instance de la fenêtre ayant appelé le constructeur</param>
         public ListeCharges(Form fenetre)
         {
+            InitializeComponent();
             // Si le paramètre contient la fenêtre de type FicheBien
             if (typeof(FicheBien).IsInstanceOfType(fenetre))
             {
                 this.fenFicheBien = fenetre as FicheBien;
                 this.leBien = this.fenFicheBien.GetLeBien();
             }
+            this.Text = "Liste des charges";
             this.lesCharges = new Dictionary<string, string>();
             this.lesBiens = new Dictionary<string, string>();
             this.chargeBien = new Dictionary<string, string>();
-            InitializeComponent();
             RemplirListeBiens();
             RecupListeCharges();
             AfficheTitre();
@@ -66,18 +68,16 @@ namespace GestionLocation
             this.req += "ORDER BY libelle";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
-            bool finCurseur = !reader.Read();
             string ligneCharge;
-            while (!finCurseur)
+            while (reader.Read())
             {
+                string bien = lesBiens.FirstOrDefault(x => x.Value == reader["idbien"].ToString()).Key;
                 // Remplit la listbox
-                ligneCharge = $"{reader["libelle"]} || Montant : {reader["montantcharge"]} € || Fréquence : {reader["refFrequence"]}";
+                ligneCharge = $"{bien} || {reader["libelle"]} || Montant : {reader["montantcharge"]} € || Fréquence : {reader["refFrequence"]}";
                 lstCharges.Items.Add(ligneCharge);
                 // Remplit le dictionnaire avec le contenu du listbox: idchargesannuelles
-                //lesCharges.Add(lstCharges.Items[lstCharges.Items.Count - 1].ToString(), reader.GetString(0));
                 lesCharges.Add(ligneCharge, reader.GetString(0));
                 chargeBien.Add(ligneCharge, reader.GetString(1));
-                finCurseur = !reader.Read();
             }
             reader.Close();
         }
@@ -284,7 +284,6 @@ namespace GestionLocation
             {
                 this.leBien[1] = lstBiens.SelectedItem.ToString();
                 this.leBien[0] = lesBiens[lstBiens.SelectedItem.ToString()];
-                //RetrouverID();
                 RecupListeCharges();
                 AfficheTitre();
             }

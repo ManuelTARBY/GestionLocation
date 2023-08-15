@@ -32,6 +32,7 @@ namespace GestionLocation
         public AjoutModifCautions(Cautions fenCaution, string typeReq, int id = 0)
         {
             InitializeComponent();
+            this.Text = "Ajout/Modification d'une caution";
             this.fenCaution = fenCaution;
             this.typeReq = typeReq;
             this.id = id;
