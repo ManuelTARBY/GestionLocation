@@ -32,6 +32,46 @@ namespace GestionLocation
         {
             RemplirBien();
             RemplirLocation();
+            AppliquerCouleurs();
+        }
+
+
+        /// <summary>
+        /// Gère les couleurs d'alerte en cas d'anomalie
+        /// </summary>
+        public void AppliquerCouleurs()
+        {
+            // Charges imputables
+            int charges = int.Parse(txtCharges.Text.Replace(" €", ""));
+            int chImput = 0;
+            if (!txtChargesImputables.Text.Equals("-"))
+            {
+                chImput = int.Parse(txtChargesImputables.Text.Replace(" €", ""));
+            }            
+            if (chImput > charges)
+            {
+                txtChargesImputables.BackColor = System.Drawing.Color.DarkRed;
+                txtChargesImputables.ForeColor = System.Drawing.Color.White;
+            }
+            else
+            {
+                txtChargesImputables.BackColor = System.Drawing.SystemColors.Control;
+                txtChargesImputables.ForeColor = System.Drawing.SystemColors.WindowText;
+            }
+
+            // Vacance locative
+            float renta = float.Parse(txtSeuilRenta.Text.Replace(" %", ""));
+            float vacance = float.Parse(txtVacanceLocative.Text.Replace(" %", ""));
+            if (vacance > 100 - renta)
+            {
+                txtVacanceLocative.BackColor = System.Drawing.Color.DarkRed;
+                txtVacanceLocative.ForeColor = System.Drawing.Color.White;
+            }
+            else
+            {
+                txtVacanceLocative.BackColor = System.Drawing.SystemColors.Control;
+                txtVacanceLocative.ForeColor = System.Drawing.SystemColors.WindowText;
+            }
         }
 
 
@@ -45,6 +85,7 @@ namespace GestionLocation
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             this.leBien[1] = reader.GetString(1);
+            this.Text = this.leBien[1];
             // Remplissage des champs récupérés dans la ligne
             lblNomBien.Text = $"{reader.GetString(1).ToUpper()}   -   {reader.GetString(5)} {reader.GetString(6)} {reader.GetString(7).ToUpper()}";
             txtLoyerHC.Text = $"{reader.GetString(2)} €";

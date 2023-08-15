@@ -485,6 +485,7 @@ namespace GestionLocation
             // txtVacanceLocative
             // 
             this.txtVacanceLocative.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.txtVacanceLocative.BackColor = System.Drawing.SystemColors.Control;
             this.txtVacanceLocative.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtVacanceLocative.Location = new System.Drawing.Point(382, 194);
             this.txtVacanceLocative.Name = "txtVacanceLocative";
@@ -643,7 +644,7 @@ namespace GestionLocation
             this.Controls.Add(this.tableLayoutPanel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "FicheBien";
-            this.Text = "FicheBien";
+            this.Text = "Fiche du bien";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);

@@ -250,7 +250,7 @@ namespace GestionLocation
             this.ClientSize = new System.Drawing.Size(577, 476);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "ModifPaiements";
-            this.Text = "ModifPaiements";
+            this.Text = "Modification d'un paiement";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();

@@ -69,7 +69,7 @@ namespace GestionLocation
             // btnAjouter
             // 
             this.btnAjouter.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.btnAjouter.Location = new System.Drawing.Point(3, 3);
+            this.btnAjouter.Location = new System.Drawing.Point(4, 3);
             this.btnAjouter.Name = "btnAjouter";
             this.btnAjouter.Size = new System.Drawing.Size(126, 44);
             this.btnAjouter.TabIndex = 1;
@@ -80,7 +80,7 @@ namespace GestionLocation
             // btnModifier
             // 
             this.btnModifier.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.btnModifier.Location = new System.Drawing.Point(135, 3);
+            this.btnModifier.Location = new System.Drawing.Point(136, 3);
             this.btnModifier.Name = "btnModifier";
             this.btnModifier.Size = new System.Drawing.Size(126, 44);
             this.btnModifier.TabIndex = 2;
@@ -159,10 +159,10 @@ namespace GestionLocation
             this.btnSupprimer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
             this.btnSupprimer.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSupprimer.ForeColor = System.Drawing.SystemColors.Control;
-            this.btnSupprimer.Location = new System.Drawing.Point(267, 3);
+            this.btnSupprimer.Location = new System.Drawing.Point(269, 3);
             this.btnSupprimer.Name = "btnSupprimer";
             this.btnSupprimer.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnSupprimer.Size = new System.Drawing.Size(129, 44);
+            this.btnSupprimer.Size = new System.Drawing.Size(127, 44);
             this.btnSupprimer.TabIndex = 6;
             this.btnSupprimer.Text = "Supprimer";
             this.btnSupprimer.UseVisualStyleBackColor = false;
