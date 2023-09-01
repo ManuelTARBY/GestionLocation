@@ -279,8 +279,8 @@ namespace GestionLocation
                 reader.Close();
                 // Exécute la requête de modification
                 ExecuteReqIUD();
-                // Met à jour la liste des biens
-                AfficherLocations();
+                // Met à jour la liste des locations (fenêtre Locations et fenêtre Accueil)
+                MajAffichageLoc();
             }
         }
 
@@ -349,14 +349,23 @@ namespace GestionLocation
                     // Supprime la location
                     this.req = $"DELETE FROM location WHERE idlocation = \"{id}\"";
                     ExecuteReqIUD();
-                    AfficherLocations();
-                    this.fenAccueil.AfficherLocations();
+                    MajAffichageLoc();
                 }
             }
             else
             {
                 MessageBox.Show("Veuillez saisir une location dans la liste pour pouvoir la supprimer.");
             }
+        }
+
+
+        /// <summary>
+        /// Met à jour l'affichage de la liste des locations
+        /// </summary>
+        public void MajAffichageLoc()
+        {
+            AfficherLocations();
+            this.fenAccueil.AfficherLocations();
         }
 
 

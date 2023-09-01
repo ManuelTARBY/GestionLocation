@@ -40,13 +40,13 @@ namespace GestionLocation
             this.lstLocataires = new System.Windows.Forms.ListBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.gbrLocataireArchive.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSupprimer
@@ -57,9 +57,9 @@ namespace GestionLocation
             this.btnSupprimer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
             this.btnSupprimer.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSupprimer.ForeColor = System.Drawing.SystemColors.Control;
-            this.btnSupprimer.Location = new System.Drawing.Point(295, 3);
+            this.btnSupprimer.Location = new System.Drawing.Point(297, 3);
             this.btnSupprimer.Name = "btnSupprimer";
-            this.btnSupprimer.Size = new System.Drawing.Size(143, 32);
+            this.btnSupprimer.Size = new System.Drawing.Size(141, 45);
             this.btnSupprimer.TabIndex = 13;
             this.btnSupprimer.Text = "Supprimer";
             this.btnSupprimer.UseVisualStyleBackColor = false;
@@ -70,9 +70,9 @@ namespace GestionLocation
             this.btnModifier.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnModifier.Location = new System.Drawing.Point(149, 3);
+            this.btnModifier.Location = new System.Drawing.Point(150, 3);
             this.btnModifier.Name = "btnModifier";
-            this.btnModifier.Size = new System.Drawing.Size(140, 32);
+            this.btnModifier.Size = new System.Drawing.Size(141, 45);
             this.btnModifier.TabIndex = 9;
             this.btnModifier.Text = "Modifier";
             this.btnModifier.UseVisualStyleBackColor = true;
@@ -85,7 +85,7 @@ namespace GestionLocation
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAjouter.Location = new System.Drawing.Point(3, 3);
             this.btnAjouter.Name = "btnAjouter";
-            this.btnAjouter.Size = new System.Drawing.Size(140, 32);
+            this.btnAjouter.Size = new System.Drawing.Size(141, 45);
             this.btnAjouter.TabIndex = 8;
             this.btnAjouter.Text = "Ajouter";
             this.btnAjouter.UseVisualStyleBackColor = true;
@@ -107,9 +107,9 @@ namespace GestionLocation
             this.btnRechercher.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRechercher.Location = new System.Drawing.Point(3, 99);
+            this.btnRechercher.Location = new System.Drawing.Point(3, 94);
             this.btnRechercher.Name = "btnRechercher";
-            this.btnRechercher.Size = new System.Drawing.Size(165, 66);
+            this.btnRechercher.Size = new System.Drawing.Size(165, 62);
             this.btnRechercher.TabIndex = 12;
             this.btnRechercher.Text = "Chercher";
             this.btnRechercher.UseVisualStyleBackColor = true;
@@ -124,7 +124,7 @@ namespace GestionLocation
             this.gbrLocataireArchive.Controls.Add(this.rdbLocataireArchive);
             this.gbrLocataireArchive.Location = new System.Drawing.Point(3, 3);
             this.gbrLocataireArchive.Name = "gbrLocataireArchive";
-            this.gbrLocataireArchive.Size = new System.Drawing.Size(165, 90);
+            this.gbrLocataireArchive.Size = new System.Drawing.Size(165, 85);
             this.gbrLocataireArchive.TabIndex = 11;
             this.gbrLocataireArchive.TabStop = false;
             this.gbrLocataireArchive.Text = "Tri";
@@ -146,9 +146,9 @@ namespace GestionLocation
             this.btnArchiver.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnArchiver.Location = new System.Drawing.Point(3, 171);
+            this.btnArchiver.Location = new System.Drawing.Point(3, 162);
             this.btnArchiver.Name = "btnArchiver";
-            this.btnArchiver.Size = new System.Drawing.Size(165, 68);
+            this.btnArchiver.Size = new System.Drawing.Size(165, 64);
             this.btnArchiver.TabIndex = 10;
             this.btnArchiver.Text = "Archiver / Désarchiver";
             this.btnArchiver.UseVisualStyleBackColor = true;
@@ -178,8 +178,8 @@ namespace GestionLocation
             this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 85F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 19.12752F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 80.87248F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(447, 298);
             this.tableLayoutPanel1.TabIndex = 14;
             // 
@@ -193,31 +193,12 @@ namespace GestionLocation
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
             this.tableLayoutPanel2.Controls.Add(this.lstLocataires, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel4, 1, 0);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 47);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 60);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(441, 248);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(441, 235);
             this.tableLayoutPanel2.TabIndex = 0;
-            // 
-            // tableLayoutPanel3
-            // 
-            this.tableLayoutPanel3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel3.ColumnCount = 3;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel3.Controls.Add(this.btnAjouter, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.btnSupprimer, 2, 0);
-            this.tableLayoutPanel3.Controls.Add(this.btnModifier, 1, 0);
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 1;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(441, 38);
-            this.tableLayoutPanel3.TabIndex = 1;
             // 
             // tableLayoutPanel4
             // 
@@ -235,8 +216,27 @@ namespace GestionLocation
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 40F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 30F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 30F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(171, 242);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(171, 229);
             this.tableLayoutPanel4.TabIndex = 8;
+            // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel3.ColumnCount = 3;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel3.Controls.Add(this.btnAjouter, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.btnSupprimer, 2, 0);
+            this.tableLayoutPanel3.Controls.Add(this.btnModifier, 1, 0);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 1;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(441, 51);
+            this.tableLayoutPanel3.TabIndex = 1;
             // 
             // Locataires
             // 
@@ -250,8 +250,8 @@ namespace GestionLocation
             this.gbrLocataireArchive.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
-            this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

@@ -68,10 +68,12 @@ namespace GestionLocation
             // 
             // btnAjouter
             // 
-            this.btnAjouter.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.btnAjouter.Location = new System.Drawing.Point(4, 3);
+            this.btnAjouter.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAjouter.Location = new System.Drawing.Point(3, 3);
             this.btnAjouter.Name = "btnAjouter";
-            this.btnAjouter.Size = new System.Drawing.Size(126, 44);
+            this.btnAjouter.Size = new System.Drawing.Size(127, 44);
             this.btnAjouter.TabIndex = 1;
             this.btnAjouter.Text = "Ajouter";
             this.btnAjouter.UseVisualStyleBackColor = true;
@@ -79,10 +81,12 @@ namespace GestionLocation
             // 
             // btnModifier
             // 
-            this.btnModifier.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnModifier.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnModifier.Location = new System.Drawing.Point(136, 3);
             this.btnModifier.Name = "btnModifier";
-            this.btnModifier.Size = new System.Drawing.Size(126, 44);
+            this.btnModifier.Size = new System.Drawing.Size(127, 44);
             this.btnModifier.TabIndex = 2;
             this.btnModifier.Text = "Modifier";
             this.btnModifier.UseVisualStyleBackColor = true;
@@ -90,10 +94,11 @@ namespace GestionLocation
             // 
             // btnArchiver
             // 
-            this.btnArchiver.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.btnArchiver.Location = new System.Drawing.Point(8, 3);
+            this.btnArchiver.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnArchiver.Location = new System.Drawing.Point(3, 3);
             this.btnArchiver.Name = "btnArchiver";
-            this.btnArchiver.Size = new System.Drawing.Size(183, 44);
+            this.btnArchiver.Size = new System.Drawing.Size(193, 44);
             this.btnArchiver.TabIndex = 3;
             this.btnArchiver.Text = "Archiver/Désarchiver";
             this.btnArchiver.UseVisualStyleBackColor = true;
@@ -144,7 +149,7 @@ namespace GestionLocation
             // 
             // btnRechercher
             // 
-            this.btnRechercher.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnRechercher.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.btnRechercher.Location = new System.Drawing.Point(3, 103);
             this.btnRechercher.Name = "btnRechercher";
             this.btnRechercher.Size = new System.Drawing.Size(188, 38);
@@ -155,7 +160,9 @@ namespace GestionLocation
             // 
             // btnSupprimer
             // 
-            this.btnSupprimer.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.btnSupprimer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSupprimer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
             this.btnSupprimer.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSupprimer.ForeColor = System.Drawing.SystemColors.Control;
@@ -170,13 +177,14 @@ namespace GestionLocation
             // 
             // btnFicheBien
             // 
-            this.btnFicheBien.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.btnFicheBien.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnFicheBien.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(190)))), ((int)(((byte)(54)))));
             this.btnFicheBien.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnFicheBien.ForeColor = System.Drawing.SystemColors.Control;
-            this.btnFicheBien.Location = new System.Drawing.Point(206, 3);
+            this.btnFicheBien.Location = new System.Drawing.Point(202, 3);
             this.btnFicheBien.Name = "btnFicheBien";
-            this.btnFicheBien.Size = new System.Drawing.Size(186, 44);
+            this.btnFicheBien.Size = new System.Drawing.Size(194, 44);
             this.btnFicheBien.TabIndex = 7;
             this.btnFicheBien.Text = "Fiche du bien";
             this.btnFicheBien.UseVisualStyleBackColor = false;

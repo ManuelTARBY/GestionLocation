@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace GestionLocation
 {
     partial class AjoutModifLocations
@@ -91,12 +93,12 @@ namespace GestionLocation
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.datDebut.Location = new System.Drawing.Point(163, 35);
-            this.datDebut.MaxDate = new System.DateTime(2023, 8, 12, 0, 0, 0, 0);
+            this.datDebut.MaxDate = new System.DateTime(2123, 12, 31, 0, 0, 0, 0);
             this.datDebut.MinDate = new System.DateTime(1901, 1, 1, 0, 0, 0, 0);
             this.datDebut.Name = "datDebut";
             this.datDebut.Size = new System.Drawing.Size(314, 26);
             this.datDebut.TabIndex = 3;
-            this.datDebut.Value = new System.DateTime(2023, 8, 12, 0, 0, 0, 0);
+            this.datDebut.Value = DateTime.Today;
             // 
             // datFin
             // 
@@ -104,12 +106,12 @@ namespace GestionLocation
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.datFin.Location = new System.Drawing.Point(483, 35);
-            this.datFin.MaxDate = new System.DateTime(2023, 8, 12, 0, 0, 0, 0);
+            this.datFin.MaxDate = new System.DateTime(2123, 12, 31, 0, 0, 0, 0);
             this.datFin.MinDate = new System.DateTime(1901, 1, 1, 0, 0, 0, 0);
             this.datFin.Name = "datFin";
             this.datFin.Size = new System.Drawing.Size(315, 26);
             this.datFin.TabIndex = 4;
-            this.datFin.Value = new System.DateTime(2023, 8, 12, 0, 0, 0, 0);
+            this.datFin.Value = this.datDebut.Value = DateTime.Today;
             // 
             // lblID
             // 
