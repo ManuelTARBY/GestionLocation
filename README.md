@@ -1,9 +1,8 @@
 # GestionLocation
 Application permettant de gérer ses locations (biens, locataires, cautions, locations, paiements)
 
-#################################################
 ######## Mise en oeuvre de l'application ########
-#################################################
+
 
 1. Créer la structure de votre base de données
 	--> Le fichier ReqCreationTables.txt contient la requête SQL pour générer les tables nécessaires
