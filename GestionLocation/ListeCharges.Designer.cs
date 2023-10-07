@@ -229,7 +229,7 @@ namespace GestionLocation
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 327);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.Name = "Liste des charges";
+            this.Name = "ListeCharges";
             this.Text = "ListeCharges";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();

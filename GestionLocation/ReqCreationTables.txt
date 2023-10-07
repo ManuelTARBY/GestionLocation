@@ -34,8 +34,6 @@ CREATE TABLE bien (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
--- --------------------------------------------------------
-
 --
 -- Structure de la table caution
 --
@@ -53,7 +51,6 @@ CREATE TABLE caution (
   emailcaution varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   cautionarchivee tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 
 
 --
@@ -100,6 +97,30 @@ INSERT INTO frequencepaiement (libelle, occurrence) VALUES
 -- --------------------------------------------------------
 
 --
+-- Structure de la table grpedebiens
+--
+
+DROP TABLE IF EXISTS grpedebiens;
+CREATE TABLE grpedebiens (
+  idgroupe int NOT NULL,
+  nomdugroupe varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+--
+-- Structure de la table lignegroupe
+--
+
+DROP TABLE IF EXISTS lignegroupe;
+CREATE TABLE lignegroupe (
+  idgroupe int NOT NULL,
+  idbien int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table locataire
 --
 
@@ -115,10 +136,9 @@ CREATE TABLE locataire (
   datenaissancelocataire date DEFAULT NULL,
   lieunaissancelocataire varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   telephonelocataire varchar(14) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  emailocataire varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  emailocataire varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   locatairearchive tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 
 
 --
@@ -136,7 +156,6 @@ CREATE TABLE location (
   depotgarantie float(13,2) DEFAULT NULL,
   locationarchivee tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 
 
 --
@@ -171,9 +190,11 @@ CREATE TABLE utilisateur (
   cpuser varchar(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   villeuser varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   emailuser varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  pwdemail varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  adresseserveursmtp varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  port int NOT NULL
+  pwdemail varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  adresseserveursmtp varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  port int NOT NULL,
+  clientid varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  clientsecret varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
@@ -208,6 +229,20 @@ ALTER TABLE frequencepaiement
   ADD PRIMARY KEY (libelle);
 
 --
+-- Index pour la table grpedebiens
+--
+ALTER TABLE grpedebiens
+  ADD PRIMARY KEY (idgroupe);
+
+--
+-- Index pour la table lignegroupe
+--
+ALTER TABLE lignegroupe
+  ADD PRIMARY KEY (idgroupe,idbien),
+  ADD KEY i_fk_lignegroupe_grpedebiens1 (idgroupe),
+  ADD KEY i_fk_lignegroupe_bien1 (idbien);
+
+--
 -- Index pour la table locataire
 --
 ALTER TABLE locataire
@@ -234,7 +269,6 @@ ALTER TABLE paiement
 --
 ALTER TABLE utilisateur
   ADD PRIMARY KEY (iduser);
-COMMIT;
 
 --
 -- Contraintes pour les tables déchargées
@@ -246,6 +280,13 @@ COMMIT;
 ALTER TABLE chargesannuelles
   ADD CONSTRAINT chargesannuelles_ibfk_1 FOREIGN KEY (idbien) REFERENCES bien (idbien),
   ADD CONSTRAINT chargesannuelles_ibfk_2 FOREIGN KEY (refFrequence) REFERENCES frequencepaiement (libelle) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- Contraintes pour la table lignegroupe
+--
+ALTER TABLE lignegroupe
+  ADD CONSTRAINT lignegroupe_ibfk_1 FOREIGN KEY (idgroupe) REFERENCES grpedebiens (idgroupe),
+  ADD CONSTRAINT lignegroupe_ibfk_2 FOREIGN KEY (idbien) REFERENCES bien (idbien);
 
 --
 -- Contraintes pour la table location
