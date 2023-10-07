@@ -384,5 +384,16 @@ namespace GestionLocation
             reader.Close();
             return infos;
         }
+
+        /// <summary>
+        /// Ouvre la fenêtre de gestion des groupes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnGroupes_Click(object sender, EventArgs e)
+        {
+            GroupesDeBiens fenGroupes = new GroupesDeBiens();
+            fenGroupes.ShowDialog();
+        }
     }
 }

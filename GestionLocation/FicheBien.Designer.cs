@@ -71,11 +71,17 @@ namespace GestionLocation
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
+            this.txtActuelLocat = new System.Windows.Forms.TextBox();
+            this.lblDureeOccup = new System.Windows.Forms.Label();
+            this.txtDureeOccup = new System.Windows.Forms.TextBox();
+            this.lblActuelLocat = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
             this.tableLayoutPanel5.SuspendLayout();
+            this.tableLayoutPanel6.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblNomBien
@@ -87,7 +93,7 @@ namespace GestionLocation
             this.lblNomBien.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblNomBien.Location = new System.Drawing.Point(3, 0);
             this.lblNomBien.Name = "lblNomBien";
-            this.lblNomBien.Size = new System.Drawing.Size(684, 62);
+            this.lblNomBien.Size = new System.Drawing.Size(684, 75);
             this.lblNomBien.TabIndex = 0;
             this.lblNomBien.Text = "Nom du bien";
             this.lblNomBien.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -96,7 +102,7 @@ namespace GestionLocation
             // 
             this.txtLoyerHC.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.txtLoyerHC.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtLoyerHC.Location = new System.Drawing.Point(172, 15);
+            this.txtLoyerHC.Location = new System.Drawing.Point(172, 20);
             this.txtLoyerHC.Name = "txtLoyerHC";
             this.txtLoyerHC.ReadOnly = true;
             this.txtLoyerHC.Size = new System.Drawing.Size(95, 26);
@@ -107,7 +113,7 @@ namespace GestionLocation
             // 
             this.txtCharges.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.txtCharges.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtCharges.Location = new System.Drawing.Point(172, 72);
+            this.txtCharges.Location = new System.Drawing.Point(172, 86);
             this.txtCharges.Name = "txtCharges";
             this.txtCharges.ReadOnly = true;
             this.txtCharges.Size = new System.Drawing.Size(95, 26);
@@ -118,7 +124,7 @@ namespace GestionLocation
             // 
             this.txtLoyerCC.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.txtLoyerCC.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtLoyerCC.Location = new System.Drawing.Point(172, 187);
+            this.txtLoyerCC.Location = new System.Drawing.Point(172, 219);
             this.txtLoyerCC.Name = "txtLoyerCC";
             this.txtLoyerCC.ReadOnly = true;
             this.txtLoyerCC.Size = new System.Drawing.Size(95, 26);
@@ -129,7 +135,7 @@ namespace GestionLocation
             // 
             this.txtChargesAnnuelles.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.txtChargesAnnuelles.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtChargesAnnuelles.Location = new System.Drawing.Point(382, 15);
+            this.txtChargesAnnuelles.Location = new System.Drawing.Point(382, 20);
             this.txtChargesAnnuelles.Name = "txtChargesAnnuelles";
             this.txtChargesAnnuelles.ReadOnly = true;
             this.txtChargesAnnuelles.Size = new System.Drawing.Size(122, 26);
@@ -141,7 +147,7 @@ namespace GestionLocation
             this.lblLoyerHC.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblLoyerHC.AutoSize = true;
             this.lblLoyerHC.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblLoyerHC.Location = new System.Drawing.Point(91, 18);
+            this.lblLoyerHC.Location = new System.Drawing.Point(91, 23);
             this.lblLoyerHC.Name = "lblLoyerHC";
             this.lblLoyerHC.Size = new System.Drawing.Size(75, 20);
             this.lblLoyerHC.TabIndex = 6;
@@ -153,7 +159,7 @@ namespace GestionLocation
             this.lblCharges.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblCharges.AutoSize = true;
             this.lblCharges.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCharges.Location = new System.Drawing.Point(97, 75);
+            this.lblCharges.Location = new System.Drawing.Point(97, 89);
             this.lblCharges.Name = "lblCharges";
             this.lblCharges.Size = new System.Drawing.Size(69, 20);
             this.lblCharges.TabIndex = 7;
@@ -165,7 +171,7 @@ namespace GestionLocation
             this.lblLoyerCC.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblLoyerCC.AutoSize = true;
             this.lblLoyerCC.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblLoyerCC.Location = new System.Drawing.Point(92, 190);
+            this.lblLoyerCC.Location = new System.Drawing.Point(92, 222);
             this.lblLoyerCC.Name = "lblLoyerCC";
             this.lblLoyerCC.Size = new System.Drawing.Size(74, 20);
             this.lblLoyerCC.TabIndex = 8;
@@ -177,7 +183,7 @@ namespace GestionLocation
             this.lblChargesAnnuelles.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblChargesAnnuelles.AutoSize = true;
             this.lblChargesAnnuelles.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblChargesAnnuelles.Location = new System.Drawing.Point(510, 18);
+            this.lblChargesAnnuelles.Location = new System.Drawing.Point(510, 23);
             this.lblChargesAnnuelles.Name = "lblChargesAnnuelles";
             this.lblChargesAnnuelles.Size = new System.Drawing.Size(141, 20);
             this.lblChargesAnnuelles.TabIndex = 9;
@@ -189,7 +195,7 @@ namespace GestionLocation
             this.lblSeuilRenta.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblSeuilRenta.AutoSize = true;
             this.lblSeuilRenta.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSeuilRenta.Location = new System.Drawing.Point(510, 65);
+            this.lblSeuilRenta.Location = new System.Drawing.Point(510, 79);
             this.lblSeuilRenta.Name = "lblSeuilRenta";
             this.lblSeuilRenta.Size = new System.Drawing.Size(143, 40);
             this.lblSeuilRenta.TabIndex = 10;
@@ -200,7 +206,7 @@ namespace GestionLocation
             // 
             this.txtSeuilRenta.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.txtSeuilRenta.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSeuilRenta.Location = new System.Drawing.Point(382, 72);
+            this.txtSeuilRenta.Location = new System.Drawing.Point(382, 86);
             this.txtSeuilRenta.Name = "txtSeuilRenta";
             this.txtSeuilRenta.ReadOnly = true;
             this.txtSeuilRenta.Size = new System.Drawing.Size(122, 26);
@@ -212,7 +218,7 @@ namespace GestionLocation
             this.lblArchive.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblArchive.AutoSize = true;
             this.lblArchive.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblArchive.Location = new System.Drawing.Point(510, 190);
+            this.lblArchive.Location = new System.Drawing.Point(510, 222);
             this.lblArchive.Name = "lblArchive";
             this.lblArchive.Size = new System.Drawing.Size(61, 20);
             this.lblArchive.TabIndex = 13;
@@ -223,7 +229,7 @@ namespace GestionLocation
             // 
             this.txtNbLoc.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.txtNbLoc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtNbLoc.Location = new System.Drawing.Point(172, 102);
+            this.txtNbLoc.Location = new System.Drawing.Point(172, 119);
             this.txtNbLoc.Name = "txtNbLoc";
             this.txtNbLoc.ReadOnly = true;
             this.txtNbLoc.Size = new System.Drawing.Size(122, 26);
@@ -235,7 +241,7 @@ namespace GestionLocation
             this.lblNbLoc.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblNbLoc.AutoSize = true;
             this.lblNbLoc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblNbLoc.Location = new System.Drawing.Point(48, 105);
+            this.lblNbLoc.Location = new System.Drawing.Point(48, 122);
             this.lblNbLoc.Name = "lblNbLoc";
             this.lblNbLoc.Size = new System.Drawing.Size(118, 20);
             this.lblNbLoc.TabIndex = 15;
@@ -246,7 +252,7 @@ namespace GestionLocation
             // 
             this.txtDebutExploit.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.txtDebutExploit.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtDebutExploit.Location = new System.Drawing.Point(172, 10);
+            this.txtDebutExploit.Location = new System.Drawing.Point(172, 13);
             this.txtDebutExploit.Name = "txtDebutExploit";
             this.txtDebutExploit.ReadOnly = true;
             this.txtDebutExploit.Size = new System.Drawing.Size(122, 26);
@@ -258,7 +264,7 @@ namespace GestionLocation
             this.lblDebutExploit.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblDebutExploit.AutoSize = true;
             this.lblDebutExploit.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDebutExploit.Location = new System.Drawing.Point(17, 13);
+            this.lblDebutExploit.Location = new System.Drawing.Point(17, 16);
             this.lblDebutExploit.Name = "lblDebutExploit";
             this.lblDebutExploit.Size = new System.Drawing.Size(149, 20);
             this.lblDebutExploit.TabIndex = 17;
@@ -268,7 +274,7 @@ namespace GestionLocation
             // btnFermer
             // 
             this.btnFermer.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.btnFermer.Location = new System.Drawing.Point(381, 5);
+            this.btnFermer.Location = new System.Drawing.Point(381, 11);
             this.btnFermer.Name = "btnFermer";
             this.btnFermer.Size = new System.Drawing.Size(264, 47);
             this.btnFermer.TabIndex = 18;
@@ -280,7 +286,7 @@ namespace GestionLocation
             // 
             this.txtArchive.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.txtArchive.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtArchive.Location = new System.Drawing.Point(382, 187);
+            this.txtArchive.Location = new System.Drawing.Point(382, 219);
             this.txtArchive.Name = "txtArchive";
             this.txtArchive.ReadOnly = true;
             this.txtArchive.Size = new System.Drawing.Size(122, 26);
@@ -291,7 +297,7 @@ namespace GestionLocation
             // 
             this.txtChargesImputables.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.txtChargesImputables.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtChargesImputables.Location = new System.Drawing.Point(172, 129);
+            this.txtChargesImputables.Location = new System.Drawing.Point(172, 152);
             this.txtChargesImputables.Name = "txtChargesImputables";
             this.txtChargesImputables.ReadOnly = true;
             this.txtChargesImputables.Size = new System.Drawing.Size(95, 26);
@@ -303,7 +309,7 @@ namespace GestionLocation
             this.lblChargesImputables.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblChargesImputables.AutoSize = true;
             this.lblChargesImputables.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblChargesImputables.Location = new System.Drawing.Point(78, 132);
+            this.lblChargesImputables.Location = new System.Drawing.Point(78, 155);
             this.lblChargesImputables.Name = "lblChargesImputables";
             this.lblChargesImputables.Size = new System.Drawing.Size(88, 20);
             this.lblChargesImputables.TabIndex = 21;
@@ -314,7 +320,7 @@ namespace GestionLocation
             // 
             this.txtSeuilRentaJours.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.txtSeuilRentaJours.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSeuilRentaJours.Location = new System.Drawing.Point(382, 129);
+            this.txtSeuilRentaJours.Location = new System.Drawing.Point(382, 152);
             this.txtSeuilRentaJours.Name = "txtSeuilRentaJours";
             this.txtSeuilRentaJours.ReadOnly = true;
             this.txtSeuilRentaJours.Size = new System.Drawing.Size(122, 26);
@@ -326,7 +332,7 @@ namespace GestionLocation
             this.lblSeuilRentaJours.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblSeuilRentaJours.AutoSize = true;
             this.lblSeuilRentaJours.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSeuilRentaJours.Location = new System.Drawing.Point(510, 122);
+            this.lblSeuilRentaJours.Location = new System.Drawing.Point(510, 145);
             this.lblSeuilRentaJours.Name = "lblSeuilRentaJours";
             this.lblSeuilRentaJours.Size = new System.Drawing.Size(143, 40);
             this.lblSeuilRentaJours.TabIndex = 23;
@@ -336,7 +342,7 @@ namespace GestionLocation
             // btnListeCharges
             // 
             this.btnListeCharges.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.btnListeCharges.Location = new System.Drawing.Point(52, 5);
+            this.btnListeCharges.Location = new System.Drawing.Point(52, 11);
             this.btnListeCharges.Name = "btnListeCharges";
             this.btnListeCharges.Size = new System.Drawing.Size(238, 47);
             this.btnListeCharges.TabIndex = 24;
@@ -349,7 +355,7 @@ namespace GestionLocation
             this.lblFinExploit.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblFinExploit.AutoSize = true;
             this.lblFinExploit.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFinExploit.Location = new System.Drawing.Point(510, 13);
+            this.lblFinExploit.Location = new System.Drawing.Point(510, 16);
             this.lblFinExploit.Name = "lblFinExploit";
             this.lblFinExploit.Size = new System.Drawing.Size(127, 20);
             this.lblFinExploit.TabIndex = 28;
@@ -360,7 +366,7 @@ namespace GestionLocation
             // 
             this.txtFinExploit.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.txtFinExploit.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtFinExploit.Location = new System.Drawing.Point(382, 10);
+            this.txtFinExploit.Location = new System.Drawing.Point(382, 13);
             this.txtFinExploit.Name = "txtFinExploit";
             this.txtFinExploit.ReadOnly = true;
             this.txtFinExploit.Size = new System.Drawing.Size(122, 26);
@@ -371,7 +377,7 @@ namespace GestionLocation
             // 
             this.txtDureeMoyenneLoc.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.txtDureeMoyenneLoc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtDureeMoyenneLoc.Location = new System.Drawing.Point(382, 102);
+            this.txtDureeMoyenneLoc.Location = new System.Drawing.Point(382, 119);
             this.txtDureeMoyenneLoc.Name = "txtDureeMoyenneLoc";
             this.txtDureeMoyenneLoc.ReadOnly = true;
             this.txtDureeMoyenneLoc.Size = new System.Drawing.Size(122, 26);
@@ -382,7 +388,7 @@ namespace GestionLocation
             // 
             this.txtDureeMiniLoc.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.txtDureeMiniLoc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtDureeMiniLoc.Location = new System.Drawing.Point(172, 148);
+            this.txtDureeMiniLoc.Location = new System.Drawing.Point(172, 172);
             this.txtDureeMiniLoc.Name = "txtDureeMiniLoc";
             this.txtDureeMiniLoc.ReadOnly = true;
             this.txtDureeMiniLoc.Size = new System.Drawing.Size(122, 26);
@@ -394,7 +400,7 @@ namespace GestionLocation
             this.lblDureeMoyenneLoc.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblDureeMoyenneLoc.AutoSize = true;
             this.lblDureeMoyenneLoc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDureeMoyenneLoc.Location = new System.Drawing.Point(510, 95);
+            this.lblDureeMoyenneLoc.Location = new System.Drawing.Point(510, 112);
             this.lblDureeMoyenneLoc.Name = "lblDureeMoyenneLoc";
             this.lblDureeMoyenneLoc.Size = new System.Drawing.Size(148, 40);
             this.lblDureeMoyenneLoc.TabIndex = 31;
@@ -405,7 +411,7 @@ namespace GestionLocation
             // 
             this.txtDureeMaxiLoc.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.txtDureeMaxiLoc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtDureeMaxiLoc.Location = new System.Drawing.Point(382, 148);
+            this.txtDureeMaxiLoc.Location = new System.Drawing.Point(382, 172);
             this.txtDureeMaxiLoc.Name = "txtDureeMaxiLoc";
             this.txtDureeMaxiLoc.ReadOnly = true;
             this.txtDureeMaxiLoc.Size = new System.Drawing.Size(122, 26);
@@ -417,7 +423,7 @@ namespace GestionLocation
             this.lblDureeMiniLoc.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblDureeMiniLoc.AutoSize = true;
             this.lblDureeMiniLoc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDureeMiniLoc.Location = new System.Drawing.Point(55, 141);
+            this.lblDureeMiniLoc.Location = new System.Drawing.Point(55, 165);
             this.lblDureeMiniLoc.Name = "lblDureeMiniLoc";
             this.lblDureeMiniLoc.Size = new System.Drawing.Size(111, 40);
             this.lblDureeMiniLoc.TabIndex = 33;
@@ -429,7 +435,7 @@ namespace GestionLocation
             this.lblDureeMaxiLoc.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblDureeMaxiLoc.AutoSize = true;
             this.lblDureeMaxiLoc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDureeMaxiLoc.Location = new System.Drawing.Point(510, 141);
+            this.lblDureeMaxiLoc.Location = new System.Drawing.Point(510, 165);
             this.lblDureeMaxiLoc.Name = "lblDureeMaxiLoc";
             this.lblDureeMaxiLoc.Size = new System.Drawing.Size(115, 40);
             this.lblDureeMaxiLoc.TabIndex = 34;
@@ -440,7 +446,7 @@ namespace GestionLocation
             // 
             this.txtDureeExploitEnAnnees.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.txtDureeExploitEnAnnees.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtDureeExploitEnAnnees.Location = new System.Drawing.Point(172, 56);
+            this.txtDureeExploitEnAnnees.Location = new System.Drawing.Point(172, 66);
             this.txtDureeExploitEnAnnees.Name = "txtDureeExploitEnAnnees";
             this.txtDureeExploitEnAnnees.ReadOnly = true;
             this.txtDureeExploitEnAnnees.Size = new System.Drawing.Size(122, 26);
@@ -452,7 +458,7 @@ namespace GestionLocation
             this.lblDureeExploitEnAnnees.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblDureeExploitEnAnnees.AutoSize = true;
             this.lblDureeExploitEnAnnees.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDureeExploitEnAnnees.Location = new System.Drawing.Point(48, 49);
+            this.lblDureeExploitEnAnnees.Location = new System.Drawing.Point(48, 59);
             this.lblDureeExploitEnAnnees.Name = "lblDureeExploitEnAnnees";
             this.lblDureeExploitEnAnnees.Size = new System.Drawing.Size(118, 40);
             this.lblDureeExploitEnAnnees.TabIndex = 36;
@@ -464,7 +470,7 @@ namespace GestionLocation
             this.lblDureeExploitEnJours.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblDureeExploitEnJours.AutoSize = true;
             this.lblDureeExploitEnJours.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDureeExploitEnJours.Location = new System.Drawing.Point(510, 49);
+            this.lblDureeExploitEnJours.Location = new System.Drawing.Point(510, 59);
             this.lblDureeExploitEnJours.Name = "lblDureeExploitEnJours";
             this.lblDureeExploitEnJours.Size = new System.Drawing.Size(122, 40);
             this.lblDureeExploitEnJours.TabIndex = 37;
@@ -475,7 +481,7 @@ namespace GestionLocation
             // 
             this.txtDureeExploitEnJours.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.txtDureeExploitEnJours.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtDureeExploitEnJours.Location = new System.Drawing.Point(382, 56);
+            this.txtDureeExploitEnJours.Location = new System.Drawing.Point(382, 66);
             this.txtDureeExploitEnJours.Name = "txtDureeExploitEnJours";
             this.txtDureeExploitEnJours.ReadOnly = true;
             this.txtDureeExploitEnJours.Size = new System.Drawing.Size(122, 26);
@@ -487,7 +493,7 @@ namespace GestionLocation
             this.txtVacanceLocative.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.txtVacanceLocative.BackColor = System.Drawing.SystemColors.Control;
             this.txtVacanceLocative.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtVacanceLocative.Location = new System.Drawing.Point(382, 194);
+            this.txtVacanceLocative.Location = new System.Drawing.Point(382, 227);
             this.txtVacanceLocative.Name = "txtVacanceLocative";
             this.txtVacanceLocative.ReadOnly = true;
             this.txtVacanceLocative.Size = new System.Drawing.Size(122, 26);
@@ -499,7 +505,7 @@ namespace GestionLocation
             this.lblVacanceLocative.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblVacanceLocative.AutoSize = true;
             this.lblVacanceLocative.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblVacanceLocative.Location = new System.Drawing.Point(510, 197);
+            this.lblVacanceLocative.Location = new System.Drawing.Point(510, 230);
             this.lblVacanceLocative.Name = "lblVacanceLocative";
             this.lblVacanceLocative.Size = new System.Drawing.Size(157, 20);
             this.lblVacanceLocative.TabIndex = 41;
@@ -523,7 +529,7 @@ namespace GestionLocation
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 80F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(690, 628);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(690, 752);
             this.tableLayoutPanel1.TabIndex = 42;
             // 
             // tableLayoutPanel2
@@ -536,11 +542,11 @@ namespace GestionLocation
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.Controls.Add(this.btnListeCharges, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.btnFermer, 1, 0);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 567);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 679);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(684, 58);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(684, 70);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // tableLayoutPanel3
@@ -552,13 +558,14 @@ namespace GestionLocation
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.Controls.Add(this.tableLayoutPanel4, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.tableLayoutPanel5, 0, 2);
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 65);
+            this.tableLayoutPanel3.Controls.Add(this.tableLayoutPanel6, 0, 1);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 78);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 3;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 47.5F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 47.5F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(684, 496);
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 46F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 8F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 46F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(684, 595);
             this.tableLayoutPanel3.TabIndex = 1;
             // 
             // tableLayoutPanel4
@@ -594,7 +601,7 @@ namespace GestionLocation
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(678, 229);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(678, 267);
             this.tableLayoutPanel4.TabIndex = 0;
             // 
             // tableLayoutPanel5
@@ -625,7 +632,7 @@ namespace GestionLocation
             this.tableLayoutPanel5.Controls.Add(this.txtNbLoc, 1, 2);
             this.tableLayoutPanel5.Controls.Add(this.txtDureeMiniLoc, 1, 3);
             this.tableLayoutPanel5.Controls.Add(this.txtFinExploit, 2, 0);
-            this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 262);
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 323);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
             this.tableLayoutPanel5.RowCount = 5;
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
@@ -633,14 +640,81 @@ namespace GestionLocation
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel5.Size = new System.Drawing.Size(678, 231);
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(678, 269);
             this.tableLayoutPanel5.TabIndex = 1;
+            // 
+            // tableLayoutPanel6
+            // 
+            this.tableLayoutPanel6.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel6.ColumnCount = 4;
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel6.Controls.Add(this.txtActuelLocat, 0, 0);
+            this.tableLayoutPanel6.Controls.Add(this.lblDureeOccup, 3, 0);
+            this.tableLayoutPanel6.Controls.Add(this.txtDureeOccup, 1, 0);
+            this.tableLayoutPanel6.Controls.Add(this.lblActuelLocat, 0, 0);
+            this.tableLayoutPanel6.Location = new System.Drawing.Point(3, 276);
+            this.tableLayoutPanel6.Name = "tableLayoutPanel6";
+            this.tableLayoutPanel6.RowCount = 1;
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel6.Size = new System.Drawing.Size(678, 41);
+            this.tableLayoutPanel6.TabIndex = 2;
+            // 
+            // txtActuelLocat
+            // 
+            this.txtActuelLocat.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.txtActuelLocat.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtActuelLocat.Location = new System.Drawing.Point(172, 7);
+            this.txtActuelLocat.Name = "txtActuelLocat";
+            this.txtActuelLocat.ReadOnly = true;
+            this.txtActuelLocat.Size = new System.Drawing.Size(163, 26);
+            this.txtActuelLocat.TabIndex = 20;
+            // 
+            // lblDureeOccup
+            // 
+            this.lblDureeOccup.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lblDureeOccup.AutoSize = true;
+            this.lblDureeOccup.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDureeOccup.Location = new System.Drawing.Point(510, 0);
+            this.lblDureeOccup.Name = "lblDureeOccup";
+            this.lblDureeOccup.Size = new System.Drawing.Size(147, 40);
+            this.lblDureeOccup.TabIndex = 21;
+            this.lblDureeOccup.Text = "Durée d\'occupation (mois)";
+            this.lblDureeOccup.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // txtDureeOccup
+            // 
+            this.txtDureeOccup.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.txtDureeOccup.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtDureeOccup.Location = new System.Drawing.Point(382, 7);
+            this.txtDureeOccup.Name = "txtDureeOccup";
+            this.txtDureeOccup.ReadOnly = true;
+            this.txtDureeOccup.Size = new System.Drawing.Size(122, 26);
+            this.txtDureeOccup.TabIndex = 23;
+            this.txtDureeOccup.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // lblActuelLocat
+            // 
+            this.lblActuelLocat.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.lblActuelLocat.AutoSize = true;
+            this.lblActuelLocat.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblActuelLocat.Location = new System.Drawing.Point(48, 10);
+            this.lblActuelLocat.Name = "lblActuelLocat";
+            this.lblActuelLocat.Size = new System.Drawing.Size(118, 20);
+            this.lblActuelLocat.TabIndex = 22;
+            this.lblActuelLocat.Text = "Actuel locataire";
+            this.lblActuelLocat.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // FicheBien
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(714, 652);
+            this.ClientSize = new System.Drawing.Size(714, 776);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "FicheBien";
@@ -653,6 +727,8 @@ namespace GestionLocation
             this.tableLayoutPanel4.PerformLayout();
             this.tableLayoutPanel5.ResumeLayout(false);
             this.tableLayoutPanel5.PerformLayout();
+            this.tableLayoutPanel6.ResumeLayout(false);
+            this.tableLayoutPanel6.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -701,5 +777,10 @@ namespace GestionLocation
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
+        private System.Windows.Forms.TextBox txtActuelLocat;
+        private System.Windows.Forms.Label lblDureeOccup;
+        private System.Windows.Forms.TextBox txtDureeOccup;
+        private System.Windows.Forms.Label lblActuelLocat;
     }
 }

@@ -1,0 +1,45 @@
+
+--- Liste des requêtes GESTION LOCATIONS ---
+
+# Récupère la liste des id de location pour une année donnée
+SELECT DISTINCT idlocation FROM paiement WHERE periodefacturee LIKE '2023%'
+
+# Récupère les id des locataires présents sur une année donnée
+SELECT idlocataire FROM location WHERE idlocation IN (SELECT DISTINCT idlocation FROM paiement WHERE periodefacturee LIKE '2023%')
+
+# Récupère la liste des noms complets des locataires présents sur une année donnée
+SELECT nomcompletlocataire FROM locataire WHERE idlocataire IN (SELECT idlocataire FROM location WHERE idlocation IN (SELECT DISTINCT idlocation FROM paiement WHERE periodefacturee LIKE '2023%'))
+
+# Récupère les id de location à partir du nom d'un bien
+SELECT idlocation FROM location INNER JOIN bien ON location.idbien = bien.idbien WHERE nombien = 'Chambre 1'
+
+# Calcule le total des loyers perçus pour une année donnée (année 2023 dans l'exemple)
+SELECT SUM(montantpaye) FROM paiement WHERE periodefacturee LIKE '2023%'
+
+# Calcule le total des loyers perçus pour une année donnée pour un bien donné (année 2023 et Chambre 1 dans l'exemple)
+SELECT SUM(montantpaye) AS 'Total des loyers perçus sur l\'année' FROM paiement WHERE periodefacturee LIKE '2023%' AND idlocation IN
+(SELECT idlocation FROM location INNER JOIN bien ON location.idbien = bien.idbien WHERE nombien = 'Chambre 1')
+
+# Calcule le total des charges pour un bien donné à partir de son nom (Maison 4 dans l'exemple)
+SELECT SUM(chargeannuelle) FROM chargesannuelles WHERE idbien = (SELECT idbien FROM bien WHERE nombien = 'Maison 4')
+
+# Calcule le total des charges pour un groupe de bien donné à partir de son nom de groupe (Coloc 52 dans l'exemple)
+SELECT SUM(chargeannuelle) FROM chargesannuelles WHERE idbien IN
+(SELECT idbien FROM lignegroupe JOIN grpedebiens ON lignegroupe.idgroupe = grpedebiens.idgroupe WHERE nomdugroupe = 'Coloc 52')
+
+# Calcule le total des charges annuelles imputables pour un bien donné (bien lié à l'id 2 dans l'exemple)
+SELECT SUM(chargeannuelle) FROM chargesannuelles WHERE idbien = 2 AND imputable = 1
+
+# Calcule le total des loyers perçus pour une année donnée pour un groupe de biens donné (Coloc 52 en 2023 dans l'exemple)
+SELECT SUM(montantpaye) FROM paiement WHERE periodefacturee LIKE '2023%' AND idlocation IN
+(SELECT idlocation FROM location INNER JOIN bien ON location.idbien = bien.idbien WHERE bien.idbien IN
+(SELECT idbien FROM lignegroupe JOIN grpedebiens ON lignegroupe.idgroupe = grpedebiens.idgroupe WHERE nomdugroupe = 'Coloc 52'))
+
+# Calcule le total des loyers HC, Charges et Loyers CC pour un groupe de bien donné (Coloc 52 dans l'exemple)
+SELECT SUM(loyerHC) AS 'Total loyers HC', SUM(charges) AS 'Total charges', SUM(loyercc) AS 'Total loyer CC' FROM bien WHERE idbien IN
+(SELECT idbien FROM lignegroupe JOIN grpedebiens ON lignegroupe.idgroupe = grpedebiens.idgroupe WHERE nomdugroupe = 'Coloc 52')
+
+# Calcule le nombre de locations pour un groupe de biens donné (Coloc 52 dans l'exemple)
+SELECT COUNT(idlocation) FROM location WHERE idbien IN
+(SELECT idbien FROM lignegroupe WHERE idbien IN
+(SELECT idbien FROM grpedebiens WHERE nomdugroupe ='Coloc 52'))

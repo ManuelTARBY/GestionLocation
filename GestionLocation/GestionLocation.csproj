@@ -206,6 +206,12 @@
       <DependentUpon>FicheBien.cs</DependentUpon>
     </Compile>
     <Compile Include="Global.cs" />
+    <Compile Include="GroupesDeBiens.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GroupesDeBiens.Designer.cs">
+      <DependentUpon>GroupesDeBiens.cs</DependentUpon>
+    </Compile>
     <Compile Include="ListeCharges.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -273,6 +279,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FicheBien.resx">
       <DependentUpon>FicheBien.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GroupesDeBiens.resx">
+      <DependentUpon>GroupesDeBiens.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ListeCharges.resx">
       <DependentUpon>ListeCharges.cs</DependentUpon>

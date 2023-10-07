@@ -130,7 +130,7 @@ namespace GestionLocation
             }
             else
             {
-                // Demande confirmation de suppression du bien
+                // Demande confirmation de suppression du locataire
                 DialogResult result = MessageBox.Show($"Êtes-vous sûr de vouloir supprimer le locataire : {lstLocataires.SelectedItem} ?", "Confirmer suppression", MessageBoxButtons.YesNo);
                 if (result == DialogResult.Yes)
                 {

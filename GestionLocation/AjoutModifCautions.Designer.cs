@@ -218,7 +218,7 @@ namespace GestionLocation
             this.btnValider.Name = "btnValider";
             this.btnValider.Size = new System.Drawing.Size(278, 34);
             this.btnValider.TabIndex = 53;
-            this.btnValider.Text = "Valider";
+            this.btnValider.Text = "Enregistrer";
             this.btnValider.UseVisualStyleBackColor = true;
             this.btnValider.Click += new System.EventHandler(this.BtnValider_Click);
             // 

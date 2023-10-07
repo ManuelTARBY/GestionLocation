@@ -79,7 +79,7 @@ namespace GestionLocation
                 }
             }
             this.req += " ORDER BY periodefacturee";
-            // Affiche les enregistrement de la table Paiement et récupère les idpaiement et idlocation dans un dictionnaire
+            // Affiche les enregistrements de la table Paiement et récupère les idpaiement et idlocation dans un dictionnaire
             EnvoiReqSelectPaiements();
         }
 
@@ -96,8 +96,16 @@ namespace GestionLocation
             bool finCurseur = !reader.Read();
             while (!finCurseur)
             {
+                /*string ligne = $"Location n°{reader.GetString(1)} || Période : {reader.GetDateTime(4):MMMM yyyy} || " +
+                    $"Montant dû : {reader.GetString(5)} || Montant payé : {reader.GetString(3)} || Restant dû : {reader.GetString(6)}";*/
+                String dateRegle = $"{reader.GetDateTime(2):d}";
+                if (dateRegle.Equals("01/01/0001"))
+                {
+                    dateRegle = "-";
+                }
                 string ligne = $"Location n°{reader.GetString(1)} || Période : {reader.GetDateTime(4):MMMM yyyy} || " +
-                    $"Montant dû : {reader.GetString(5)} || Montant payé : {reader.GetString(3)} || Restant dû : {reader.GetString(6)}";
+                    $"Montant dû : {reader.GetString(5)} || Montant payé : {reader.GetString(3)} || Date : {dateRegle}" +
+                    $" || Restant dû : {reader.GetString(6)}";
                 lstPaiements.Items.Add(ligne);
                 this.lesPaiements.Add(ligne, reader["idpaiement"].ToString());
                 finCurseur = !reader.Read();

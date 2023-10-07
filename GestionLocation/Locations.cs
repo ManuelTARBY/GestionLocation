@@ -83,7 +83,6 @@ namespace GestionLocation
             curseur) */
             bool finCurseur = !reader.Read();
             // boucle tant que la ligne lue contient quelque chose
-            // (donc tant que la fin du curseur n'est pas atteinte)
             while (!finCurseur)
             {
                 // affichage des champs récupérés dans la ligne

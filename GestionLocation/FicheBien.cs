@@ -10,17 +10,26 @@ namespace GestionLocation
 
         private MySqlCommand command;
         private string req;
+        // Stocke [id, nom]
         private readonly string[] leBien = new string[2];
+        // Id de la location actuelle
+        private string idLocActuelle;
+        private readonly string type;
+        private int dureeLocActuelle, nbDeBiens;
 
 
         /// <summary>
         /// Constructeur de FicheBien
         /// </summary>
-        /// <param name="id">id du bien</param>
-        public FicheBien(int id)
+        /// <param name="data">Contient l'id, le nom et le type du bien</param>
+        public FicheBien(string[] data)
         {
             InitializeComponent();
-            this.leBien[0] = id.ToString();
+            this.idLocActuelle = "0";
+            this.leBien[0] = data[1];
+            this.leBien[1] = data[2];
+            this.type = data[0];
+            this.nbDeBiens = 1;
             RemplirChamps();
         }
 
@@ -32,7 +41,56 @@ namespace GestionLocation
         {
             RemplirBien();
             RemplirLocation();
+            RemplirLocataire();
             AppliquerCouleurs();
+        }
+
+
+        /// <summary>
+        /// Remplit les champs relatifs au locataire (nom et durée de la location)
+        /// </summary>
+        public void RemplirLocataire()
+        {
+            // Si le bien n'est pas occupé ou qu'il s'agit d'un groupe de bien
+            if (this.idLocActuelle.Equals("0") || this.type.Equals("groupe"))
+            {
+                txtDureeOccup.Visible = false;
+                lblDureeOccup.Visible = false;
+            }
+            // Sinon
+            else
+            {
+                // Cherche l'id du locataire relié à cette location
+                string idLocataire;
+                this.req = $"SELECT idlocataire FROM location WHERE idlocation ={this.idLocActuelle}";
+                this.command = new MySqlCommand(this.req, Global.Connexion);
+                MySqlDataReader reader = this.command.ExecuteReader();
+                reader.Read();
+                idLocataire = reader.GetString(0);
+                reader.Close();
+                // Recherche du nom complet du locataire à partir de son id
+                txtActuelLocat.Text = RecupLocataire(idLocataire);
+                // Calcule la durée de l'actuelle location en mois
+                txtDureeOccup.Text = ConvertJoursVersMois(this.dureeLocActuelle);
+            }
+        }
+
+
+        /// <summary>
+        /// Récupère le nom complet d'un locataire à partir de son id
+        /// </summary>
+        /// <param name="idLocat">Iddu locataire à trouver</param>
+        /// <returns>Nom complet du locataire</returns>
+        public string RecupLocataire(string idLocat)
+        {
+            string leNom;
+            this.req = $"SELECT nomcompletlocataire FROM locataire WHERE idlocataire ={idLocat}";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            MySqlDataReader reader = this.command.ExecuteReader();
+            reader.Read();
+            leNom = reader.GetString(0);
+            reader.Close();
+            return leNom;
         }
 
 
@@ -80,43 +138,62 @@ namespace GestionLocation
         /// </summary>
         public void RemplirBien()
         {
-            this.req = $"SELECT * FROM bien WHERE idbien ={this.leBien[0]}";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
-            reader.Read();
-            this.leBien[1] = reader.GetString(1);
-            this.Text = this.leBien[1];
-            // Remplissage des champs récupérés dans la ligne
-            lblNomBien.Text = $"{reader.GetString(1).ToUpper()}   -   {reader.GetString(5)} {reader.GetString(6)} {reader.GetString(7).ToUpper()}";
-            txtLoyerHC.Text = $"{reader.GetString(2)} €";
-            txtCharges.Text = $"{reader.GetString(3)} €";
-            txtLoyerCC.Text = $"{reader.GetString(4)} €";
-            try
+            switch (this.type)
             {
-                txtChargesImputables.Text = $"{reader.GetString(8)} €";
+                case "bien":
+                    this.req = $"SELECT * FROM bien WHERE idbien ={this.leBien[0]}";
+                    this.command = new MySqlCommand(this.req, Global.Connexion);
+                    MySqlDataReader reader = this.command.ExecuteReader();
+                    reader.Read();
+                    // Remplissage des champs récupérés dans la ligne
+                    lblNomBien.Text = $"{this.leBien[1].ToUpper()}   -   {reader.GetString(5)} {reader.GetString(6)} {reader.GetString(7).ToUpper()}";
+                    txtLoyerHC.Text = $"{reader.GetString(2)} €";
+                    txtCharges.Text = $"{reader.GetString(3)} €";
+                    txtLoyerCC.Text = $"{reader.GetString(4)} €";
+                    try
+                    {
+                        txtChargesImputables.Text = $"{reader.GetString(8)} €";
+                    }
+                    catch
+                    {
+                        txtChargesImputables.Text = "-";
+                    }
+                    try
+                    {
+                        txtChargesAnnuelles.Text = $"{reader.GetString(9)} €";
+                    }
+                    catch
+                    {
+                        txtChargesAnnuelles.Text = "-";
+                    }
+                    //CalculSeuilRenta(reader.GetInt32(4));
+                    if ((bool)reader["bienarchive"])
+                    {
+                        txtArchive.Text = "Oui";
+                    }
+                    else
+                    {
+                        txtArchive.Text = "Non";
+                    }
+                    reader.Close();
+                    break;
+                case "groupe":
+                    lblActuelLocat.Visible = false;
+                    txtActuelLocat.Visible = false;
+                    lblArchive.Visible = false;
+                    txtArchive.Visible = false;
+                    lblDebutExploit.Visible = false;
+                    txtDebutExploit.Visible = false;
+                    lblFinExploit.Visible = false;
+                    txtFinExploit.Visible = false;
+                    lblNomBien.Text = $"{this.leBien[1].ToUpper()}";
+                    txtChargesAnnuelles.Text = RecupChargesAnnuGrpe() + " €";
+                    RemplirLoyerChargeGrpe();
+                    break;
+                default:
+                    break;
             }
-            catch
-            {
-                txtChargesImputables.Text = "-";
-            }
-            try
-            {
-                txtChargesAnnuelles.Text = $"{reader.GetString(9)} €";
-            }
-            catch
-            {
-                txtChargesAnnuelles.Text = "-";
-            }
-            CalculSeuilRenta(reader.GetInt32(4));
-            if ((bool)reader["bienarchive"])
-            {
-                txtArchive.Text = "Oui";
-            }
-            else
-            {
-                txtArchive.Text = "Non";
-            }
-            reader.Close();
+            CalculSeuilRenta(txtLoyerCC.Text);
         }
 
 
@@ -127,26 +204,75 @@ namespace GestionLocation
         {
             // Calcule le nombre de locations
             CalculNbLoc();
-            
-            // Calcule le début d'exploitation
-            CalculDebutExploit();
-            
-            // Calcule la fin d'exploitation
-            CalculFinExploit();
-            
-            // Calcule la durée d'exploitation
-            CalculDureeExploit();
+            double[] dureeExploit;
+            switch (this.type) {
+                case "bien":
+                    // Calcule le début d'exploitation
+                    this.req = $"SELECT MIN(debutlocation) FROM (SELECT debutlocation FROM location WHERE idbien={this.leBien[0]}) AS reqC";
+                    txtDebutExploit.Text = CalculDebutExploit();
+
+                    // Calcule la fin d'exploitation
+                    this.req = $"SELECT MAX(finlocation) FROM (SELECT finlocation FROM location WHERE idbien={this.leBien[0]}) AS reqD";
+                    txtFinExploit.Text = CalculFinExploit();
+
+                    // Calcule la durée d'exploitation
+                    dureeExploit = CalculDureeExploit(txtDebutExploit.Text, txtFinExploit.Text);
+                    txtDureeExploitEnJours.Text = dureeExploit[0].ToString();
+                    txtDureeExploitEnAnnees.Text = String.Format("{0:0.#}", dureeExploit[1]);
+                    break;
+                case "groupe":
+                    double exploitAnnees = 0, exploitJours = 0;
+                    List<string> lesBiens = RecupLesBiens();
+                    this.nbDeBiens = lesBiens.Count;
+                    string[] lesDebutExploit = new string[nbDeBiens];
+                    string[] lesFinExploit = new string[nbDeBiens];
+                    for (int i = 0; i < nbDeBiens; i++)
+                    {
+                        this.req = $"SELECT MIN(debutlocation) FROM (SELECT debutlocation FROM location WHERE idbien={lesBiens[i]}) AS reqA";
+                        lesDebutExploit[i] = CalculDebutExploit();
+                        this.req = $"SELECT MAX(finlocation) FROM (SELECT finlocation FROM location WHERE idbien={lesBiens[i]}) AS reqB";
+                        lesFinExploit[i] = CalculFinExploit();
+                    }
+                    for (int j = 0; j < nbDeBiens; j++)
+                    {
+                        dureeExploit = CalculDureeExploit(lesDebutExploit[j], lesFinExploit[j]);
+                        exploitJours += dureeExploit[0];
+                        exploitAnnees += dureeExploit[1];
+                    }
+                    txtDureeExploitEnJours.Text = String.Format("{0:0.}", exploitJours / nbDeBiens);
+                    txtDureeExploitEnAnnees.Text = String.Format("{0:0.#}", exploitAnnees / nbDeBiens);
+                    break;
+                default:
+                    break;
+            }
             
             // Récupération des durées de location
-            this.req = $"SELECT * FROM location WHERE idbien={this.leBien[0]}";
+            switch (type)
+            {
+                case "bien":
+                    this.req = $"SELECT * FROM location WHERE idbien={this.leBien[0]}";
+                    break;
+                case "groupe":
+                    this.req = $"SELECT * FROM location WHERE idbien IN (SELECT idbien FROM lignegroupe WHERE idgroupe = {this.leBien[0]})";
+                    break;
+                default:
+                    break;
+            }
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             List<int> lesDureesDeLoc = new List<int>();
+            DateTime today = DateTime.Now;
             while (reader.Read())
             {
                 DateTime debutLoc = DateTime.ParseExact($"{reader.GetDateTime(4):d}", "d", null);
                 DateTime finLoc = DateTime.ParseExact($"{reader.GetDateTime(5):d}", "d", null);
                 lesDureesDeLoc.Add(finLoc.Subtract(debutLoc).Days + 1);
+                // Si la location est l'actuelle location
+                if (debutLoc < today && finLoc > today)
+                {
+                    this.idLocActuelle = reader.GetString(0);
+                    this.dureeLocActuelle = today.Subtract(debutLoc).Days + 1;
+                }
             }
             reader.Close();
             // Calcul des durées mini, moyenne et maxi de location
@@ -163,9 +289,31 @@ namespace GestionLocation
             txtDureeMaxiLoc.Text = ConvertJoursVersMois(dureeMaxi);
 
             // Calcul de la vacance locative
+            if (this.type.Equals("groupe"))
+            {
+                dureeTotaleDeLoc /= this.nbDeBiens;
+            }
             float vacanceJours = int.Parse(txtDureeExploitEnJours.Text) - dureeTotaleDeLoc;
             float vacancePrc = (float)Math.Round(vacanceJours / int.Parse(txtDureeExploitEnJours.Text) * 100, 1);
             txtVacanceLocative.Text = $"{vacancePrc} %";
+        }
+
+        /// <summary>
+        /// Récupère les
+        /// </summary>
+        /// <returns></returns>
+        public List<string> RecupLesBiens()
+        {
+            List<string> lesBiens = new List<string>();
+            this.req = $"SELECT idbien FROM lignegroupe WHERE idgroupe = {this.leBien[0]}";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            MySqlDataReader reader = this.command.ExecuteReader();
+            while (reader.Read())
+            {
+                lesBiens.Add(reader["idbien"].ToString());
+            }
+            reader.Close();
+            return lesBiens;
         }
 
 
@@ -197,11 +345,18 @@ namespace GestionLocation
         /// </summary>
         public void CalculNbLoc()
         {
-            this.req = $"SELECT COUNT(idlocation) FROM (SELECT idlocation FROM location WHERE idbien={this.leBien[0]}) AS req";
+            if (this.type.Equals("bien"))
+            {
+                this.req = $"SELECT COUNT(idlocation) AS 'Nb de loc' FROM (SELECT idlocation FROM location WHERE idbien={this.leBien[0]}) AS req";
+            }
+            else
+            {
+                this.req = $"SELECT COUNT(idlocation) AS 'Nb de loc' FROM location WHERE idbien IN (SELECT idbien FROM lignegroupe WHERE idgroupe = \'{this.leBien[0]}\')";
+            }
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
-            txtNbLoc.Text = reader.GetString(0);
+            txtNbLoc.Text = reader["Nb de loc"].ToString();
             reader.Close();
         }
 
@@ -209,64 +364,72 @@ namespace GestionLocation
         /// <summary>
         /// Remplit le champ relatif au début d'exploitation du bien
         /// </summary>
-        public void CalculDebutExploit()
+        /// <returns>Date de début d'exploitation sous forme de chaîne</returns>
+        public string CalculDebutExploit()
         {
-            this.req = $"SELECT MIN(debutlocation) FROM (SELECT debutlocation FROM location WHERE idbien={this.leBien[0]}) AS req";
+            string debutExploit;
+            //this.req = $"SELECT MIN(debutlocation) FROM (SELECT debutlocation FROM location WHERE idbien={this.leBien[0]}) AS req";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             try
             {
-                txtDebutExploit.Text = $"{reader.GetDateTime(0):d}";
+                debutExploit = $"{reader.GetDateTime(0):d}";
             }
             catch
             {
-                txtDebutExploit.Text = "-";
+                debutExploit = "-";
             }
             reader.Close();
+            return debutExploit;
         }
 
 
         /// <summary>
         /// Remplit le champ relatif à la fin d'exploitation du bien
         /// </summary>
-        public void CalculFinExploit()
+        /// <return>Date de fin d'exploitation sous forme de chaîne</return>
+        public string CalculFinExploit()
         {
-            this.req = $"SELECT MAX(finlocation) FROM (SELECT finlocation FROM location WHERE idbien={this.leBien[0]}) AS req";
+            string finExploit;
+            //this.req = $"SELECT MAX(finlocation) FROM (SELECT finlocation FROM location WHERE idbien={this.leBien[0]}) AS req";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             try
             {
-                txtFinExploit.Text = $"{reader.GetDateTime(0):d}";
+                finExploit = $"{reader.GetDateTime(0):d}";
             }
             catch
             {
-                txtDebutExploit.Text = "-";
+                finExploit = "-";
             }
             reader.Close();
+            return finExploit;
         }
 
 
         /// <summary>
         /// Remplit les champs relatifs aux durées d'exploitation pour le bien
         /// </summary>
-        public void CalculDureeExploit()
+        public double[] CalculDureeExploit(string debExpl, string finExpl)
         {
-            DateTime debutExploit = DateTime.ParseExact(txtDebutExploit.Text, "d", null);
-            DateTime finExploit = DateTime.ParseExact(txtFinExploit.Text, "d", null);
+            DateTime debutExploit = DateTime.ParseExact(debExpl, "d", null);
+            DateTime finExploit = DateTime.ParseExact(finExpl, "d", null);
             TimeSpan dureeExploit = finExploit.Subtract(debutExploit);
-            txtDureeExploitEnJours.Text = dureeExploit.Days.ToString();
+            double[] lesDurees = new double[2];
+            lesDurees[0] = dureeExploit.Days;
             double exploitAnnees = (double)(dureeExploit.TotalDays / 365);
-            txtDureeExploitEnAnnees.Text = Math.Round(exploitAnnees, 1).ToString();
+            lesDurees[1] = Math.Round(exploitAnnees, 1);
+            return lesDurees;
         }
 
 
         /// <summary>
         /// Gère le calcul du seuil de rentabilité
         /// </summary>
-        /// <param name="loyerCC"></param>
-        public void CalculSeuilRenta(int loyerCC)
+        /// <param name="loyerCC">Loyer charges comprises</param>
+        public void CalculSeuilRenta(string loyerCC)
         {
             // Si les charges annuelles sont inconnues
             if (txtChargesAnnuelles.Text.Equals("-"))
@@ -277,14 +440,16 @@ namespace GestionLocation
             // Sinon
             else
             {
-                string[] strChargesAnnuelles = txtChargesAnnuelles.Text.Split(' ');
-                int loyerCCAnnuel = loyerCC * 12;
-                float renta = float.Parse(strChargesAnnuelles[0]) / loyerCCAnnuel * 100;
+                float loyCC = float.Parse(loyerCC.Replace(" €", ""));
+                float strChargesAnnuelles = float.Parse(txtChargesAnnuelles.Text.Replace(" €", ""));
+                float loyerCCAnnuel = loyCC * 12;
+                float renta = strChargesAnnuelles / loyerCCAnnuel * 100;
                 // En pourcentage
+                txtSeuilRenta.Text = $"{String.Format("{0:0.#}", renta)}";
                 txtSeuilRenta.Text = $"{Math.Round(renta, 1)} %";
                 // En jours
-                int rentaJours = (int)(365 * renta / 100);
-                txtSeuilRentaJours.Text = $"{rentaJours}";
+                float rentaJours = (365 * renta / 100);
+                txtSeuilRentaJours.Text = $"{String.Format("{0:0.}", rentaJours)}";
             }
         }
 
@@ -308,6 +473,40 @@ namespace GestionLocation
         public string[] GetLeBien()
         {
             return this.leBien;
+        }
+
+
+        /// <summary>
+        /// Remplit le champ des charges annuelles pour un groupe de biens
+        /// </summary>
+        /// <returns>Montant des charges annuelles pour ce groupe de biens</returns>
+        public string RecupChargesAnnuGrpe()
+        {
+            string totalCh;
+            this.req = $"SELECT SUM(chargeannuelle) AS total FROM chargesannuelles WHERE idbien IN (SELECT idbien FROM lignegroupe JOIN grpedebiens ON lignegroupe.idgroupe = grpedebiens.idgroupe WHERE nomdugroupe = \"{this.leBien[1]}\")";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            MySqlDataReader reader = this.command.ExecuteReader();
+            reader.Read();
+            totalCh = reader["total"].ToString();
+            reader.Close();
+            return totalCh;
+        }
+
+
+        /// <summary>
+        /// Remplit les champs LoyerHC, Charges et LoyerCC pour un groupe de biens
+        /// </summary>
+        public void RemplirLoyerChargeGrpe()
+        {
+            this.req = $"SELECT SUM(loyerHC) AS 'Loyers HC', SUM(charges) AS 'Total charges', SUM(loyercc) AS 'Loyers CC', SUM(chargesimputables) AS 'Imputables' FROM bien WHERE idbien IN (SELECT idbien FROM lignegroupe JOIN grpedebiens ON lignegroupe.idgroupe = grpedebiens.idgroupe WHERE nomdugroupe = \"{this.leBien[1]}\")";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            MySqlDataReader reader = this.command.ExecuteReader();
+            reader.Read();
+            txtLoyerHC.Text = reader["Loyers HC"].ToString() + " €";
+            txtCharges.Text = reader["Total charges"].ToString() + " €";
+            txtLoyerCC.Text = reader["Loyers CC"].ToString() + " €";
+            txtChargesImputables.Text = reader["Imputables"].ToString() + " €";
+            reader.Close();
         }
     }
 }

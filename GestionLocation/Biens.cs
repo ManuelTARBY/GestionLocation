@@ -27,38 +27,47 @@ namespace GestionLocation
         }
 
         /// <summary>
-        /// Gère le remplissage de la liste des biens
+        /// Gère le remplissage de la liste des biens et des groupes de biens
         /// </summary>
         public void RemplirLstBiens()
         {
             lstBiens.Items.Clear();
-            this.command = new MySqlCommand(ConstruitReqListeBien(), Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
-            // boucle tant que la ligne lue contient quelque chose
-            while (reader.Read())
+            for (int i = 0; i < 2; i++)
             {
-                // affichage des champs récupérés dans la ligne
-                lstBiens.Items.Add($"{reader["NomBien"]}");
+                this.command = new MySqlCommand(ConstruitReqListeBien(i), Global.Connexion);
+                MySqlDataReader reader = this.command.ExecuteReader();
+                while (reader.Read())
+                {
+                    // affichage des champs récupérés dans la ligne
+                    lstBiens.Items.Add(reader.GetString(0));
+                }
+                reader.Close();
             }
-            reader.Close();
         }
 
         /// <summary>
         /// Construit la requête qui sert à remplir la listBox des biens
         /// </summary>
-        /// <returns></returns>
-        private string ConstruitReqListeBien()
+        /// <returns>Requête</returns>
+        private string ConstruitReqListeBien(int cpt)
         {
-            this.req = "SELECT nombien FROM bien WHERE bienarchive = ";
-            if (rdbBienArchive.Checked)
+            if (cpt == 0)
             {
-                this.req += "1";
+                this.req = "SELECT nombien FROM bien WHERE bienarchive = ";
+                if (rdbBienArchive.Checked)
+                {
+                    this.req += "1";
+                }
+                else
+                {
+                    this.req += "0";
+                }
+                this.req += " ORDER BY nombien";
             }
-            else
+            else if (cpt == 1)
             {
-                this.req += "0";
+                this.req = "SELECT nomdugroupe FROM grpedebiens ORDER BY nomdugroupe";
             }
-            this.req += " ORDER BY nombien";
             return this.req;
         }
 
@@ -221,17 +230,43 @@ namespace GestionLocation
             }
             else
             {
-                this.req = $"SELECT * FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                MySqlDataReader reader = this.command.ExecuteReader();
-                reader.Read();
-                int id = reader.GetInt32(0);
-                reader.Close();
-                
-                // Crée la fenêtre de fiche du bien à ouvrir et l'ouvre avec la connexion et le tableau des données du bien en paramètres
-                FicheBien modifBiens = new FicheBien(id);
+                // Récupère le type et l'id
+                string[] data = RechercheIdBienGroupe();
+                // Crée la fenêtre de fiche du bien avec le type (bien ou groupe) et l'(id en paramètre
+                FicheBien modifBiens = new FicheBien(data);
                 modifBiens.ShowDialog();
             }
         }
+
+        /// <summary>
+        /// Gère la récupération de l'id du bien ou du groupe à partir de son nom
+        /// </summary>
+        /// <returns>Tableau contenant le type (bien ou groupe de biens) et son id</returns>
+        private string[] RechercheIdBienGroupe()
+        {
+            string[] dataBien = { "bien", "", $"{lstBiens.SelectedItem}" };
+            this.req = $"SELECT * FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            MySqlDataReader readerBien = this.command.ExecuteReader();
+            try
+            {
+                readerBien.Read();
+                dataBien[1] = readerBien["idbien"].ToString();
+                readerBien.Close();
+            }
+            catch
+            {
+                readerBien.Close();
+                dataBien[0] = "groupe";
+                this.req = $"SELECT idgroupe FROM grpedebiens WHERE nomdugroupe = \"{lstBiens.SelectedItem}\"";
+                this.command = new MySqlCommand(this.req, Global.Connexion);
+                MySqlDataReader readerGrpe = this.command.ExecuteReader();
+                readerGrpe.Read();
+                dataBien[1] = readerGrpe["idgroupe"].ToString();
+                readerGrpe.Close();
+            }
+            return dataBien;
+        }
+
     }
 }

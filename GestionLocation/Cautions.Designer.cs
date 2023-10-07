@@ -74,7 +74,7 @@ namespace GestionLocation
             this.btnModifier.Name = "btnModifier";
             this.btnModifier.Size = new System.Drawing.Size(141, 47);
             this.btnModifier.TabIndex = 16;
-            this.btnModifier.Text = "Modifier";
+            this.btnModifier.Text = "Afficher";
             this.btnModifier.UseVisualStyleBackColor = true;
             this.btnModifier.Click += new System.EventHandler(this.BtnModifier_Click);
             // 
