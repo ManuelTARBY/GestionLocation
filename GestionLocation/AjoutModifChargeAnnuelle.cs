@@ -196,6 +196,7 @@ namespace GestionLocation
         /// <returns>Vrai si tous les champs sont remplis, faux dans le cas contraire</returns>
         private bool VerifChamps()
         {
+            // Cas d'erreur
             if (txtLibelle.Text.Equals("") || txtMontant.Text.Equals("") || cobFrequence.SelectedItem == null || MontantVirg() == 0)
             {
                 return false;
