@@ -162,7 +162,14 @@ namespace GestionLocation
             }
             else
             {
-                MessageBox.Show("Veuillez remplir tous les champs pour pouvoir valider la saisie.");
+                if (MontantVirg() == 0)
+                {
+                    MessageBox.Show("Veuillez remplir un montant correct.");
+                }
+                else
+                {
+                    MessageBox.Show("Veuillez remplir tous les champs pour pouvoir valider la saisie.");
+                }
             }
         }
 
@@ -189,7 +196,7 @@ namespace GestionLocation
         /// <returns>Vrai si tous les champs sont remplis, faux dans le cas contraire</returns>
         private bool VerifChamps()
         {
-            if (txtLibelle.Text.Equals("") || txtMontant.Text.Equals("") || cobFrequence.SelectedItem == null)
+            if (txtLibelle.Text.Equals("") || txtMontant.Text.Equals("") || cobFrequence.SelectedItem == null || MontantVirg() == 0)
             {
                 return false;
             }
@@ -262,7 +269,6 @@ namespace GestionLocation
             }
             catch
             {
-                MessageBox.Show("Montant incorrect.");
                 return 0;
             }
         }

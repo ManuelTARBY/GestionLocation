@@ -69,7 +69,10 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Gestion Location|x64'">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>..\..\..\..\OneDrive\Bureau\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\Program Files\Gestion Location\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Icone GL.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Crypto, Version=1.8.9.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
@@ -205,6 +208,11 @@
     <Compile Include="FicheBien.Designer.cs">
       <DependentUpon>FicheBien.cs</DependentUpon>
     </Compile>
+    <Compile Include="gestionlocationDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>gestionlocationDataSet.xsd</DependentUpon>
+    </Compile>
     <Compile Include="Global.cs" />
     <Compile Include="GroupesDeBiens.cs">
       <SubType>Form</SubType>
@@ -250,6 +258,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Stats.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Stats.Designer.cs">
+      <DependentUpon>Stats.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Accueil.resx">
       <DependentUpon>Accueil.cs</DependentUpon>
     </EmbeddedResource>
@@ -310,6 +324,20 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Stats.resx">
+      <DependentUpon>Stats.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="gestionlocationDataSet.xsc">
+      <DependentUpon>gestionlocationDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="gestionlocationDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>gestionlocationDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="gestionlocationDataSet.xss">
+      <DependentUpon>gestionlocationDataSet.xsd</DependentUpon>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -337,7 +365,11 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Icone GL.ico" />
     <Content Include="ReqCreationTables.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\DataSources\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

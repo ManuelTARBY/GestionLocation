@@ -24,7 +24,6 @@ namespace GestionLocation
         public AjoutModifLocations(Locations fenLocation, string typeReq, int id = 0)
         {
             InitializeComponent();
-            this.Text = "Ajout/Modification d'une location";
             this.fenLocation = fenLocation;
             this.typeReq = typeReq;
             this.id = id;
@@ -35,13 +34,14 @@ namespace GestionLocation
             {
                 SelectionnerElements();
             }
+            // Si c'est un ajout
             else
             {
-                this.req = "SELECT MAX(req.idlocation) FROM (SELECT idlocation FROM location) AS req";
+                this.req = "SELECT MAX(idlocation) + 1 FROM location";
                 this.command = new MySqlCommand(this.req, Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
                 reader.Read();
-                this.id = reader.GetInt32(0) + 1;
+                this.id = reader.GetInt32(0);
                 reader.Close();
             }
             lblID.Text = $"ID : {this.id}";

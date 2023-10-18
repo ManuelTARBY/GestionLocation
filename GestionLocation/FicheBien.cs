@@ -21,7 +21,7 @@ namespace GestionLocation
         /// <summary>
         /// Constructeur de FicheBien
         /// </summary>
-        /// <param name="data">Contient l'id, le nom et le type du bien</param>
+        /// <param name="data">Contient le type, l'id et le nom du bien</param>
         public FicheBien(string[] data)
         {
             InitializeComponent();
@@ -31,7 +31,41 @@ namespace GestionLocation
             this.type = data[0];
             this.nbDeBiens = 1;
             RemplirChamps();
+            //CalculeTableCA();
         }
+
+
+        /*public void CalculeTableCA()
+        {
+            Dictionary<string, string> tabAnneeCa = new Dictionary<string, string>();
+            string anneeMin, anneeMax;
+            // Détermination des années pour la période d'exploitation
+            // Première année
+            this.req = $"SELECT MIN(debutlocation) AS 'AnneeMin' FROM location WHERE idbien = {this.leBien[0]}";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            MySqlDataReader reader = this.command.ExecuteReader();
+            reader.Read();
+            anneeMin = reader["AnneeMin"].ToString();
+            reader.Close();
+            // Dernière année
+            this.req = $"SELECT MAX(finlocation) AS 'AnneeMax' FROM location WHERE idbien = {this.leBien[0]}";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            reader = this.command.ExecuteReader();
+            reader.Read();
+            anneeMax = reader["AnneeMax"].ToString();
+            reader.Close();
+            anneeMin = anneeMin.Substring(6, 4);
+            anneeMax = anneeMax.Substring(6, 4);
+            for (int i = int.Parse(anneeMin); i <= int.Parse(anneeMax); i ++)
+            {
+                this.req = $"SELECT SUM(montantpaye) AS 'CA' FROM paiement WHERE periodefacturee LIKE '{i}%' AND idlocation IN (SELECT idlocation FROM location WHERE idbien = {this.leBien[0]})";
+                this.command = new MySqlCommand(this.req, Global.Connexion);
+                reader = this.command.ExecuteReader();
+                reader.Read();
+                tabAnneeCa.Add(i.ToString(), reader["CA"].ToString() + " €");
+                reader.Close();
+            }
+        }*/
 
 
         /// <summary>

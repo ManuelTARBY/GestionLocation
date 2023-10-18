@@ -62,23 +62,25 @@ namespace GestionLocation
         public void RemplirListePaiements()
         {
             // Détermination de la requête
+            this.req = "SELECT nombien, periodefacturee, montantdu, montantpaye, datepaiement, resteapayer, idpaiement, idlocation " +
+                "FROM paiement NATURAL JOIN location NATURAL JOIN bien ";
             if (this.idLocation != 0)
             {
-                this.req = $"SELECT * FROM paiement WHERE idlocation = {this.idLocation}";
+                this.req += $"WHERE idlocation = {this.idLocation}";
             }
             else
             {
                 if (lstLocations.SelectedItem == null)
                 {
-                    this.req = $"SELECT * FROM paiement WHERE loyerregle = False";
+                    this.req += $"WHERE loyerregle = False";
                 }
                 else
                 {
                     this.idLocation = this.lesId[lstLocations.SelectedItem.ToString()];
-                    this.req = $"SELECT * FROM paiement WHERE loyerregle = False AND idlocation = {this.idLocation}";
+                    this.req += $"WHERE loyerregle = False AND idlocation = {this.idLocation}";
                 }
             }
-            this.req += " ORDER BY periodefacturee";
+            this.req += " ORDER BY periodefacturee, nombien";
             // Affiche les enregistrements de la table Paiement et récupère les idpaiement et idlocation dans un dictionnaire
             EnvoiReqSelectPaiements();
         }
@@ -96,21 +98,37 @@ namespace GestionLocation
             bool finCurseur = !reader.Read();
             while (!finCurseur)
             {
-                /*string ligne = $"Location n°{reader.GetString(1)} || Période : {reader.GetDateTime(4):MMMM yyyy} || " +
-                    $"Montant dû : {reader.GetString(5)} || Montant payé : {reader.GetString(3)} || Restant dû : {reader.GetString(6)}";*/
-                String dateRegle = $"{reader.GetDateTime(2):d}";
+                string dateRegle = $"{reader.GetDateTime(4):d}";
                 if (dateRegle.Equals("01/01/0001"))
                 {
                     dateRegle = "-";
                 }
-                string ligne = $"Location n°{reader.GetString(1)} || Période : {reader.GetDateTime(4):MMMM yyyy} || " +
-                    $"Montant dû : {reader.GetString(5)} || Montant payé : {reader.GetString(3)} || Date : {dateRegle}" +
-                    $" || Restant dû : {reader.GetString(6)}";
+                string ligne = $"({reader["idlocation"]}) {reader["nombien"]} || Période : {reader.GetDateTime(1):MMMM yyyy} || " +
+                    $"Montant dû : {reader.GetString(2)} || Montant payé : {reader.GetString(3)} || Date : {dateRegle}" +
+                    $" || Restant dû : {reader.GetString(5)}";
                 lstPaiements.Items.Add(ligne);
                 this.lesPaiements.Add(ligne, reader["idpaiement"].ToString());
                 finCurseur = !reader.Read();
             }
             reader.Close();
+        }
+
+
+        /// <summary>
+        /// Retrouve le nom du bien à partir d'un id de location
+        /// </summary>
+        /// <param name="idloc">id de la location</param>
+        /// <returns>Nom du bien concerné par cet id de location</returns>
+        public string RecupNomBien(string idloc)
+        {
+            string lenom;
+            string req = $"SELECT nombien FROM bien NATURAL JOIN location WHERE idlocation = {idloc}";
+            MySqlCommand command = new MySqlCommand(req, Global.Connexion);
+            MySqlDataReader reader = command.ExecuteReader();
+            reader.Read();
+            lenom = reader["nombien"].ToString();
+            reader.Close();
+            return lenom;
         }
 
 
@@ -125,7 +143,8 @@ namespace GestionLocation
             lesId.Clear();
             // Construit la requête
             StringBuilder req = new StringBuilder();
-            req.AppendLine("SELECT nombien AS `Bien`, nomcompletlocataire AS `Locataire`, debutlocation AS `Début de location`, finlocation AS `Fin de location`, nomcompletcaution AS `Caution`, idlocation AS `id`");
+            req.AppendLine("SELECT nombien AS `Bien`, nomcompletlocataire AS `Locataire`, debutlocation AS `Début de location`, " +
+                "finlocation AS `Fin de location`, nomcompletcaution AS `Caution`, idlocation AS `id`");
             req.AppendLine("FROM location JOIN locataire USING(idlocataire) JOIN bien USING(idbien) JOIN caution USING(idcaution)");
             req.AppendLine($"WHERE locationarchivee = {etat} ORDER BY nombien");
             this.command = new MySqlCommand(req.ToString(), Global.Connexion);
@@ -241,14 +260,18 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnNonRegle_Click(object sender, EventArgs e)
         {
+            
+            this.req = "SELECT nombien, periodefacturee, montantdu, montantpaye, datepaiement, resteapayer, idpaiement, idlocation " +
+                "FROM paiement NATURAL JOIN location NATURAL JOIN bien ";
             if (lstLocations.SelectedItem != null)
             {
-                this.req = $"SELECT * FROM paiement WHERE loyerregle = False AND idlocation = {this.lesId[lstLocations.SelectedItem.ToString()]} ORDER BY periodefacturee";
+                this.req += $"WHERE loyerregle = False AND idlocation = {this.lesId[lstLocations.SelectedItem.ToString()]} " +
+                    $"ORDER BY periodefacturee";
             }
             else
             {
                 this.idLocation = 0;
-                this.req = $"SELECT * FROM paiement WHERE loyerregle = False ORDER BY periodefacturee";
+                this.req += $"WHERE loyerregle = False ORDER BY periodefacturee";
             }
             EnvoiReqSelectPaiements();
         }
@@ -673,9 +696,8 @@ namespace GestionLocation
         /// </summary>
         public void RecupIdLocation()
         {
-            string[] separatingStrings = { "Location n°", " || " };
+            char[] separatingStrings = { '(', ')' };
             string texte = lstPaiements.SelectedItem.ToString();
-
             string[] lesMots = texte.Split(separatingStrings, StringSplitOptions.RemoveEmptyEntries);
             this.idLocation = int.Parse(lesMots[0]);
         }

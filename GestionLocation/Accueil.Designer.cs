@@ -55,6 +55,7 @@ namespace GestionLocation
             this.lstLocations.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.lstLocations.Enabled = false;
             this.lstLocations.FormattingEnabled = true;
             this.lstLocations.ItemHeight = 20;
             this.lstLocations.Location = new System.Drawing.Point(3, 215);
@@ -268,6 +269,8 @@ namespace GestionLocation
             this.btnGroupes.Text = "Groupes";
             this.btnGroupes.UseVisualStyleBackColor = true;
             this.btnGroupes.Click += new System.EventHandler(this.BtnGroupes_Click);
+            this.btnGroupes.MouseEnter += new System.EventHandler(this.BtnGroupes_MouseEnter);
+            this.btnGroupes.MouseLeave += new System.EventHandler(this.BtnGroupes_MouseLeave);
             // 
             // Accueil
             // 

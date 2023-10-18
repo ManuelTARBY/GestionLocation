@@ -1,14 +1,7 @@
-﻿using MailKit.Security;
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GestionLocation
@@ -347,6 +340,25 @@ namespace GestionLocation
             SurvolSortie((Button)sender);
         }
 
+        /// <summary>
+        /// Gère le survol du bouton Groupes
+        /// </summary>
+        /// <param name="sender">Bouton survolé</param>
+        /// <param name="e"></param>
+        private void BtnGroupes_MouseEnter(object sender, EventArgs e)
+        {
+            SurvolEntree((Button)sender);
+        }
+
+        /// <summary>
+        /// Gère la sortie de survol du bouton Groupes
+        /// </summary>
+        /// <param name="sender">Bouton concerné</param>
+        /// <param name="e"></param>
+        private void BtnGroupes_MouseLeave(object sender, EventArgs e)
+        {
+            SurvolSortie((Button)sender);
+        }
 
         /// <summary>
         /// Ouvre la fenêtre AjoutModifUtilisateurs
@@ -355,6 +367,8 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnUser_Click(object sender, EventArgs e)
         {
+            /*Stats fenStats = new Stats();
+            fenStats.ShowDialog();*/
             string[] infos = RecupInfosUser(this.idUser);
             infos[0] = "UPDATE utilisateur SET";
             AjoutModifUtilisateurs fenUser = new AjoutModifUtilisateurs(infos, this.fenConnexion);
@@ -395,5 +409,6 @@ namespace GestionLocation
             GroupesDeBiens fenGroupes = new GroupesDeBiens();
             fenGroupes.ShowDialog();
         }
+
     }
 }

@@ -61,6 +61,7 @@ namespace GestionLocation
             this.txtId.Name = "txtId";
             this.txtId.Size = new System.Drawing.Size(198, 26);
             this.txtId.TabIndex = 1;
+            this.txtId.Text = "manu";
             this.txtId.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtId_KeyPress);
             // 
             // txtPwd

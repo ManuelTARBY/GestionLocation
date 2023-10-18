@@ -98,7 +98,6 @@ namespace GestionLocation
             this.datDebut.Name = "datDebut";
             this.datDebut.Size = new System.Drawing.Size(314, 26);
             this.datDebut.TabIndex = 3;
-            this.datDebut.Value = DateTime.Today;
             // 
             // datFin
             // 
@@ -111,7 +110,6 @@ namespace GestionLocation
             this.datFin.Name = "datFin";
             this.datFin.Size = new System.Drawing.Size(315, 26);
             this.datFin.TabIndex = 4;
-            this.datFin.Value = this.datDebut.Value = DateTime.Today;
             // 
             // lblID
             // 

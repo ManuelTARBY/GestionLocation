@@ -17,8 +17,15 @@ SELECT idlocation FROM location INNER JOIN bien ON location.idbien = bien.idbien
 SELECT SUM(montantpaye) FROM paiement WHERE periodefacturee LIKE '2023%'
 
 # Calcule le total des loyers perçus pour une année donnée pour un bien donné (année 2023 et Chambre 1 dans l'exemple)
-SELECT SUM(montantpaye) AS 'Total des loyers perçus sur l\'année' FROM paiement WHERE periodefacturee LIKE '2023%' AND idlocation IN
+SELECT SUM(montantpaye) AS 'CA' FROM paiement WHERE periodefacturee LIKE '2023%' AND idlocation IN
 (SELECT idlocation FROM location INNER JOIN bien ON location.idbien = bien.idbien WHERE nombien = 'Chambre 1')
+
+# Calcule le CA d'un bien donné pour chaque année d'exploitation (maison 4 dans l'exemple)
+SELECT DISTINCT YEAR(periodefacturee) AS 'Année', SUM(montantpaye) AS 'CA' FROM paiement WHERE YEAR(periodefacturee) IN
+(SELECT DISTINCT YEAR(periodefacturee) AS 'Année' FROM paiement WHERE idlocation IN
+(SELECT idlocation FROM location JOIN bien ON location.idbien = bien.idbien WHERE bien.nombien = 'Maison 4')) AND idlocation IN
+(SELECT idlocation FROM location INNER JOIN bien ON location.idbien = bien.idbien WHERE nombien = 'Maison 4')
+GROUP BY YEAR(periodefacturee)
 
 # Calcule le total des charges pour un bien donné à partir de son nom (Maison 4 dans l'exemple)
 SELECT SUM(chargeannuelle) FROM chargesannuelles WHERE idbien = (SELECT idbien FROM bien WHERE nombien = 'Maison 4')
@@ -42,4 +49,4 @@ SELECT SUM(loyerHC) AS 'Total loyers HC', SUM(charges) AS 'Total charges', SUM(l
 # Calcule le nombre de locations pour un groupe de biens donné (Coloc 52 dans l'exemple)
 SELECT COUNT(idlocation) FROM location WHERE idbien IN
 (SELECT idbien FROM lignegroupe WHERE idbien IN
-(SELECT idbien FROM grpedebiens WHERE nomdugroupe ='Coloc 52'))
+(SELECT idbien FROM grpedebiens WHERE nomdugroupe = 'Coloc 52'))

@@ -23,7 +23,7 @@ namespace GestionLocation
         {
             InitializeComponent();
             CheckDir();
-            lblCptEssai.Text = $"Essai : 1/{essaiMax}";
+            lblCptEssai.Text = $"Essai : {this.cptEssai}/{essaiMax}";
             this.AcceptButton = btnConnexion;
         }
 
@@ -39,7 +39,7 @@ namespace GestionLocation
             lblErreur.Text = "";
             if (txtId.Text != "")
             {
-                if (this.cptEssai < essaiMax)
+                while (this.cptEssai <= essaiMax)
                 {
                     GenererChaineConnexion();
                     // Teste la connexion à la BDD
@@ -76,13 +76,16 @@ namespace GestionLocation
                     {
                         lblErreur.Text = "La connexion a échoué";
                         this.cptEssai++;
-                        lblCptEssai.Text = $"Essai : {this.cptEssai}/{essaiMax}";
+                        if (this.cptEssai > essaiMax)
+                        {
+                            MessageBox.Show("Nombre de tentatives maximum atteint.");
+                            Application.Exit();
+                        }
+                        else
+                        {
+                            lblCptEssai.Text = $"Essai : {this.cptEssai}/{essaiMax}";
+                        }
                     }
-                }
-                else
-                {
-                    MessageBox.Show("Nombre de tentatives maximum atteint.");
-                    Application.Exit();
                 }
             }
             else
@@ -118,7 +121,7 @@ namespace GestionLocation
         /// </summary>
         private void GenererChaineConnexion()
         {
-            this.chaineConnexion = $"server={adresseserveur};user id={txtId.Text};password={txtPwd.Text};Convert Zero Datetime=True;Convert Zero Datetime=True;Allow Zero Datetime=true;SslMode=none;database=gestionlocation";
+            this.chaineConnexion = $"server=localhost;user id={txtId.Text};password={txtPwd.Text};Convert Zero Datetime=True;Convert Zero Datetime=True;Allow Zero Datetime=true;SslMode=none;database=gestionlocation";
         }
 
 
@@ -133,9 +136,9 @@ namespace GestionLocation
                 Global.Connexion = new MySqlConnection(this.chaineConnexion);
                 Global.Connexion.Open();
             }
-            catch(MySqlException e)
+            catch
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show("La connexion n'a pas pu être établie.");
                 return false;
             }
             return true;
