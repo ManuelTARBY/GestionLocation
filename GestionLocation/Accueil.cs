@@ -385,7 +385,7 @@ namespace GestionLocation
         /// <returns>Tableau contenant les infos sur l'utilisateur</returns>
         public string[] RecupInfosUser(string idUser)
         {
-            string[] infos = new string[13];
+            string[] infos = new string[14];
             infos[1] = idUser;
             string req = $"SELECT * FROM utilisateur WHERE iduser = {this.idUser}";
             this.command = new MySqlCommand(req, Global.Connexion);
@@ -394,6 +394,10 @@ namespace GestionLocation
             for (int i = 1; i < infos.Length - 1; i++)
             {
                 infos[i + 1] = reader.GetString(i);
+            }
+            if (!reader["signature"].ToString().Equals(""))
+            {
+                infos[13] = $"{Environment.CurrentDirectory}/ Signature /{ infos[3]} {infos[4]}.png";
             }
             reader.Close();
             return infos;

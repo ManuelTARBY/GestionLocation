@@ -36,6 +36,7 @@ namespace GestionLocation
             txtPwdEmail.Text = infos[10];
             txtServeurSMTP.Text = infos[11];
             txtPort.Text = infos[12];
+            txtSignature.Text = infos[13];
         }
 
 
@@ -236,10 +237,10 @@ namespace GestionLocation
         public void ConstruitReqAjout()
         {
             this.req = $"{this.infos[0]} utilisateur (iduser, login, pwd, prenomuser, nomuser, adresseuser, cpuser, villeuser, emailuser, " +
-                $"pwdemail, adresseserveursmtp, port, clientid, clientsecret) " +
+                $"pwdemail, adresseserveursmtp, port, clientid, clientsecret, signature) " +
                 $"VALUES ({lblID.Text}, \'{infos[2]}\', \'{infos[3]}\', \'{Global.Capitalize(txtPrenom.Text)}\', \'{txtNom.Text.ToUpper()}\', " +
                 $"\'{txtAdresse.Text}\', \'{txtCp.Text}\', \'{txtVille.Text.ToUpper()}\', \'{txtEmail.Text}\', \'{txtPwdEmail.Text}\', " +
-                $"\'{this.adresseSmtp}\', \'{this.port}\', \'{""}\' , \'{""}\')";
+                $"\'{this.adresseSmtp}\', \'{this.port}\', \'{""}\' , \'{""}\', \'{txtSignature.Text}\')";
         }
 
 
@@ -251,8 +252,8 @@ namespace GestionLocation
             this.req = $"{this.infos[0]} login = \'{this.infos[2]}\', pwd = \'{this.infos[3]}\', prenomuser = \'{Global.Capitalize(txtPrenom.Text)}\', " +
                 $"nomuser = \'{txtNom.Text.ToUpper()}\', adresseuser = \'{txtAdresse.Text}\', cpuser = \'{txtCp.Text}\', " +
                 $"villeuser = \'{txtVille.Text.ToUpper()}\', emailuser = \'{txtEmail.Text}\', pwdemail = \'{txtPwdEmail.Text}\', " +
-                $"adresseserveursmtp = \'{this.adresseSmtp}\', port = \'{this.port}\', clientid = \'{""}\' , clientsecret = \'{""}\' " +
-                $"WHERE iduser = {this.infos[1]}";
+                $"adresseserveursmtp = \'{this.adresseSmtp}\', port = \'{this.port}\', clientid = \'{""}\' , clientsecret = \'{""}\', " +
+                $"signature = '{txtSignature.Text}' WHERE iduser = {this.infos[1]}";
         }
 
 

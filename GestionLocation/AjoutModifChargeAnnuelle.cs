@@ -129,7 +129,7 @@ namespace GestionLocation
         {
             if (VerifChamps())
             {
-                float annu = CalculerMontantAnnuel();
+                string annu = CalculerMontantAnnuel();
                 // Prépare la requête d'ajout ou de modification de l'enregistrement de ChargesAnnuelles
                 switch (this.typeReq)
                 {
@@ -177,17 +177,20 @@ namespace GestionLocation
         /// Calcule le montant annuel de la charge en fonction du montant et de la fréquence renseignés
         /// </summary>
         /// <returns></returns>
-        private float CalculerMontantAnnuel()
+        private string CalculerMontantAnnuel()
         {
             // Récupère l'occurrence de la charge
             this.req = $"SELECT occurrence FROM frequencepaiement WHERE libelle = \'{cobFrequence.SelectedItem}\'";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
-            int occurrence = (int)(reader["occurrence"]);
+            float occurrence = (float)reader["occurrence"];
             reader.Close();
             float totalAnnuel = (occurrence * MontantVirg());
-            return (int)Math.Round(totalAnnuel, 2);
+            totalAnnuel = (float)Math.Round(totalAnnuel, 2);
+            string annu = totalAnnuel.ToString();
+            annu = annu.Replace(',', '.');
+            return annu;
         }
 
         /// <summary>

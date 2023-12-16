@@ -39,7 +39,7 @@ namespace GestionLocation
             lblErreur.Text = "";
             if (txtId.Text != "")
             {
-                while (this.cptEssai <= essaiMax)
+                if (this.cptEssai <= essaiMax)
                 {
                     GenererChaineConnexion();
                     // Teste la connexion à la BDD
@@ -65,7 +65,7 @@ namespace GestionLocation
                             reader.Read();
                             int result = int.Parse(reader.GetString(0)) + 1;
                             reader.Close();
-                            string[] infos = { "INSERT INTO", "", txtId.Text, txtPwd.Text, "", "", "", "", "", "", "", "", "", "", "" };
+                            string[] infos = { "INSERT INTO", "", txtId.Text, txtPwd.Text, "", "", "", "", "", "", "", "", "", "", "", "" };
                             infos[1] = result.ToString();
                             // Ouvre la fenêtre AjoutModifUtilisateurs
                             AjoutModifUtilisateurs fenUtilisateur = new AjoutModifUtilisateurs(infos, this);
@@ -121,7 +121,7 @@ namespace GestionLocation
         /// </summary>
         private void GenererChaineConnexion()
         {
-            this.chaineConnexion = $"server={adressebdd};user id={txtId.Text};password={txtPwd.Text};Convert Zero Datetime=True;Convert Zero Datetime=True;Allow Zero Datetime=true;SslMode=none;database=gestionlocation";
+            this.chaineConnexion = $"server=localhost;user id={txtId.Text};password={txtPwd.Text};Convert Zero Datetime=True;Convert Zero Datetime=True;Allow Zero Datetime=true;SslMode=none;database=gestionlocation";
         }
 
 
