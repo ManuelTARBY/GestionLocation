@@ -24,6 +24,7 @@ namespace GestionLocation
         {
             InitializeComponent();
             RemplirComboBiens();
+            cbxListBiens.SelectedIndex = 0;
         }
 
 

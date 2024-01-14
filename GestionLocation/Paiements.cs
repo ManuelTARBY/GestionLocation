@@ -63,21 +63,21 @@ namespace GestionLocation
         {
             // Détermination de la requête
             this.req = "SELECT nombien, periodefacturee, montantdu, montantpaye, datepaiement, resteapayer, idpaiement, idlocation " +
-                "FROM paiement NATURAL JOIN location NATURAL JOIN bien ";
+                "FROM paiement NATURAL JOIN location NATURAL JOIN bien WHERE locationarchivee = 0 ";
             if (this.idLocation != 0)
             {
-                this.req += $"WHERE idlocation = {this.idLocation}";
+                this.req += $"AND idlocation = {this.idLocation}";
             }
             else
             {
                 if (lstLocations.SelectedItem == null)
                 {
-                    this.req += $"WHERE loyerregle = False";
+                    this.req += $"AND loyerregle = False";
                 }
                 else
                 {
                     this.idLocation = this.lesId[lstLocations.SelectedItem.ToString()];
-                    this.req += $"WHERE loyerregle = False AND idlocation = {this.idLocation}";
+                    this.req += $"AND loyerregle = False AND idlocation = {this.idLocation}";
                 }
             }
             this.req += " ORDER BY periodefacturee, nombien";

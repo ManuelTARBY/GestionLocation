@@ -367,14 +367,14 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnUser_Click(object sender, EventArgs e)
         {
-            /*Stats fenStats = new Stats();
-            fenStats.ShowDialog();*/
-            string[] infos = RecupInfosUser(this.idUser);
+            Stats fenStats = new Stats();
+            fenStats.ShowDialog();
+            /*string[] infos = RecupInfosUser(this.idUser);
             infos[0] = "UPDATE utilisateur SET";
             AjoutModifUtilisateurs fenUser = new AjoutModifUtilisateurs(infos, this.fenConnexion);
             this.Visible = false;
             fenUser.ShowDialog();
-            this.Visible = true;
+            this.Visible = true;*/
         }
 
 
