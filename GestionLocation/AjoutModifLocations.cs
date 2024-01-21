@@ -1,8 +1,11 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using Word = Microsoft.Office.Interop.Word;
 
 namespace GestionLocation
 {
@@ -13,7 +16,8 @@ namespace GestionLocation
         private readonly int id;
         private string req;
         private MySqlCommand command;
-        private readonly string[] rubLocations = { "idlocation", "idbien", "idcaution", "idlocataire", "debutlocation", "finlocation", "depotgarantie", "locationarchivee" };
+        private readonly string[] rubLocations = { "idlocation", "idbien", "idcaution", "idlocataire", "debutlocation", "finlocation", "depotgarantie", "locationarchivee", "numcontratvisale" };
+        private readonly Dictionary<string, string> datas;
 
         /// <summary>
         /// Constructeur de AjoutModifLocations
@@ -24,6 +28,7 @@ namespace GestionLocation
         public AjoutModifLocations(Locations fenLocation, string typeReq, int id = 0)
         {
             InitializeComponent();
+            this.datas = new Dictionary<string, string>();
             this.fenLocation = fenLocation;
             this.typeReq = typeReq;
             this.id = id;
@@ -34,7 +39,7 @@ namespace GestionLocation
             {
                 SelectionnerElements();
             }
-            // Si c'est un ajout
+            // Sinon, si c'est un ajout
             else
             {
                 this.req = "SELECT MAX(idlocation) + 1 FROM location";
@@ -68,11 +73,7 @@ namespace GestionLocation
             this.req = "SELECT nombien FROM bien WHERE bienarchive = 0 ORDER BY nombien";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
-            /* lecture de la première ligne du curseur (finCurseur passe à false en fin de
-            curseur) */
             bool finCurseur = !reader.Read();
-            // boucle tant que la ligne lue contient quelque chose
-            // (donc tant que la fin du curseur n'est pas atteinte)
             while (!finCurseur)
             {
                 // affichage des champs récupérés dans la ligne
@@ -120,11 +121,7 @@ namespace GestionLocation
             this.req = "SELECT nomcompletcaution FROM caution WHERE cautionarchivee = 0 ORDER BY nomcompletcaution";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
-            /* lecture de la première ligne du curseur (finCurseur passe à false en fin de
-            curseur) */
             bool finCurseur = !reader.Read();
-            // boucle tant que la ligne lue contient quelque chose
-            // (donc tant que la fin du curseur n'est pas atteinte)
             while (!finCurseur)
             {
                 // affichage des champs récupérés dans la ligne
@@ -152,6 +149,7 @@ namespace GestionLocation
             datDebut.Value = reader.GetDateTime(4);
             datFin.Value = reader.GetDateTime(5);
             txtDepotGarantie.Text = reader.GetString(6);
+            txtContratVisale.Text = reader["numcontratvisale"].ToString();
             if ((bool)reader["locationarchivee"])
             {
                 cbxArchive.Checked = true;
@@ -176,6 +174,28 @@ namespace GestionLocation
             string nombien = ($"{reader["nombien"]}");
             reader.Close();
             return nombien;
+        }
+
+
+        /// <summary>
+        /// Récupère les données sur un bien à partir de son id
+        /// </summary>
+        /// <param name="id">Identifiant du bien</param>
+        /// <returns>Données sur le bien</returns>
+        public void RecupBien(string id)
+        {
+            this.req = $"SELECT * FROM bien WHERE idbien = {id}";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            MySqlDataReader reader = this.command.ExecuteReader();
+            reader.Read();
+            this.datas.Add("NomBien", $"{reader["nombien"]}");
+            this.datas.Add("LoyerHC", $"{reader["loyerHC"]}");
+            this.datas.Add("Charges", $"{reader["charges"]}");
+            this.datas.Add("LoyerCC", $"{reader["loyerCC"]}");
+            this.datas.Add("AdresseBien", $"{reader["adressebien"]}");
+            this.datas.Add("CPBien", $"{reader["cpbien"]}");
+            this.datas.Add("VilleBien", $"{ reader["villebien"]}");
+            reader.Close();
         }
 
 
@@ -239,9 +259,139 @@ namespace GestionLocation
                 this.fenLocation.AfficherBiens();
                 this.fenLocation.AfficherLocations();
                 this.fenLocation.GetFenAccueil().AfficherLocations();
+                if (this.typeReq.Equals("INSERT INTO"))
+                {
+                    // Génère le bail de location
+                    GenererBail(lesId);
+                }
                 // Ferme la fenêtre
                 this.Dispose();
             }
+        }
+
+
+        /// <summary>
+        /// Génère le bail de location
+        /// </summary>
+        public void GenererBail(string[] lesId)
+        {
+            // Crée le fichier
+            string cheminModele = Environment.CurrentDirectory + "/Baux/Bail.doc";
+            string cheminDestination = $"C:\\Users\\Don_F\\OneDrive\\Bureau\\Bail {lstLocataires.SelectedItem}.doc";
+            File.Copy(cheminModele, cheminDestination, true);
+
+            // Remplit le bail
+            // Création d'une application Word
+            Word.Application wordApp = new Word.Application
+            {
+                Visible = false
+            };
+
+            // Ouverture du document
+            Word.Document bail = wordApp.Documents.Open(cheminDestination);
+
+            // Remplacement du texte
+            RecupDatas(lesId);
+            Word.Find find = wordApp.Selection.Find;
+            foreach (KeyValuePair<string, string> data in datas)
+            {
+                find.Text = $"%{data.Key}%";
+                find.Replacement.Text = data.Value;
+                find.Execute(Replace: Word.WdReplace.wdReplaceAll);
+            }
+
+            // Sauvegarde des modifications
+            bail.Save();
+
+            // Fermeture du document et de l'application Word
+            bail.Close();
+            wordApp.Quit();
+        }
+
+
+        /// <summary>
+        /// Récupère toutes les infos pour construire le bail
+        /// </summary>
+        /// <returns>Dictionnaire contenant toutes les données</returns>
+        public Dictionary<string, string> RecupDatas(string[] lesId)
+        {
+            // Données du locataire
+            RecupLocataire(lesId[1]);
+            // Données du bien
+            RecupBien(lesId[0]);
+            // Données de la caution
+            RecupCaution(lesId[2]);
+            // Données sur la location
+            RecupLocation();
+            return this.datas;
+        }
+
+
+        /// <summary>
+        /// Récupère les infos sur le locataire
+        /// </summary>
+        public void RecupLocataire(string id)
+        {
+            this.req = $"SELECT * FROM locataire WHERE idlocataire = {id}";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            MySqlDataReader reader = this.command.ExecuteReader();
+            reader.Read();
+            this.datas.Add("PrenomLocat", $"{reader["prenomlocataire"]}");
+            this.datas.Add("NomLocat", $"{reader["nomlocataire"]}");
+            this.datas.Add("NomPrenomLocat", $"{reader["prenomlocataire"]} {reader["nomlocataire"]}");
+            this.datas.Add("AdresseLocat", $"{reader["adresselocataire"]} {reader["cplocataire"]} {reader["villelocataire"]}");
+            this.datas.Add("DaNaisLocat", $"{reader["datenaissancelocataire"]}");
+            this.datas.Add("LieuNaisLocat", $"{reader["lieunaissancelocataire"].ToString().ToUpper()}");
+            this.datas.Add("TelLocat", $"{reader["telephonelocataire"]}");
+            this.datas.Add("EmailLocat", $"{reader["emailocataire"]}");
+            reader.Close();
+        }
+
+
+        /// <summary>
+        /// Récupère les infos sur la caution
+        /// </summary>
+        public void RecupCaution(string id)
+        {
+            this.req = $"SELECT * FROM caution WHERE idcaution = {id}";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            MySqlDataReader reader = this.command.ExecuteReader();
+            reader.Read();
+            this.datas.Add("PrenomCaution", $"{reader["prenomcaution"]}");
+            this.datas.Add("NomCaution", $"{reader["nomcaution"]}");
+            this.datas.Add("NomPrenomCaution", $"{reader["prenomcaution"]} {reader["nomcaution"]}");
+            this.datas.Add("AdresseCaution", $"{reader["adressecaution"]} {reader["cpcaution"]} {reader["villecaution"].ToString().ToUpper()}");
+            this.datas.Add("TelCaution", $"{reader["telephonecaution"]}");
+            this.datas.Add("EmailCaution", $"{reader["emailcaution"]}");
+            reader.Close();
+            if (this.datas["NomCaution"].Equals("VISALE"))
+            {
+                this.datas.Add("InfoCaution1", $"N° de contrat : ");
+                this.datas.Add("InfoCaution2", txtContratVisale.Text);
+            }
+            else
+            {
+                this.datas.Add("InfoCaution1", $"Adresse de la caution : ");
+                this.datas.Add("InfoCaution2", this.datas["AdresseCaution"]);
+            }
+        }
+
+
+        /// <summary>
+        /// Récupère les informations sur la location
+        /// </summary>
+        public void RecupLocation()
+        {
+            if (lstCautions.SelectedItem.Equals("VISALE (Action Logement"))
+            {
+                this.datas.Add("DepotGarantie", "0");
+            }
+            else
+            {
+                this.datas.Add("DepotGarantie", this.datas["LoyerHC"]);
+            }
+            this.datas.Add("DebLoc", $"{datDebut.Value:dd/MM/yyyy}");
+            this.datas.Add("FinLoc", $"{datFin.Value:dd/MM/yyyy}");
         }
 
 
@@ -281,6 +431,11 @@ namespace GestionLocation
                 MessageBox.Show("Veuillez sélectionner des dates cohérentes.");
                 return false;
             }
+            else if (lstCautions.SelectedItem.Equals("VISALE (Action Logement)") && txtContratVisale.Text.Equals(""))
+            {
+                MessageBox.Show("Veuillez renseigner le numéro de contrat Visale.");
+                return false;
+            }
             else
             {
                 if (txtDepotGarantie.Text.Equals(""))
@@ -316,11 +471,11 @@ namespace GestionLocation
         /// Construit la requête de modification
         /// </summary>
         private void ConstruitReqModif(string[] lesId)
-        {
+        {   
             this.req = $"{this.typeReq} location SET ";
             this.req += $"idlocation = {this.id}, idbien = \"{lesId[0]}\", idcaution = \"{lesId[2]}\", idlocataire = \"{lesId[1]}\", " +
                 $"debutlocation = \"{datDebut.Value:yyyy-MM-dd}\", finlocation = \"{datFin.Value:yyyy-MM-dd}\", " +
-                $"depotgarantie = \"{txtDepotGarantie.Text}\", locationarchivee = {cbxArchive.Checked} WHERE idlocation = {this.id}";
+                $"depotgarantie = \"{txtDepotGarantie.Text}\", locationarchivee = {cbxArchive.Checked}, numcontratvisale = \'{txtContratVisale.Text}\' WHERE idlocation = {this.id}";
         }
 
 
@@ -335,7 +490,8 @@ namespace GestionLocation
                 this.req += $"{rubLocations[i]}, ";
             }
             this.req += $"{rubLocations[rubLocations.Length - 1]}) VALUES ({this.id}, {lesId[0]}, {lesId[2]}, " +
-                $"{lesId[1]}, \"{datDebut.Value:yyyy-MM-dd}\", \"{datFin.Value:yyyy-MM-dd}\", {txtDepotGarantie.Text}, {cbxArchive.Checked})";
+                $"{lesId[1]}, \"{datDebut.Value:yyyy-MM-dd}\", \"{datFin.Value:yyyy-MM-dd}\", {txtDepotGarantie.Text}, " +
+                $"{cbxArchive.Checked}, \'{txtContratVisale.Text}\')";
         }
 
 
@@ -633,6 +789,22 @@ namespace GestionLocation
             this.command.Prepare();
             // exécution de la requête
             this.command.ExecuteNonQuery();
+        }
+
+
+        /// <summary>
+        /// Gère la sélection d'une caution
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void LstCautions_SelectedIndexChanged(object sender, EventArgs e)
+        {
+             lblContratVisale.Visible = lstCautions.SelectedItem.Equals("VISALE (Action Logement)");
+             txtContratVisale.Visible = lstCautions.SelectedItem.Equals("VISALE (Action Logement)");
+            if (!lstCautions.SelectedItem.Equals("VISALE (Action Logement)"))
+            {
+                txtContratVisale.Text = "";
+            }
         }
     }
 }

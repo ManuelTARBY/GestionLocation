@@ -159,7 +159,8 @@ CREATE TABLE location (
   debutlocation date DEFAULT NULL,
   finlocation date DEFAULT NULL,
   depotgarantie float(13,2) DEFAULT NULL,
-  locationarchivee tinyint(1) DEFAULT NULL
+  locationarchivee tinyint(1) DEFAULT NULL,
+  numcontratvisale varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------

@@ -48,6 +48,8 @@ namespace GestionLocation
             this.lblCautions = new System.Windows.Forms.Label();
             this.btnFermer = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.txtContratVisale = new System.Windows.Forms.TextBox();
+            this.lblContratVisale = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -60,7 +62,7 @@ namespace GestionLocation
             this.lstBiens.ItemHeight = 20;
             this.lstBiens.Location = new System.Drawing.Point(3, 99);
             this.lstBiens.Name = "lstBiens";
-            this.lstBiens.Size = new System.Drawing.Size(154, 104);
+            this.lstBiens.Size = new System.Drawing.Size(154, 124);
             this.lstBiens.TabIndex = 0;
             // 
             // lstLocataires
@@ -72,7 +74,7 @@ namespace GestionLocation
             this.lstLocataires.ItemHeight = 20;
             this.lstLocataires.Location = new System.Drawing.Point(163, 99);
             this.lstLocataires.Name = "lstLocataires";
-            this.lstLocataires.Size = new System.Drawing.Size(314, 104);
+            this.lstLocataires.Size = new System.Drawing.Size(314, 124);
             this.lstLocataires.TabIndex = 1;
             // 
             // lstCautions
@@ -84,8 +86,9 @@ namespace GestionLocation
             this.lstCautions.ItemHeight = 20;
             this.lstCautions.Location = new System.Drawing.Point(483, 99);
             this.lstCautions.Name = "lstCautions";
-            this.lstCautions.Size = new System.Drawing.Size(315, 104);
+            this.lstCautions.Size = new System.Drawing.Size(315, 124);
             this.lstCautions.TabIndex = 2;
+            this.lstCautions.SelectedIndexChanged += new System.EventHandler(this.LstCautions_SelectedIndexChanged);
             // 
             // datDebut
             // 
@@ -159,7 +162,7 @@ namespace GestionLocation
             // cbxArchive
             // 
             this.cbxArchive.AutoSize = true;
-            this.cbxArchive.Location = new System.Drawing.Point(3, 226);
+            this.cbxArchive.Location = new System.Drawing.Point(3, 279);
             this.cbxArchive.Name = "cbxArchive";
             this.cbxArchive.Size = new System.Drawing.Size(96, 24);
             this.cbxArchive.TabIndex = 33;
@@ -170,9 +173,9 @@ namespace GestionLocation
             // 
             this.btnValider.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnValider.Location = new System.Drawing.Point(163, 226);
+            this.btnValider.Location = new System.Drawing.Point(163, 279);
             this.btnValider.Name = "btnValider";
-            this.btnValider.Size = new System.Drawing.Size(314, 53);
+            this.btnValider.Size = new System.Drawing.Size(314, 47);
             this.btnValider.TabIndex = 34;
             this.btnValider.Text = "Valider";
             this.btnValider.UseVisualStyleBackColor = true;
@@ -212,9 +215,9 @@ namespace GestionLocation
             // 
             this.btnFermer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnFermer.Location = new System.Drawing.Point(483, 226);
+            this.btnFermer.Location = new System.Drawing.Point(483, 279);
             this.btnFermer.Name = "btnFermer";
-            this.btnFermer.Size = new System.Drawing.Size(315, 53);
+            this.btnFermer.Size = new System.Drawing.Size(315, 47);
             this.btnFermer.TabIndex = 38;
             this.btnFermer.Text = "Fermer";
             this.btnFermer.UseVisualStyleBackColor = true;
@@ -230,13 +233,10 @@ namespace GestionLocation
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
             this.tableLayoutPanel1.Controls.Add(this.lblFinLoc, 2, 0);
-            this.tableLayoutPanel1.Controls.Add(this.btnValider, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.lblLocataires, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.btnFermer, 2, 4);
             this.tableLayoutPanel1.Controls.Add(this.lstLocataires, 1, 3);
             this.tableLayoutPanel1.Controls.Add(this.lblDebutLoc, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.datDebut, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.cbxArchive, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.datFin, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.lblCautions, 2, 2);
             this.tableLayoutPanel1.Controls.Add(this.lstCautions, 2, 3);
@@ -244,16 +244,43 @@ namespace GestionLocation
             this.tableLayoutPanel1.Controls.Add(this.lblDepotGarantie, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.lstBiens, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.lblBiens, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.btnValider, 1, 5);
+            this.tableLayoutPanel1.Controls.Add(this.btnFermer, 2, 5);
+            this.tableLayoutPanel1.Controls.Add(this.cbxArchive, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.txtContratVisale, 2, 4);
+            this.tableLayoutPanel1.Controls.Add(this.lblContratVisale, 1, 4);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(15, 7);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 5;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 54.79452F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 45.20548F));
+            this.tableLayoutPanel1.RowCount = 6;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 45F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(801, 329);
             this.tableLayoutPanel1.TabIndex = 39;
+            // 
+            // txtContratVisale
+            // 
+            this.txtContratVisale.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtContratVisale.Location = new System.Drawing.Point(483, 247);
+            this.txtContratVisale.Name = "txtContratVisale";
+            this.txtContratVisale.Size = new System.Drawing.Size(315, 26);
+            this.txtContratVisale.TabIndex = 39;
+            this.txtContratVisale.Visible = false;
+            // 
+            // lblContratVisale
+            // 
+            this.lblContratVisale.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.lblContratVisale.AutoSize = true;
+            this.lblContratVisale.Location = new System.Drawing.Point(368, 250);
+            this.lblContratVisale.Name = "lblContratVisale";
+            this.lblContratVisale.Size = new System.Drawing.Size(109, 20);
+            this.lblContratVisale.TabIndex = 40;
+            this.lblContratVisale.Text = "N° de contrat :";
+            this.lblContratVisale.Visible = false;
             // 
             // AjoutModifLocations
             // 
@@ -290,5 +317,7 @@ namespace GestionLocation
         private System.Windows.Forms.Label lblCautions;
         private System.Windows.Forms.Button btnFermer;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TextBox txtContratVisale;
+        private System.Windows.Forms.Label lblContratVisale;
     }
 }

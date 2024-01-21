@@ -38,10 +38,10 @@ namespace GestionLocation
             AfficheTitre();
         }
 
+
         /// <summary>
         /// Gère le titre à afficher
         /// </summary>
-        /// <returns></returns>
         public void AfficheTitre()
         {
             string titre = "Liste des charges";
@@ -51,8 +51,9 @@ namespace GestionLocation
             lblNomBien.Text = titre;
         }
 
+
         /// <summary>
-        /// Récupère la liste des charges à partir de l'id du bien 
+        /// Récupère la liste des charges (les charges ponctuelles hors année en cours sont exclues) à partir de l'id du bien
         /// </summary>
         public void RecupListeCharges()
         {
@@ -82,6 +83,7 @@ namespace GestionLocation
             }
             reader.Close();
         }
+
 
         /// <summary>
         /// Gère le clic sur le bouton Ajouter
@@ -123,6 +125,7 @@ namespace GestionLocation
             return this.leBien;
         }
 
+
         /// <summary>
         /// Gère le clic sur le bouton modifier
         /// </summary>
@@ -142,6 +145,7 @@ namespace GestionLocation
             }
         }
 
+
         /// <summary>
         /// Renvoie l'instance de FicheBien
         /// </summary>
@@ -150,6 +154,7 @@ namespace GestionLocation
         {
             return this.fenFicheBien;
         }
+
 
         /// <summary>
         /// Gère le demande de suppression d'une charge de la liste
@@ -289,6 +294,7 @@ namespace GestionLocation
                 AfficheTitre();
             }
         }
+
 
         /// <summary>
         /// Retrouve l'id d'un bien à partir de son nom

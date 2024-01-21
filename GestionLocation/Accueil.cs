@@ -1,7 +1,9 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Drawing;
+using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GestionLocation
@@ -367,8 +369,10 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnUser_Click(object sender, EventArgs e)
         {
-            Stats fenStats = new Stats();
-            fenStats.ShowDialog();
+            // Ouvre la fenêtre des stats
+            /*Stats fenStats = new Stats();
+            fenStats.ShowDialog();*/
+            // Ouvre la fenêtre de l'utilisateur
             /*string[] infos = RecupInfosUser(this.idUser);
             infos[0] = "UPDATE utilisateur SET";
             AjoutModifUtilisateurs fenUser = new AjoutModifUtilisateurs(infos, this.fenConnexion);
@@ -381,7 +385,7 @@ namespace GestionLocation
         /// <summary>
         /// Récupère dans un tableau les infos concernant l'utilisateur à partir de son ID
         /// </summary>
-        /// <param name="idUser">ID de l'utilsiateur</param>
+        /// <param name="idUser">ID de l'utilisateur</param>
         /// <returns>Tableau contenant les infos sur l'utilisateur</returns>
         public string[] RecupInfosUser(string idUser)
         {
