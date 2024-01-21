@@ -100,12 +100,13 @@ namespace GestionLocation
         /// </summary>
         public void RecupDonnees()
         {
-            this.req = $"SELECT libelle, montantcharge, refFrequence, imputable FROM chargesannuelles WHERE idchargeannuelle = {this.idCharge}";
+            this.req = $"SELECT libelle, montantcharge, refFrequence, imputable, annee FROM chargesannuelles WHERE idchargeannuelle = {this.idCharge}";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             txtLibelle.Text = $"{reader["libelle"]}";
             txtMontant.Text = $"{reader["montantcharge"]}";
+            txtAnnee.Text = $"{reader["annee"]}";
             // Récupère le statut de "Imputable"
             if ((bool)reader["imputable"])
             {
@@ -134,13 +135,13 @@ namespace GestionLocation
                 switch (this.typeReq)
                 {
                     case "INSERT":
-                        this.req = "INSERT INTO chargesannuelles (idchargeannuelle, idbien, libelle, refFrequence, montantcharge, chargeannuelle, imputable) " +
+                        this.req = "INSERT INTO chargesannuelles (idchargeannuelle, idbien, libelle, refFrequence, annee, montantcharge, chargeannuelle, imputable) " +
                             $"VALUES ({lblID.Text}, {this.leBien[0]}, \'{txtLibelle.Text}\', " +
-                            $"\'{cobFrequence.SelectedItem}\', \'{MontantPoint()}\', \'{annu}\', {cbxImputable.Checked})";
+                            $"\'{cobFrequence.SelectedItem}\', \'{txtAnnee.Text}\', \'{MontantPoint()}\', \'{annu}\', {cbxImputable.Checked})";
                         break;
                     case "UPDATE":
                         this.req = $"UPDATE chargesannuelles SET idbien = {leBien[0]}, libelle = \'{txtLibelle.Text}\', refFrequence = \'{cobFrequence.SelectedItem}\', " +
-                            $"montantcharge = \'{MontantPoint()}\', chargeannuelle = \'{annu}\', imputable = {cbxImputable.Checked} " +
+                            $"annee=\'{txtAnnee.Text}\', montantcharge = \'{MontantPoint()}\', chargeannuelle = \'{annu}\', imputable = {cbxImputable.Checked} " +
                             $"WHERE idchargeannuelle = {this.idCharge}";
                         break;
                 }
@@ -165,6 +166,10 @@ namespace GestionLocation
                 if (MontantVirg() == 0)
                 {
                     MessageBox.Show("Veuillez remplir un montant correct.");
+                }
+                else if (VerifAnnee() == false)
+                {
+                    MessageBox.Show("Veuillez saisir une année correcte.");
                 }
                 else
                 {
@@ -200,7 +205,8 @@ namespace GestionLocation
         private bool VerifChamps()
         {
             // Cas d'erreur
-            if (txtLibelle.Text.Equals("") || txtMontant.Text.Equals("") || cobFrequence.SelectedItem == null || MontantVirg() == 0)
+            bool annee = VerifAnnee();
+            if (txtLibelle.Text.Equals("") || txtMontant.Text.Equals("") || cobFrequence.SelectedItem == null || MontantVirg() == 0 || annee == false)
             {
                 return false;
             }
@@ -254,6 +260,30 @@ namespace GestionLocation
 
 
         /// <summary>
+        /// Vérifie si l'année saisie est correcte
+        /// </summary>
+        /// <returns>true si l'année est correcte, sinon false</returns>
+        public bool VerifAnnee()
+        {
+            if (cobFrequence.SelectedItem.Equals("Ponctuelle"))
+            {
+                if (int.TryParse(txtAnnee.Text, out _))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+
+        /// <summary>
         /// Rend le contenu du champ txtMontant convertible en float pour permettre le calcul du montant annuel
         /// </summary>
         /// <param name="chaine"></param>
@@ -300,6 +330,18 @@ namespace GestionLocation
         private void BtnFermer_Click(object sender, EventArgs e)
         {
             this.Dispose();
+        }
+
+
+        /// <summary>
+        /// Gère les changements de fréquences
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CobFrequence_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            txtAnnee.Visible = cobFrequence.SelectedItem.Equals("Ponctuelle");
+            lblAnnee.Visible = cobFrequence.SelectedItem.Equals("Ponctuelle");
         }
     }
 }

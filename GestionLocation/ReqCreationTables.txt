@@ -33,6 +33,7 @@ CREATE TABLE bien (
   bienarchive tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
 
 --
 -- Structure de la table caution
@@ -52,6 +53,7 @@ CREATE TABLE caution (
   cautionarchivee tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
 
 --
 -- Structure de la table chargesannuelles
@@ -63,11 +65,13 @@ CREATE TABLE chargesannuelles (
   idbien int NOT NULL,
   libelle varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   refFrequence varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  annee int DEFAULT NULL,
   montantcharge float(13,2) DEFAULT NULL,
   chargeannuelle float(13,2) DEFAULT NULL,
   imputable tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
 
 --
 -- Structure de la table frequencepaiement
@@ -76,7 +80,7 @@ CREATE TABLE chargesannuelles (
 DROP TABLE IF EXISTS frequencepaiement;
 CREATE TABLE frequencepaiement (
   libelle varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  occurrence int NOT NULL
+  occurrence float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -106,6 +110,7 @@ CREATE TABLE grpedebiens (
   nomdugroupe varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
 
 --
 -- Structure de la table lignegroupe
@@ -116,7 +121,6 @@ CREATE TABLE lignegroupe (
   idgroupe int NOT NULL,
   idbien int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 
 -- --------------------------------------------------------
 
@@ -140,6 +144,7 @@ CREATE TABLE locataire (
   locatairearchive tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
 
 --
 -- Structure de la table location
@@ -157,6 +162,7 @@ CREATE TABLE location (
   locationarchivee tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
 
 --
 -- Structure de la table paiement
@@ -174,6 +180,7 @@ CREATE TABLE paiement (
   loyerregle tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
 
 --
 -- Structure de la table utilisateur
@@ -194,10 +201,9 @@ CREATE TABLE utilisateur (
   adresseserveursmtp varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   port int NOT NULL,
   clientid varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  clientsecret varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL
-  signature varchar(256) DEFAULT NULL utf8mb4_unicode_ci
+  clientsecret varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  signature varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 
 --
 -- Index pour les tables déchargées
@@ -221,7 +227,8 @@ ALTER TABLE caution
 ALTER TABLE chargesannuelles
   ADD PRIMARY KEY (idchargeannuelle),
   ADD KEY i_fk_chargesannuelles_bien1 (idbien),
-  ADD KEY i_fk_chargesannuelles_libelleFreq (refFrequence) USING BTREE;
+  ADD KEY i_fk_chargesannuelles_libelleFreq (refFrequence) USING BTREE,
+  ADD KEY idx_annee (annee);
 
 --
 -- Index pour la table frequencepaiement

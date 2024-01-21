@@ -60,10 +60,11 @@ namespace GestionLocation
             lstCharges.Items.Clear();
             this.lesCharges.Clear();
             this.chargeBien.Clear();
-            this.req = $"SELECT idchargeannuelle, idbien, libelle, montantcharge, refFrequence FROM chargesannuelles ";
+            this.req = $"SELECT idchargeannuelle, idbien, libelle, montantcharge, refFrequence FROM chargesannuelles " +
+                $"WHERE (refFrequence != 'Ponctuelle' OR refFrequence = 'Ponctuelle' AND annee = YEAR(NOW())) ";
             if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
             {
-                this.req += $"WHERE idbien={this.leBien[0]} ";
+                this.req += $"AND idbien={this.leBien[0]} ";
             }
             this.req += "ORDER BY libelle";
             this.command = new MySqlCommand(this.req, Global.Connexion);

@@ -50,3 +50,8 @@ SELECT SUM(loyerHC) AS 'Total loyers HC', SUM(charges) AS 'Total charges', SUM(l
 SELECT COUNT(idlocation) FROM location WHERE idbien IN
 (SELECT idbien FROM lignegroupe WHERE idbien IN
 (SELECT idbien FROM grpedebiens WHERE nomdugroupe = 'Coloc 52'))
+
+# Calcule les charges annuelles pour l'ensemble des biens pour une année donnée
+SELECT SUM(chargeannuelle) + COALESCE((SELECT SUM(chargeannuelle) AS "Charges ponctuelles 2024" FROM chargesannuelles WHERE annee = "2024"),0) AS "Charges annuelles" 
+FROM chargesannuelles
+WHERE refFrequence != "Ponctuelle"
