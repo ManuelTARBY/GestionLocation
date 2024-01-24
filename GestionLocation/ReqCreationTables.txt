@@ -1,9 +1,4 @@
-﻿SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+﻿/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
@@ -30,7 +25,17 @@ CREATE TABLE bien (
   villebien varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   chargesimputables int DEFAULT NULL,
   chargeannuelles int DEFAULT NULL,
-  bienarchive tinyint(1) DEFAULT NULL
+  bienarchive tinyint(1) DEFAULT NULL,
+  typehabitat varchar(11) COLLATE utf8mb4_unicode_ci NOT NULL,
+  regimejuridique varchar(14) COLLATE utf8mb4_unicode_ci NOT NULL,
+  periodeconstruction varchar(4) COLLATE utf8mb4_unicode_ci NOT NULL,
+  superficie float(13,2) NOT NULL,
+  nbpiece int NOT NULL,
+  description text COLLATE utf8mb4_unicode_ci NOT NULL,
+  elementequip text COLLATE utf8mb4_unicode_ci NOT NULL,
+  autre text COLLATE utf8mb4_unicode_ci NOT NULL,
+  prodchauff varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  prodeauchaude varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -52,6 +57,13 @@ CREATE TABLE caution (
   emailcaution varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   cautionarchivee tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table caution
+--
+
+INSERT INTO caution (idcaution, prenomcaution, nomcaution, nomcompletcaution, adressecaution, cpcaution, villecaution, telephonecaution, emailcaution, cautionarchivee) VALUES
+(1, '(Action Logement)', 'VISALE', 'VISALE (Action Logement)', '19/21 quai d\'Austerlitz', '75013', 'Paris', '09 70 80 08 00', '', 0);
 
 -- --------------------------------------------------------
 

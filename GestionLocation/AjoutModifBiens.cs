@@ -12,7 +12,9 @@ namespace GestionLocation
         private string req;
         private readonly int id;
         private readonly string typeReq;
-        private readonly string[] rubBiens = {"idbien", "nombien", "loyerhc", "charges", "loyercc", "adressebien", "cpbien", "villebien", "bienarchive"};
+        private readonly string[] rubBiens = {"idbien", "nombien", "loyerhc", "charges", "loyercc", "adressebien", "cpbien", 
+            "villebien", "bienarchive", "typehabitat", "regimejuridique", "periodeconstruction", "superficie", "nbpiece",
+            "description", "elementequip", "autre", "prodchauff", "prodeauchaude"};
 
         /// <summary>
         /// Consstructeur de la fenêtre AjoutModifBiens
@@ -23,6 +25,7 @@ namespace GestionLocation
         public AjoutModifBiens(Biens fenBien, string typeReq, int id = 0)
         {
             InitializeComponent();
+            RemplitLesCombos();
             this.Text = "Ajout/Modification d'un bien";
             this.leBien = fenBien;
             this.id = id;
@@ -42,6 +45,30 @@ namespace GestionLocation
             }
             lblID.Text = $"ID : {this.id}";
         }
+
+
+        /// <summary>
+        /// Remplit les combobox de la fenêtre
+        /// </summary>
+        public void RemplitLesCombos()
+        {
+            // Types d'habitat
+            cbxTypeHabitat.Items.Add("Appartement");
+            cbxTypeHabitat.Items.Add("Maison");
+
+            // Régimes juridiques
+            cbxRegimeJuri.Items.Add("Monopropriété");
+            cbxRegimeJuri.Items.Add("Copropriété");
+
+            // Modes de production de chauffage
+            cbxProdChauff.Items.Add("Individuel");
+            cbxProdChauff.Items.Add("Collectif");
+
+            // Mode de production d'eau chaude
+            cbxProdEauChaude.Items.Add("Individuel");
+            cbxProdEauChaude.Items.Add("Collectif");
+        }
+
 
         /// <summary>
         /// Remplit les champs
@@ -69,6 +96,12 @@ namespace GestionLocation
             {
                 cbxArchive.Checked = false;
             }
+            txtPerConstruc.Text = reader.GetString(13);
+            txtSuperficie.Text = reader.GetString(14);
+            txtNbPiece.Text = reader.GetString(15);
+            txtDescriLogement.Text = reader.GetString(16);
+            txtElemEquip.Text = reader.GetString(17);
+            txtAutre.Text = reader.GetString(18);
             // fermeture du curseur
             reader.Close();
         }
@@ -150,7 +183,12 @@ namespace GestionLocation
             this.req = $"{this.typeReq} bien SET ";
             this.req += $"idbien = {this.id}, nombien = \"{txtNom.Text}\", loyerHC = \"{txtLoyerHC.Text}\", " +
                 $"charges = \"{txtCharges.Text}\", loyerCC = \"{txtLoyerCC.Text}\", adressebien = \"{txtAdresse.Text}\", " +
-                $"cpbien = \"{txtCp.Text}\", villebien = \"{txtVille.Text.ToUpper()}\", bienarchive = {cbxArchive.Checked} WHERE idbien = {this.id}";
+                $"cpbien = \"{txtCp.Text}\", villebien = \"{txtVille.Text.ToUpper()}\", bienarchive = {cbxArchive.Checked}, " +
+                $"typehabitat = \"{cbxTypeHabitat.SelectedItem}\", regimejuridique = \"{cbxRegimeJuri.SelectedItem}\", " +
+                $"periodeconstruction = \"{txtPerConstruc.Text}\", superficie = \"{txtSuperficie.Text}\", " +
+                $"nbpiece = \"{txtNbPiece.Text}\", description = \"{txtDescriLogement.Text}\", " +
+                $"elementequip = \"{txtElemEquip.Text}\", autre = \"{txtAutre.Text}\"," +
+                $"prodchauff = \"{cbxProdChauff.SelectedItem}\", prodeauchaude = \"{cbxProdEauChaude.SelectedItem}\" WHERE idbien = {this.id}";
         }
 
         /// <summary>
@@ -163,8 +201,11 @@ namespace GestionLocation
             {
                 this.req += $"{rubBiens[i]}, ";
             }
-            this.req += $"{rubBiens[8]}) VALUES ({this.id}, \"{txtNom.Text}\", \"{txtLoyerHC.Text}\", \"{txtCharges.Text}\", " +
-                $"\"{txtLoyerCC.Text}\", \"{txtAdresse.Text}\", \"{txtCp.Text}\", \"{txtVille.Text.ToUpper()}\", {cbxArchive.Checked})";
+            this.req += $"{rubBiens[rubBiens.Length-1]}) VALUES ({this.id}, \"{txtNom.Text}\", \"{txtLoyerHC.Text}\", \"{txtCharges.Text}\", " +
+                $"\"{txtLoyerCC.Text}\", \"{txtAdresse.Text}\", \"{txtCp.Text}\", \"{txtVille.Text.ToUpper()}\", {cbxArchive.Checked}, " +
+                $"\"{cbxTypeHabitat.SelectedItem}\", \"{cbxRegimeJuri.SelectedItem}\", \"{txtPerConstruc.Text}\", \"{txtSuperficie.Text}\", " +
+                $"\"{txtNbPiece.Text}\", \"{txtNbPiece.Text}\", \"{txtDescriLogement.Text}\", \"{txtElemEquip.Text}\", " +
+                $"\"{txtAutre.Text}\", \"{cbxProdChauff.SelectedItem}\", \"{cbxProdEauChaude.SelectedItem}\")";
         }
 
 

@@ -236,7 +236,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnValider_Click(object sender, EventArgs e)
         {
-            if (ChampsRenseignes() == true)
+            if (ChampsRenseignes())
             {
                 string[] lesId = RecupLesId();
                 if (this.typeReq.Equals("UPDATE"))
@@ -299,6 +299,16 @@ namespace GestionLocation
                 find.Replacement.Text = data.Value;
                 find.Execute(Replace: Word.WdReplace.wdReplaceAll);
             }
+            find.Text = "%NbExemplaire%";
+            if (datas["NomCaution"].Equals("VISALE"))
+            {
+                find.Replacement.Text = "2";
+            }
+            else
+            {
+                find.Replacement.Text = "3";
+            }
+            find.Execute(Replace: Word.WdReplace.wdReplaceAll);
 
             // Sauvegarde des modifications
             bail.Save();

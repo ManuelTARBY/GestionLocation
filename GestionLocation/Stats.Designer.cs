@@ -37,6 +37,14 @@ namespace GestionLocation
             this.gestionlocationDataSet = new GestionLocation.gestionlocationDataSet();
             this.v_ca_annuelTableAdapter = new GestionLocation.gestionlocationDataSetTableAdapters.v_ca_annuelTableAdapter();
             this.cbxListBiens = new System.Windows.Forms.ComboBox();
+            this.cbxAnnee = new System.Windows.Forms.ComboBox();
+            this.lblAnnee = new System.Windows.Forms.Label();
+            this.txtCFAnnuel = new System.Windows.Forms.TextBox();
+            this.lblCFAnnuel = new System.Windows.Forms.Label();
+            this.lblCAAnnuel = new System.Windows.Forms.Label();
+            this.txtCAAnnuel = new System.Windows.Forms.TextBox();
+            this.lblChargesAnnuelles = new System.Windows.Forms.Label();
+            this.txtChargesAnnuelles = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.vcaannuelBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gestionlocationDataSet)).BeginInit();
@@ -61,7 +69,7 @@ namespace GestionLocation
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersWidth = 62;
             this.dataGridView1.RowTemplate.Height = 28;
-            this.dataGridView1.Size = new System.Drawing.Size(483, 426);
+            this.dataGridView1.Size = new System.Drawing.Size(483, 141);
             this.dataGridView1.TabIndex = 0;
             // 
             // annéeDataGridViewTextBoxColumn
@@ -104,11 +112,85 @@ namespace GestionLocation
             this.cbxListBiens.Size = new System.Drawing.Size(225, 28);
             this.cbxListBiens.TabIndex = 1;
             // 
+            // cbxAnnee
+            // 
+            this.cbxAnnee.FormattingEnabled = true;
+            this.cbxAnnee.Location = new System.Drawing.Point(40, 228);
+            this.cbxAnnee.Name = "cbxAnnee";
+            this.cbxAnnee.Size = new System.Drawing.Size(211, 28);
+            this.cbxAnnee.TabIndex = 2;
+            this.cbxAnnee.SelectedIndexChanged += new System.EventHandler(this.CbxAnnee_SelectedIndexChanged);
+            // 
+            // lblAnnee
+            // 
+            this.lblAnnee.AutoSize = true;
+            this.lblAnnee.Location = new System.Drawing.Point(45, 205);
+            this.lblAnnee.Name = "lblAnnee";
+            this.lblAnnee.Size = new System.Drawing.Size(56, 20);
+            this.lblAnnee.TabIndex = 3;
+            this.lblAnnee.Text = "Année";
+            // 
+            // txtCFAnnuel
+            // 
+            this.txtCFAnnuel.Location = new System.Drawing.Point(319, 344);
+            this.txtCFAnnuel.Name = "txtCFAnnuel";
+            this.txtCFAnnuel.Size = new System.Drawing.Size(143, 26);
+            this.txtCFAnnuel.TabIndex = 4;
+            // 
+            // lblCFAnnuel
+            // 
+            this.lblCFAnnuel.AutoSize = true;
+            this.lblCFAnnuel.Location = new System.Drawing.Point(315, 319);
+            this.lblCFAnnuel.Name = "lblCFAnnuel";
+            this.lblCFAnnuel.Size = new System.Drawing.Size(135, 20);
+            this.lblCFAnnuel.TabIndex = 5;
+            this.lblCFAnnuel.Text = "Cash Flow annuel";
+            // 
+            // lblCAAnnuel
+            // 
+            this.lblCAAnnuel.AutoSize = true;
+            this.lblCAAnnuel.Location = new System.Drawing.Point(315, 203);
+            this.lblCAAnnuel.Name = "lblCAAnnuel";
+            this.lblCAAnnuel.Size = new System.Drawing.Size(83, 20);
+            this.lblCAAnnuel.TabIndex = 7;
+            this.lblCAAnnuel.Text = "CA annuel";
+            // 
+            // txtCAAnnuel
+            // 
+            this.txtCAAnnuel.Location = new System.Drawing.Point(319, 228);
+            this.txtCAAnnuel.Name = "txtCAAnnuel";
+            this.txtCAAnnuel.Size = new System.Drawing.Size(143, 26);
+            this.txtCAAnnuel.TabIndex = 6;
+            // 
+            // lblChargesAnnuelles
+            // 
+            this.lblChargesAnnuelles.AutoSize = true;
+            this.lblChargesAnnuelles.Location = new System.Drawing.Point(315, 261);
+            this.lblChargesAnnuelles.Name = "lblChargesAnnuelles";
+            this.lblChargesAnnuelles.Size = new System.Drawing.Size(141, 20);
+            this.lblChargesAnnuelles.TabIndex = 9;
+            this.lblChargesAnnuelles.Text = "Charges annuelles";
+            // 
+            // txtChargesAnnuelles
+            // 
+            this.txtChargesAnnuelles.Location = new System.Drawing.Point(319, 286);
+            this.txtChargesAnnuelles.Name = "txtChargesAnnuelles";
+            this.txtChargesAnnuelles.Size = new System.Drawing.Size(143, 26);
+            this.txtChargesAnnuelles.TabIndex = 8;
+            // 
             // Stats
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.lblChargesAnnuelles);
+            this.Controls.Add(this.txtChargesAnnuelles);
+            this.Controls.Add(this.lblCAAnnuel);
+            this.Controls.Add(this.txtCAAnnuel);
+            this.Controls.Add(this.lblCFAnnuel);
+            this.Controls.Add(this.txtCFAnnuel);
+            this.Controls.Add(this.lblAnnee);
+            this.Controls.Add(this.cbxAnnee);
             this.Controls.Add(this.cbxListBiens);
             this.Controls.Add(this.dataGridView1);
             this.Name = "Stats";
@@ -118,6 +200,7 @@ namespace GestionLocation
             ((System.ComponentModel.ISupportInitialize)(this.vcaannuelBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gestionlocationDataSet)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -130,5 +213,13 @@ namespace GestionLocation
         private System.Windows.Forms.DataGridViewTextBoxColumn annéeDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn cADataGridViewTextBoxColumn;
         private System.Windows.Forms.ComboBox cbxListBiens;
+        private System.Windows.Forms.ComboBox cbxAnnee;
+        private System.Windows.Forms.Label lblAnnee;
+        private System.Windows.Forms.TextBox txtCFAnnuel;
+        private System.Windows.Forms.Label lblCFAnnuel;
+        private System.Windows.Forms.Label lblCAAnnuel;
+        private System.Windows.Forms.TextBox txtCAAnnuel;
+        private System.Windows.Forms.Label lblChargesAnnuelles;
+        private System.Windows.Forms.TextBox txtChargesAnnuelles;
     }
 }

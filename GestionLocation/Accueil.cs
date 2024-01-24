@@ -370,8 +370,8 @@ namespace GestionLocation
         private void BtnUser_Click(object sender, EventArgs e)
         {
             // Ouvre la fenêtre des stats
-            /*Stats fenStats = new Stats();
-            fenStats.ShowDialog();*/
+            Stats fenStats = new Stats();
+            fenStats.ShowDialog();
             // Ouvre la fenêtre de l'utilisateur
             /*string[] infos = RecupInfosUser(this.idUser);
             infos[0] = "UPDATE utilisateur SET";

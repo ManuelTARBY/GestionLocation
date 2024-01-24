@@ -61,7 +61,7 @@ namespace GestionLocation
             bool finCurseur = !reader.Read();
             while (!finCurseur)
             {
-                // affichage des champs récupérés dans la ligne
+                // Affiche les champs récupérés dans la ligne
                 string item = $"{reader["Bien"]} || {reader["Locataire"]} || Du {reader.GetDateTime(2):d} au {reader.GetDateTime(3):d} || Caution : {reader["Caution"]}";
                 lstLocations.Items.Add(item);
                 lesId.Add(item, (int)(reader["id"]));
