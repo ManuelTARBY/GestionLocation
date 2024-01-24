@@ -426,8 +426,8 @@ namespace GestionLocation
             this.tableLayoutPanel3.Controls.Add(this.lblEleEquip, 0, 2);
             this.tableLayoutPanel3.Controls.Add(this.lblAutre, 0, 4);
             this.tableLayoutPanel3.Controls.Add(this.txtDescriLogement, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.txtElemEquip, 0, 3);
             this.tableLayoutPanel3.Controls.Add(this.txtAutre, 0, 5);
+            this.tableLayoutPanel3.Controls.Add(this.txtElemEquip, 0, 3);
             this.tableLayoutPanel3.Location = new System.Drawing.Point(513, 3);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 7;

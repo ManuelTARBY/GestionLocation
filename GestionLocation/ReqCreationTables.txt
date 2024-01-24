@@ -13,6 +13,7 @@
 -- Structure de la table bien
 --
 
+
 DROP TABLE IF EXISTS bien;
 CREATE TABLE bien (
   idbien int NOT NULL,

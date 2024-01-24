@@ -247,8 +247,8 @@ namespace GestionLocation
             this.tableLayoutPanel3.Controls.Add(this.btnCharges, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.btnLocataires, 2, 0);
             this.tableLayoutPanel3.Controls.Add(this.btnCautions, 3, 0);
-            this.tableLayoutPanel3.Controls.Add(this.btnUser, 3, 1);
             this.tableLayoutPanel3.Controls.Add(this.btnGroupes, 2, 1);
+            this.tableLayoutPanel3.Controls.Add(this.btnUser, 3, 1);
             this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 2;
