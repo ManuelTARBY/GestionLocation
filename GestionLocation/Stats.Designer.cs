@@ -117,7 +117,7 @@ namespace GestionLocation
             this.cbxAnnee.FormattingEnabled = true;
             this.cbxAnnee.Location = new System.Drawing.Point(40, 228);
             this.cbxAnnee.Name = "cbxAnnee";
-            this.cbxAnnee.Size = new System.Drawing.Size(211, 28);
+            this.cbxAnnee.Size = new System.Drawing.Size(131, 28);
             this.cbxAnnee.TabIndex = 2;
             this.cbxAnnee.SelectedIndexChanged += new System.EventHandler(this.CbxAnnee_SelectedIndexChanged);
             // 

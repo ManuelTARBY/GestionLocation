@@ -57,16 +57,16 @@ namespace GestionLocation
             cbxTypeHabitat.Items.Add("Maison");
 
             // Régimes juridiques
-            cbxRegimeJuri.Items.Add("Monopropriété");
+            cbxRegimeJuri.Items.Add("Mono propriété");
             cbxRegimeJuri.Items.Add("Copropriété");
 
             // Modes de production de chauffage
-            cbxProdChauff.Items.Add("Individuel");
-            cbxProdChauff.Items.Add("Collectif");
+            cbxProdChauff.Items.Add("Individuelle");
+            cbxProdChauff.Items.Add("Collective");
 
             // Mode de production d'eau chaude
-            cbxProdEauChaude.Items.Add("Individuel");
-            cbxProdEauChaude.Items.Add("Collectif");
+            cbxProdEauChaude.Items.Add("Individuelle");
+            cbxProdEauChaude.Items.Add("Collective");
         }
 
 
@@ -96,12 +96,43 @@ namespace GestionLocation
             {
                 cbxArchive.Checked = false;
             }
+            if (reader.GetString(11).Equals("Appartement")) {
+                cbxTypeHabitat.SelectedIndex = 0;
+            }
+            else
+            {
+                cbxTypeHabitat.SelectedIndex = 1;
+            }
+            if (reader.GetString(12).Equals("Mono propriété"))
+            { 
+                cbxRegimeJuri.SelectedIndex = 0;
+            }
+            else
+            {
+                cbxRegimeJuri.SelectedIndex = 1;
+            }
             txtPerConstruc.Text = reader.GetString(13);
             txtSuperficie.Text = reader.GetString(14);
             txtNbPiece.Text = reader.GetString(15);
             txtDescriLogement.Text = reader.GetString(16);
             txtElemEquip.Text = reader.GetString(17);
             txtAutre.Text = reader.GetString(18);
+            if (reader.GetString(19).Equals("Individuelle"))
+            {
+                cbxProdChauff.SelectedIndex = 0;
+            }
+            else
+            {
+                cbxProdChauff.SelectedIndex = 1;
+            }
+            if (reader.GetString(20).Equals("Individuelle"))
+            {
+                cbxProdEauChaude.SelectedIndex = 0;
+            }
+            else
+            {
+                cbxProdEauChaude.SelectedIndex = 1;
+            }
             // fermeture du curseur
             reader.Close();
         }

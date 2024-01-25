@@ -40,10 +40,11 @@ namespace GestionLocation
             this.btnCautions = new System.Windows.Forms.Button();
             this.btnCharges = new System.Windows.Forms.Button();
             this.btnPaiements = new System.Windows.Forms.Button();
-            this.btnUser = new System.Windows.Forms.Button();
+            this.btnStats = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.btnUser = new System.Windows.Forms.Button();
             this.btnGroupes = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -71,9 +72,9 @@ namespace GestionLocation
             this.btnFermerAppli.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.btnFermerAppli.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnFermerAppli.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btnFermerAppli.Location = new System.Drawing.Point(832, 3);
+            this.btnFermerAppli.Location = new System.Drawing.Point(779, 89);
             this.btnFermerAppli.Name = "btnFermerAppli";
-            this.btnFermerAppli.Size = new System.Drawing.Size(141, 173);
+            this.btnFermerAppli.Size = new System.Drawing.Size(188, 81);
             this.btnFermerAppli.TabIndex = 5;
             this.btnFermerAppli.Text = "Quitter";
             this.btnFermerAppli.UseVisualStyleBackColor = false;
@@ -96,7 +97,7 @@ namespace GestionLocation
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnLocations.Location = new System.Drawing.Point(3, 3);
             this.btnLocations.Name = "btnLocations";
-            this.btnLocations.Size = new System.Drawing.Size(199, 80);
+            this.btnLocations.Size = new System.Drawing.Size(188, 80);
             this.btnLocations.TabIndex = 9;
             this.btnLocations.Text = "Locations";
             this.btnLocations.UseVisualStyleBackColor = true;
@@ -110,9 +111,9 @@ namespace GestionLocation
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnBiens.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnBiens.Location = new System.Drawing.Point(208, 3);
+            this.btnBiens.Location = new System.Drawing.Point(197, 3);
             this.btnBiens.Name = "btnBiens";
-            this.btnBiens.Size = new System.Drawing.Size(199, 80);
+            this.btnBiens.Size = new System.Drawing.Size(188, 80);
             this.btnBiens.TabIndex = 10;
             this.btnBiens.Text = "Biens";
             this.btnBiens.UseVisualStyleBackColor = true;
@@ -125,9 +126,9 @@ namespace GestionLocation
             this.btnLocataires.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnLocataires.Location = new System.Drawing.Point(413, 3);
+            this.btnLocataires.Location = new System.Drawing.Point(391, 3);
             this.btnLocataires.Name = "btnLocataires";
-            this.btnLocataires.Size = new System.Drawing.Size(199, 80);
+            this.btnLocataires.Size = new System.Drawing.Size(188, 80);
             this.btnLocataires.TabIndex = 11;
             this.btnLocataires.Text = "Locataires";
             this.btnLocataires.UseVisualStyleBackColor = true;
@@ -140,9 +141,9 @@ namespace GestionLocation
             this.btnCautions.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCautions.Location = new System.Drawing.Point(618, 3);
+            this.btnCautions.Location = new System.Drawing.Point(585, 3);
             this.btnCautions.Name = "btnCautions";
-            this.btnCautions.Size = new System.Drawing.Size(202, 80);
+            this.btnCautions.Size = new System.Drawing.Size(188, 80);
             this.btnCautions.TabIndex = 12;
             this.btnCautions.Text = "Cautions";
             this.btnCautions.UseVisualStyleBackColor = true;
@@ -157,7 +158,7 @@ namespace GestionLocation
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCharges.Location = new System.Drawing.Point(3, 89);
             this.btnCharges.Name = "btnCharges";
-            this.btnCharges.Size = new System.Drawing.Size(199, 81);
+            this.btnCharges.Size = new System.Drawing.Size(188, 81);
             this.btnCharges.TabIndex = 13;
             this.btnCharges.Text = "Charges";
             this.btnCharges.UseVisualStyleBackColor = true;
@@ -170,9 +171,9 @@ namespace GestionLocation
             this.btnPaiements.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPaiements.Location = new System.Drawing.Point(208, 89);
+            this.btnPaiements.Location = new System.Drawing.Point(197, 89);
             this.btnPaiements.Name = "btnPaiements";
-            this.btnPaiements.Size = new System.Drawing.Size(199, 81);
+            this.btnPaiements.Size = new System.Drawing.Size(188, 81);
             this.btnPaiements.TabIndex = 14;
             this.btnPaiements.Text = "Paiements";
             this.btnPaiements.UseVisualStyleBackColor = true;
@@ -180,20 +181,20 @@ namespace GestionLocation
             this.btnPaiements.MouseEnter += new System.EventHandler(this.BtnPaiements_MouseEnter);
             this.btnPaiements.MouseLeave += new System.EventHandler(this.BtnPaiements_MouseLeave);
             // 
-            // btnUser
+            // btnStats
             // 
-            this.btnUser.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.btnStats.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnUser.Location = new System.Drawing.Point(618, 89);
-            this.btnUser.Name = "btnUser";
-            this.btnUser.Size = new System.Drawing.Size(202, 81);
-            this.btnUser.TabIndex = 15;
-            this.btnUser.Text = "Utilisateur";
-            this.btnUser.UseVisualStyleBackColor = true;
-            this.btnUser.Click += new System.EventHandler(this.BtnUser_Click);
-            this.btnUser.MouseEnter += new System.EventHandler(this.BtnUser_MouseEnter);
-            this.btnUser.MouseLeave += new System.EventHandler(this.BtnUser_MouseLeave);
+            this.btnStats.Location = new System.Drawing.Point(585, 89);
+            this.btnStats.Name = "btnStats";
+            this.btnStats.Size = new System.Drawing.Size(188, 81);
+            this.btnStats.TabIndex = 15;
+            this.btnStats.Text = "Données";
+            this.btnStats.UseVisualStyleBackColor = true;
+            this.btnStats.Click += new System.EventHandler(this.BtnDatas_Click);
+            this.btnStats.MouseEnter += new System.EventHandler(this.BtnUser_MouseEnter);
+            this.btnStats.MouseLeave += new System.EventHandler(this.BtnUser_MouseLeave);
             // 
             // tableLayoutPanel1
             // 
@@ -219,11 +220,9 @@ namespace GestionLocation
             this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 85F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.btnFermerAppli, 1, 0);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
@@ -236,11 +235,13 @@ namespace GestionLocation
             this.tableLayoutPanel3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel3.ColumnCount = 4;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel3.ColumnCount = 5;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel3.Controls.Add(this.btnUser, 4, 0);
             this.tableLayoutPanel3.Controls.Add(this.btnPaiements, 1, 1);
             this.tableLayoutPanel3.Controls.Add(this.btnLocations, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.btnBiens, 1, 0);
@@ -248,23 +249,37 @@ namespace GestionLocation
             this.tableLayoutPanel3.Controls.Add(this.btnLocataires, 2, 0);
             this.tableLayoutPanel3.Controls.Add(this.btnCautions, 3, 0);
             this.tableLayoutPanel3.Controls.Add(this.btnGroupes, 2, 1);
-            this.tableLayoutPanel3.Controls.Add(this.btnUser, 3, 1);
+            this.tableLayoutPanel3.Controls.Add(this.btnStats, 3, 1);
+            this.tableLayoutPanel3.Controls.Add(this.btnFermerAppli, 4, 1);
             this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(823, 173);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(970, 173);
             this.tableLayoutPanel3.TabIndex = 6;
+            // 
+            // btnUser
+            // 
+            this.btnUser.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnUser.Location = new System.Drawing.Point(779, 3);
+            this.btnUser.Name = "btnUser";
+            this.btnUser.Size = new System.Drawing.Size(188, 80);
+            this.btnUser.TabIndex = 17;
+            this.btnUser.Text = "Utilisateur";
+            this.btnUser.UseVisualStyleBackColor = true;
+            this.btnUser.Click += new System.EventHandler(this.BtnUser_Click_1);
             // 
             // btnGroupes
             // 
             this.btnGroupes.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnGroupes.Location = new System.Drawing.Point(413, 89);
+            this.btnGroupes.Location = new System.Drawing.Point(391, 89);
             this.btnGroupes.Name = "btnGroupes";
-            this.btnGroupes.Size = new System.Drawing.Size(199, 81);
+            this.btnGroupes.Size = new System.Drawing.Size(188, 81);
             this.btnGroupes.TabIndex = 16;
             this.btnGroupes.Text = "Groupes";
             this.btnGroupes.UseVisualStyleBackColor = true;
@@ -299,10 +314,11 @@ namespace GestionLocation
         private System.Windows.Forms.Button btnCautions;
         private System.Windows.Forms.Button btnCharges;
         private System.Windows.Forms.Button btnPaiements;
-        private System.Windows.Forms.Button btnUser;
+        private System.Windows.Forms.Button btnStats;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.Button btnGroupes;
+        private System.Windows.Forms.Button btnUser;
     }
 }

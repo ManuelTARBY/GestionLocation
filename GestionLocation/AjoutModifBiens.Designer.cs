@@ -54,22 +54,22 @@ namespace GestionLocation
             this.lblPeriodConstruc = new System.Windows.Forms.Label();
             this.lblSuperficie = new System.Windows.Forms.Label();
             this.lblNbPiece = new System.Windows.Forms.Label();
-            this.lblDescription = new System.Windows.Forms.Label();
             this.lblProdEauChaude = new System.Windows.Forms.Label();
             this.lblProdChauff = new System.Windows.Forms.Label();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.lblEleEquip = new System.Windows.Forms.Label();
-            this.lblAutre = new System.Windows.Forms.Label();
-            this.txtDescriLogement = new System.Windows.Forms.TextBox();
-            this.txtElemEquip = new System.Windows.Forms.TextBox();
-            this.txtAutre = new System.Windows.Forms.TextBox();
             this.txtPerConstruc = new System.Windows.Forms.TextBox();
             this.cbxRegimeJuri = new System.Windows.Forms.ComboBox();
             this.txtSuperficie = new System.Windows.Forms.TextBox();
             this.txtNbPiece = new System.Windows.Forms.TextBox();
             this.cbxProdChauff = new System.Windows.Forms.ComboBox();
             this.cbxProdEauChaude = new System.Windows.Forms.ComboBox();
+            this.lblDescription = new System.Windows.Forms.Label();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.lblEleEquip = new System.Windows.Forms.Label();
+            this.lblAutre = new System.Windows.Forms.Label();
+            this.txtDescriLogement = new System.Windows.Forms.TextBox();
+            this.txtAutre = new System.Windows.Forms.TextBox();
+            this.txtElemEquip = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -355,11 +355,11 @@ namespace GestionLocation
             // 
             this.lblSuperficie.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblSuperficie.AutoSize = true;
-            this.lblSuperficie.Location = new System.Drawing.Point(103, 634);
+            this.lblSuperficie.Location = new System.Drawing.Point(71, 634);
             this.lblSuperficie.Name = "lblSuperficie";
-            this.lblSuperficie.Size = new System.Drawing.Size(80, 20);
+            this.lblSuperficie.Size = new System.Drawing.Size(112, 20);
             this.lblSuperficie.TabIndex = 24;
-            this.lblSuperficie.Text = "Superficie";
+            this.lblSuperficie.Text = "Superficie (m²)";
             // 
             // lblNbPiece
             // 
@@ -370,16 +370,6 @@ namespace GestionLocation
             this.lblNbPiece.Size = new System.Drawing.Size(129, 20);
             this.lblNbPiece.TabIndex = 25;
             this.lblNbPiece.Text = "Nombre de pièce";
-            // 
-            // lblDescription
-            // 
-            this.lblDescription.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.lblDescription.AutoSize = true;
-            this.lblDescription.Location = new System.Drawing.Point(3, 25);
-            this.lblDescription.Name = "lblDescription";
-            this.lblDescription.Size = new System.Drawing.Size(181, 20);
-            this.lblDescription.TabIndex = 26;
-            this.lblDescription.Text = "Description du logement";
             // 
             // lblProdEauChaude
             // 
@@ -402,6 +392,69 @@ namespace GestionLocation
             this.lblProdChauff.TabIndex = 30;
             this.lblProdChauff.Text = "Mode de production de chauffage";
             this.lblProdChauff.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // txtPerConstruc
+            // 
+            this.txtPerConstruc.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.txtPerConstruc.Location = new System.Drawing.Point(189, 575);
+            this.txtPerConstruc.MaxLength = 4;
+            this.txtPerConstruc.Name = "txtPerConstruc";
+            this.txtPerConstruc.Size = new System.Drawing.Size(103, 26);
+            this.txtPerConstruc.TabIndex = 31;
+            // 
+            // cbxRegimeJuri
+            // 
+            this.cbxRegimeJuri.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.cbxRegimeJuri.FormattingEnabled = true;
+            this.cbxRegimeJuri.Location = new System.Drawing.Point(189, 518);
+            this.cbxRegimeJuri.Name = "cbxRegimeJuri";
+            this.cbxRegimeJuri.Size = new System.Drawing.Size(269, 28);
+            this.cbxRegimeJuri.TabIndex = 32;
+            // 
+            // txtSuperficie
+            // 
+            this.txtSuperficie.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.txtSuperficie.Location = new System.Drawing.Point(189, 631);
+            this.txtSuperficie.MaxLength = 100;
+            this.txtSuperficie.Name = "txtSuperficie";
+            this.txtSuperficie.Size = new System.Drawing.Size(100, 26);
+            this.txtSuperficie.TabIndex = 33;
+            // 
+            // txtNbPiece
+            // 
+            this.txtNbPiece.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.txtNbPiece.Location = new System.Drawing.Point(189, 687);
+            this.txtNbPiece.Name = "txtNbPiece";
+            this.txtNbPiece.Size = new System.Drawing.Size(100, 26);
+            this.txtNbPiece.TabIndex = 34;
+            // 
+            // cbxProdChauff
+            // 
+            this.cbxProdChauff.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.cbxProdChauff.FormattingEnabled = true;
+            this.cbxProdChauff.Location = new System.Drawing.Point(189, 742);
+            this.cbxProdChauff.Name = "cbxProdChauff";
+            this.cbxProdChauff.Size = new System.Drawing.Size(244, 28);
+            this.cbxProdChauff.TabIndex = 35;
+            // 
+            // cbxProdEauChaude
+            // 
+            this.cbxProdEauChaude.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.cbxProdEauChaude.FormattingEnabled = true;
+            this.cbxProdEauChaude.Location = new System.Drawing.Point(189, 798);
+            this.cbxProdEauChaude.Name = "cbxProdEauChaude";
+            this.cbxProdEauChaude.Size = new System.Drawing.Size(244, 28);
+            this.cbxProdEauChaude.TabIndex = 36;
+            // 
+            // lblDescription
+            // 
+            this.lblDescription.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblDescription.AutoSize = true;
+            this.lblDescription.Location = new System.Drawing.Point(3, 25);
+            this.lblDescription.Name = "lblDescription";
+            this.lblDescription.Size = new System.Drawing.Size(181, 20);
+            this.lblDescription.TabIndex = 26;
+            this.lblDescription.Text = "Description du logement";
             // 
             // tableLayoutPanel2
             // 
@@ -472,17 +525,6 @@ namespace GestionLocation
             this.txtDescriLogement.Size = new System.Drawing.Size(497, 210);
             this.txtDescriLogement.TabIndex = 29;
             // 
-            // txtElemEquip
-            // 
-            this.txtElemEquip.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtElemEquip.Location = new System.Drawing.Point(3, 309);
-            this.txtElemEquip.Multiline = true;
-            this.txtElemEquip.Name = "txtElemEquip";
-            this.txtElemEquip.Size = new System.Drawing.Size(497, 210);
-            this.txtElemEquip.TabIndex = 30;
-            // 
             // txtAutre
             // 
             this.txtAutre.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -494,58 +536,16 @@ namespace GestionLocation
             this.txtAutre.Size = new System.Drawing.Size(497, 210);
             this.txtAutre.TabIndex = 31;
             // 
-            // txtPerConstruc
+            // txtElemEquip
             // 
-            this.txtPerConstruc.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.txtPerConstruc.Location = new System.Drawing.Point(189, 575);
-            this.txtPerConstruc.MaxLength = 4;
-            this.txtPerConstruc.Name = "txtPerConstruc";
-            this.txtPerConstruc.Size = new System.Drawing.Size(103, 26);
-            this.txtPerConstruc.TabIndex = 31;
-            // 
-            // cbxRegimeJuri
-            // 
-            this.cbxRegimeJuri.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.cbxRegimeJuri.FormattingEnabled = true;
-            this.cbxRegimeJuri.Location = new System.Drawing.Point(189, 518);
-            this.cbxRegimeJuri.Name = "cbxRegimeJuri";
-            this.cbxRegimeJuri.Size = new System.Drawing.Size(269, 28);
-            this.cbxRegimeJuri.TabIndex = 32;
-            // 
-            // txtSuperficie
-            // 
-            this.txtSuperficie.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.txtSuperficie.Location = new System.Drawing.Point(189, 631);
-            this.txtSuperficie.MaxLength = 100;
-            this.txtSuperficie.Name = "txtSuperficie";
-            this.txtSuperficie.Size = new System.Drawing.Size(100, 26);
-            this.txtSuperficie.TabIndex = 33;
-            // 
-            // txtNbPiece
-            // 
-            this.txtNbPiece.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.txtNbPiece.Location = new System.Drawing.Point(189, 687);
-            this.txtNbPiece.Name = "txtNbPiece";
-            this.txtNbPiece.Size = new System.Drawing.Size(100, 26);
-            this.txtNbPiece.TabIndex = 34;
-            // 
-            // cbxProdChauff
-            // 
-            this.cbxProdChauff.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.cbxProdChauff.FormattingEnabled = true;
-            this.cbxProdChauff.Location = new System.Drawing.Point(189, 742);
-            this.cbxProdChauff.Name = "cbxProdChauff";
-            this.cbxProdChauff.Size = new System.Drawing.Size(244, 28);
-            this.cbxProdChauff.TabIndex = 35;
-            // 
-            // cbxProdEauChaude
-            // 
-            this.cbxProdEauChaude.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.cbxProdEauChaude.FormattingEnabled = true;
-            this.cbxProdEauChaude.Location = new System.Drawing.Point(189, 798);
-            this.cbxProdEauChaude.Name = "cbxProdEauChaude";
-            this.cbxProdEauChaude.Size = new System.Drawing.Size(244, 28);
-            this.cbxProdEauChaude.TabIndex = 36;
+            this.txtElemEquip.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtElemEquip.Location = new System.Drawing.Point(3, 309);
+            this.txtElemEquip.Multiline = true;
+            this.txtElemEquip.Name = "txtElemEquip";
+            this.txtElemEquip.Size = new System.Drawing.Size(497, 210);
+            this.txtElemEquip.TabIndex = 30;
             // 
             // AjoutModifBiens
             // 

@@ -367,18 +367,10 @@ namespace GestionLocation
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void BtnUser_Click(object sender, EventArgs e)
+        private void BtnDatas_Click(object sender, EventArgs e)
         {
-            // Ouvre la fenêtre des stats
             Stats fenStats = new Stats();
             fenStats.ShowDialog();
-            // Ouvre la fenêtre de l'utilisateur
-            /*string[] infos = RecupInfosUser(this.idUser);
-            infos[0] = "UPDATE utilisateur SET";
-            AjoutModifUtilisateurs fenUser = new AjoutModifUtilisateurs(infos, this.fenConnexion);
-            this.Visible = false;
-            fenUser.ShowDialog();
-            this.Visible = true;*/
         }
 
 
@@ -418,5 +410,21 @@ namespace GestionLocation
             fenGroupes.ShowDialog();
         }
 
+
+        /// <summary>
+        /// Ouvre la fenêtre AjoutModifUtilisateurs
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnUser_Click_1(object sender, EventArgs e)
+        {
+            // Ouvre la fenêtre de l'utilisateur
+            string[] infos = RecupInfosUser(this.idUser);
+            infos[0] = "UPDATE utilisateur SET";
+            AjoutModifUtilisateurs fenUser = new AjoutModifUtilisateurs(infos, this.fenConnexion);
+            this.Visible = false;
+            fenUser.ShowDialog();
+            this.Visible = true;
+        }
     }
 }
