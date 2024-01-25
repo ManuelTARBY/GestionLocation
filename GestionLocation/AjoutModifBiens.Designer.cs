@@ -1,4 +1,6 @@
 ﻿
+using System.Windows.Forms;
+
 namespace GestionLocation
 {
     partial class AjoutModifBiens
@@ -330,6 +332,7 @@ namespace GestionLocation
             this.cbxTypeHabitat.Name = "cbxTypeHabitat";
             this.cbxTypeHabitat.Size = new System.Drawing.Size(269, 28);
             this.cbxTypeHabitat.TabIndex = 21;
+            this.cbxTypeHabitat.DropDownStyle = ComboBoxStyle.DropDownList;
             // 
             // lblRegimeJuridique
             // 
@@ -410,6 +413,7 @@ namespace GestionLocation
             this.cbxRegimeJuri.Name = "cbxRegimeJuri";
             this.cbxRegimeJuri.Size = new System.Drawing.Size(269, 28);
             this.cbxRegimeJuri.TabIndex = 32;
+            this.cbxRegimeJuri.DropDownStyle = ComboBoxStyle.DropDownList;
             // 
             // txtSuperficie
             // 
@@ -436,6 +440,7 @@ namespace GestionLocation
             this.cbxProdChauff.Name = "cbxProdChauff";
             this.cbxProdChauff.Size = new System.Drawing.Size(244, 28);
             this.cbxProdChauff.TabIndex = 35;
+            this.cbxProdChauff.DropDownStyle = ComboBoxStyle.DropDownList;
             // 
             // cbxProdEauChaude
             // 
@@ -445,6 +450,7 @@ namespace GestionLocation
             this.cbxProdEauChaude.Name = "cbxProdEauChaude";
             this.cbxProdEauChaude.Size = new System.Drawing.Size(244, 28);
             this.cbxProdEauChaude.TabIndex = 36;
+            this.cbxProdEauChaude.DropDownStyle = ComboBoxStyle.DropDownList;
             // 
             // lblDescription
             // 
