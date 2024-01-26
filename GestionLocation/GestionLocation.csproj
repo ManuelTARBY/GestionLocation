@@ -210,6 +210,12 @@
     <Compile Include="AjoutModifChargeAnnuelle.Designer.cs">
       <DependentUpon>AjoutModifChargeAnnuelle.cs</DependentUpon>
     </Compile>
+    <Compile Include="DateAssurance.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DateAssurance.Designer.cs">
+      <DependentUpon>DateAssurance.cs</DependentUpon>
+    </Compile>
     <Compile Include="FicheBien.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -298,6 +304,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AjoutModifChargeAnnuelle.resx">
       <DependentUpon>AjoutModifChargeAnnuelle.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DateAssurance.resx">
+      <DependentUpon>DateAssurance.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FicheBien.resx">
       <DependentUpon>FicheBien.cs</DependentUpon>

@@ -327,12 +327,12 @@ namespace GestionLocation
             // cbxTypeHabitat
             // 
             this.cbxTypeHabitat.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.cbxTypeHabitat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxTypeHabitat.FormattingEnabled = true;
             this.cbxTypeHabitat.Location = new System.Drawing.Point(189, 462);
             this.cbxTypeHabitat.Name = "cbxTypeHabitat";
             this.cbxTypeHabitat.Size = new System.Drawing.Size(269, 28);
             this.cbxTypeHabitat.TabIndex = 21;
-            this.cbxTypeHabitat.DropDownStyle = ComboBoxStyle.DropDownList;
             // 
             // lblRegimeJuridique
             // 
@@ -408,12 +408,12 @@ namespace GestionLocation
             // cbxRegimeJuri
             // 
             this.cbxRegimeJuri.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.cbxRegimeJuri.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxRegimeJuri.FormattingEnabled = true;
             this.cbxRegimeJuri.Location = new System.Drawing.Point(189, 518);
             this.cbxRegimeJuri.Name = "cbxRegimeJuri";
             this.cbxRegimeJuri.Size = new System.Drawing.Size(269, 28);
             this.cbxRegimeJuri.TabIndex = 32;
-            this.cbxRegimeJuri.DropDownStyle = ComboBoxStyle.DropDownList;
             // 
             // txtSuperficie
             // 
@@ -435,22 +435,22 @@ namespace GestionLocation
             // cbxProdChauff
             // 
             this.cbxProdChauff.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.cbxProdChauff.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxProdChauff.FormattingEnabled = true;
             this.cbxProdChauff.Location = new System.Drawing.Point(189, 742);
             this.cbxProdChauff.Name = "cbxProdChauff";
             this.cbxProdChauff.Size = new System.Drawing.Size(244, 28);
             this.cbxProdChauff.TabIndex = 35;
-            this.cbxProdChauff.DropDownStyle = ComboBoxStyle.DropDownList;
             // 
             // cbxProdEauChaude
             // 
             this.cbxProdEauChaude.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.cbxProdEauChaude.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxProdEauChaude.FormattingEnabled = true;
             this.cbxProdEauChaude.Location = new System.Drawing.Point(189, 798);
             this.cbxProdEauChaude.Name = "cbxProdEauChaude";
             this.cbxProdEauChaude.Size = new System.Drawing.Size(244, 28);
             this.cbxProdEauChaude.TabIndex = 36;
-            this.cbxProdEauChaude.DropDownStyle = ComboBoxStyle.DropDownList;
             // 
             // lblDescription
             // 

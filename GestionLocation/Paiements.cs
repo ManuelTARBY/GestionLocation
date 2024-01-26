@@ -181,6 +181,7 @@ namespace GestionLocation
                 if (paire.Value == this.idLocation)
                 {
                     lstLocations.SelectedIndex = lstLocations.Items.IndexOf(paire.Key);
+                    return;
                 }
             }
         }

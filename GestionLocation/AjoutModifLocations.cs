@@ -343,7 +343,20 @@ namespace GestionLocation
             RecupCaution(lesId[2]);
             // Données sur la location
             RecupLocation();
+            RecupAssurance();
             return this.datas;
+        }
+
+
+        /// <summary>
+        /// Récupère les dates de début et de fin d'assurance du logement
+        /// </summary>
+        public void RecupAssurance()
+        {
+            DateAssurance fenDateAssur = new DateAssurance();
+            fenDateAssur.ShowDialog();
+            this.datas.Add("DateSousAssur", fenDateAssur.lesDates[0]);
+            this.datas.Add("DateFinAssur", fenDateAssur.lesDates[1]);
         }
 
 
@@ -386,12 +399,12 @@ namespace GestionLocation
             reader.Close();
             if (this.datas["NomCaution"].Equals("VISALE"))
             {
-                this.datas.Add("InfoCaution1", $"N° de contrat : ");
+                this.datas.Add("InfoCaution1", $"N° de contrat :");
                 this.datas.Add("InfoCaution2", txtContratVisale.Text);
             }
             else
             {
-                this.datas.Add("InfoCaution1", $"Adresse de la caution : ");
+                this.datas.Add("InfoCaution1", $"Adresse de la caution :");
                 this.datas.Add("InfoCaution2", this.datas["AdresseCaution"]);
             }
         }
@@ -412,6 +425,15 @@ namespace GestionLocation
             }
             this.datas.Add("DebLoc", $"{datDebut.Value:dd/MM/yyyy}");
             this.datas.Add("FinLoc", $"{datFin.Value:dd/MM/yyyy}");
+            double diffDate = (datFin.Value - datDebut.Value).TotalDays + 1;
+            if (diffDate < 365)
+            {
+                this.datas.Add("DuréeContrat", $"{Math.Round((diffDate / 31.417), 1)} mois");
+            }
+            else
+            {
+                this.datas.Add("DuréeContrat", "1 année reconductible par tacite reconduction par période de : 1 an"); ;
+            }
         }
 
 
