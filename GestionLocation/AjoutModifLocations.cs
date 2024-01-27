@@ -309,6 +309,9 @@ namespace GestionLocation
                 find.Replacement.Text = data.Value;
                 find.Execute(Replace: Word.WdReplace.wdReplaceAll);
             }
+            find.Text = "%DateDuJour%";
+            find.Replacement.Text = DateTime.Now.Date.ToString("dd/MM/yyyy");
+            find.Execute(Replace: Word.WdReplace.wdReplaceAll);
             find.Text = "%NbExemplaire%";
             if (datas["NomCaution"].Equals("VISALE"))
             {
@@ -319,12 +322,33 @@ namespace GestionLocation
                 find.Replacement.Text = "3";
             }
             find.Execute(Replace: Word.WdReplace.wdReplaceAll);
+            find.Text = "%MentionCaution%";
+            if (!datas["NomCaution"].Equals("VISALE"))
+            {
+                find.Replacement.Text = "LE(LA) CAUTION";
+            }
+            else
+            {
+                find.Replacement.Text = "";
+            }
+            find.Execute(Replace: Word.WdReplace.wdReplaceAll);
+            find.Text = "%MentionLuApprouve%";
+            if (!datas["NomCaution"].Equals("VISALE"))
+            {
+                find.Replacement.Text = "Lu et approuvé";
+            }
+            else
+            {
+                find.Replacement.Text = "";
+            }
+            find.Execute(Replace: Word.WdReplace.wdReplaceAll);
 
             // Sauvegarde des modifications
             bail.Save();
 
             // Fermeture du document et de l'application Word
             bail.Close();
+            MessageBox.Show("Le contrat de location a été généré.\nPensez à vérifier les champs et à remplir l'IRL.");
             wordApp.Quit();
         }
 

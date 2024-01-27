@@ -21,6 +21,7 @@ namespace GestionLocation
         public DateAssurance()
         {
             InitializeComponent();
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
         }
 
 
@@ -31,14 +32,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnValider_Click(object sender, EventArgs e)
         {
-            if (dateFinValidite.Value <= dateSouscri.Value)
-            {
-                MessageBox.Show("Veuillez entrer une date de fin de validité supérieure à la date de souscription.");
-            }
-            else
-            {
-                this.Dispose();
-            }
+            this.Dispose();
         }
 
 

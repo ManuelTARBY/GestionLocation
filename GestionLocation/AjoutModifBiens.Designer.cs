@@ -86,7 +86,7 @@ namespace GestionLocation
             this.btnValider.Margin = new System.Windows.Forms.Padding(18);
             this.btnValider.Name = "btnValider";
             this.btnValider.Size = new System.Drawing.Size(467, 84);
-            this.btnValider.TabIndex = 0;
+            this.btnValider.TabIndex = 19;
             this.btnValider.Text = "Valider";
             this.btnValider.UseVisualStyleBackColor = true;
             this.btnValider.Click += new System.EventHandler(this.BtnValider_Click);
@@ -101,9 +101,8 @@ namespace GestionLocation
             // 
             // txtNom
             // 
-            this.txtNom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.txtNom.Location = new System.Drawing.Point(189, 59);
+            this.txtNom.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.txtNom.Location = new System.Drawing.Point(189, 71);
             this.txtNom.MaxLength = 50;
             this.txtNom.Name = "txtNom";
             this.txtNom.Size = new System.Drawing.Size(244, 26);
@@ -250,7 +249,7 @@ namespace GestionLocation
             this.cbxArchive.Location = new System.Drawing.Point(189, 862);
             this.cbxArchive.Name = "cbxArchive";
             this.cbxArchive.Size = new System.Drawing.Size(22, 21);
-            this.cbxArchive.TabIndex = 18;
+            this.cbxArchive.TabIndex = 15;
             this.cbxArchive.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel1
@@ -332,7 +331,7 @@ namespace GestionLocation
             this.cbxTypeHabitat.Location = new System.Drawing.Point(189, 462);
             this.cbxTypeHabitat.Name = "cbxTypeHabitat";
             this.cbxTypeHabitat.Size = new System.Drawing.Size(269, 28);
-            this.cbxTypeHabitat.TabIndex = 21;
+            this.cbxTypeHabitat.TabIndex = 8;
             // 
             // lblRegimeJuridique
             // 
@@ -403,7 +402,7 @@ namespace GestionLocation
             this.txtPerConstruc.MaxLength = 4;
             this.txtPerConstruc.Name = "txtPerConstruc";
             this.txtPerConstruc.Size = new System.Drawing.Size(103, 26);
-            this.txtPerConstruc.TabIndex = 31;
+            this.txtPerConstruc.TabIndex = 10;
             // 
             // cbxRegimeJuri
             // 
@@ -413,7 +412,7 @@ namespace GestionLocation
             this.cbxRegimeJuri.Location = new System.Drawing.Point(189, 518);
             this.cbxRegimeJuri.Name = "cbxRegimeJuri";
             this.cbxRegimeJuri.Size = new System.Drawing.Size(269, 28);
-            this.cbxRegimeJuri.TabIndex = 32;
+            this.cbxRegimeJuri.TabIndex = 9;
             // 
             // txtSuperficie
             // 
@@ -422,7 +421,7 @@ namespace GestionLocation
             this.txtSuperficie.MaxLength = 100;
             this.txtSuperficie.Name = "txtSuperficie";
             this.txtSuperficie.Size = new System.Drawing.Size(100, 26);
-            this.txtSuperficie.TabIndex = 33;
+            this.txtSuperficie.TabIndex = 11;
             // 
             // txtNbPiece
             // 
@@ -430,7 +429,7 @@ namespace GestionLocation
             this.txtNbPiece.Location = new System.Drawing.Point(189, 687);
             this.txtNbPiece.Name = "txtNbPiece";
             this.txtNbPiece.Size = new System.Drawing.Size(100, 26);
-            this.txtNbPiece.TabIndex = 34;
+            this.txtNbPiece.TabIndex = 12;
             // 
             // cbxProdChauff
             // 
@@ -440,7 +439,7 @@ namespace GestionLocation
             this.cbxProdChauff.Location = new System.Drawing.Point(189, 742);
             this.cbxProdChauff.Name = "cbxProdChauff";
             this.cbxProdChauff.Size = new System.Drawing.Size(244, 28);
-            this.cbxProdChauff.TabIndex = 35;
+            this.cbxProdChauff.TabIndex = 13;
             // 
             // cbxProdEauChaude
             // 
@@ -450,7 +449,7 @@ namespace GestionLocation
             this.cbxProdEauChaude.Location = new System.Drawing.Point(189, 798);
             this.cbxProdEauChaude.Name = "cbxProdEauChaude";
             this.cbxProdEauChaude.Size = new System.Drawing.Size(244, 28);
-            this.cbxProdEauChaude.TabIndex = 36;
+            this.cbxProdEauChaude.TabIndex = 14;
             // 
             // lblDescription
             // 
@@ -529,7 +528,7 @@ namespace GestionLocation
             this.txtDescriLogement.Multiline = true;
             this.txtDescriLogement.Name = "txtDescriLogement";
             this.txtDescriLogement.Size = new System.Drawing.Size(497, 210);
-            this.txtDescriLogement.TabIndex = 29;
+            this.txtDescriLogement.TabIndex = 16;
             // 
             // txtAutre
             // 
@@ -540,7 +539,7 @@ namespace GestionLocation
             this.txtAutre.Multiline = true;
             this.txtAutre.Name = "txtAutre";
             this.txtAutre.Size = new System.Drawing.Size(497, 210);
-            this.txtAutre.TabIndex = 31;
+            this.txtAutre.TabIndex = 18;
             // 
             // txtElemEquip
             // 
@@ -551,7 +550,7 @@ namespace GestionLocation
             this.txtElemEquip.Multiline = true;
             this.txtElemEquip.Name = "txtElemEquip";
             this.txtElemEquip.Size = new System.Drawing.Size(497, 210);
-            this.txtElemEquip.TabIndex = 30;
+            this.txtElemEquip.TabIndex = 17;
             // 
             // AjoutModifBiens
             // 
