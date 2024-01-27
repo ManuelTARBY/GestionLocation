@@ -32,16 +32,24 @@ namespace GestionLocation
         public void RemplirLstBiens()
         {
             lstBiens.Items.Clear();
+            List<string> lesBiens = new List<string>();
             for (int i = 0; i < 2; i++)
             {
                 this.command = new MySqlCommand(ConstruitReqListeBien(i), Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
                 while (reader.Read())
                 {
-                    // affichage des champs récupérés dans la ligne
-                    lstBiens.Items.Add(reader.GetString(0));
+                    // Récupère les biens et les groupe de bien et les tris par ordre alphabétique
+                    lesBiens.Add(reader.GetString(0));
+                    lesBiens.Sort();
+                    //lstBiens.Items.Add(reader.GetString(0));
                 }
                 reader.Close();
+            }
+            // Alimente la liste box des biens et groupes de bien
+            foreach (string bien in lesBiens)
+            {
+                lstBiens.Items.Add(bien);
             }
         }
 
@@ -84,6 +92,12 @@ namespace GestionLocation
                 this.command = new MySqlCommand(this.req, Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
                 reader.Read();
+                if (reader.HasRows == false)
+                {
+                    reader.Close();
+                    MessageBox.Show("Vous avez sélectionné un groupe, veuillez sélectionner un bien.");
+                    return;
+                }
                 int id = reader.GetInt32(0);
                 reader.Close();
                 AjoutModifBiens modifBiens = new AjoutModifBiens(this, "UPDATE", id);
