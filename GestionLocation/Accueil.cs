@@ -426,5 +426,17 @@ namespace GestionLocation
             fenUser.ShowDialog();
             this.Visible = true;
         }
+
+
+        /// <summary>
+        /// Gère la fermeture de la fenêtre (ferme l'application et coupe la connexion)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Accueil_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Global.Connexion.Close();
+            Application.Exit();
+        }
     }
 }

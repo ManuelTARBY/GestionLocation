@@ -295,6 +295,7 @@ namespace GestionLocation
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "Accueil";
             this.Text = "Accueil";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Accueil_FormClosing);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
