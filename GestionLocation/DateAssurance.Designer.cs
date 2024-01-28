@@ -46,7 +46,7 @@ namespace GestionLocation
             this.dateSouscri.MaxDate = new System.DateTime(2123, 12, 31, 0, 0, 0, 0);
             this.dateSouscri.MinDate = new System.DateTime(1901, 1, 1, 0, 0, 0, 0);
             this.dateSouscri.Name = "dateSouscri";
-            this.dateSouscri.Size = new System.Drawing.Size(343, 26);
+            this.dateSouscri.Size = new System.Drawing.Size(361, 26);
             this.dateSouscri.TabIndex = 4;
             // 
             // lblTitre
@@ -55,11 +55,12 @@ namespace GestionLocation
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblTitre.AutoSize = true;
-            this.lblTitre.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitre.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTitre.ForeColor = System.Drawing.SystemColors.HotTrack;
             this.lblTitre.Location = new System.Drawing.Point(3, 0);
+            this.lblTitre.Margin = new System.Windows.Forms.Padding(3, 0, 3, 30);
             this.lblTitre.Name = "lblTitre";
-            this.lblTitre.Size = new System.Drawing.Size(343, 114);
+            this.lblTitre.Size = new System.Drawing.Size(361, 84);
             this.lblTitre.TabIndex = 6;
             this.lblTitre.Text = "Veuillez renseigner la date de souscription à l\'assurance";
             this.lblTitre.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -80,7 +81,7 @@ namespace GestionLocation
             this.btnValider.BackColor = System.Drawing.Color.YellowGreen;
             this.btnValider.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnValider.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btnValider.Location = new System.Drawing.Point(74, 218);
+            this.btnValider.Location = new System.Drawing.Point(83, 218);
             this.btnValider.Margin = new System.Windows.Forms.Padding(3, 20, 3, 3);
             this.btnValider.MaximumSize = new System.Drawing.Size(240, 65);
             this.btnValider.Name = "btnValider";
@@ -108,14 +109,14 @@ namespace GestionLocation
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13.63636F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13.63636F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 36.36364F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(349, 314);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(367, 314);
             this.tableLayoutPanel1.TabIndex = 10;
             // 
             // DateAssurance
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(373, 338);
+            this.ClientSize = new System.Drawing.Size(391, 338);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "DateAssurance";
             this.Text = "DateAssurance";

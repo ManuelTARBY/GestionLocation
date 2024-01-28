@@ -12,6 +12,8 @@ namespace GestionLocation
         private static string serveurSmtp;
         private static string user;
         public static int HeightMaxSignature = 420;
+        // Token de connexion à l'API de l'INSEE (pour récupérer l'IRL)
+        public static string bearerToken = "f6960065-2fab-3db3-a88a-908fd5d75461";
 
 
         /// <summary>
@@ -52,7 +54,6 @@ namespace GestionLocation
             set { pwdEmailUser = value; }
             get { return pwdEmailUser; }
         }
-
 
         /// <summary>
         /// Getter et setter sur le numéro de port de l'email de l'utilisateur

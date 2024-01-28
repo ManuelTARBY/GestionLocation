@@ -3,8 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 using Word = Microsoft.Office.Interop.Word;
 
 namespace GestionLocation
@@ -348,7 +353,7 @@ namespace GestionLocation
 
             // Fermeture du document et de l'application Word
             bail.Close();
-            MessageBox.Show("Le contrat de location a été généré.\nPensez à vérifier les champs et à remplir l'IRL.");
+            MessageBox.Show("Votre contrat de location a été généré.\nPensez à vérifier tous les champs.");
             wordApp.Quit();
         }
 
@@ -367,8 +372,70 @@ namespace GestionLocation
             RecupCaution(lesId[2]);
             // Données sur la location
             RecupLocation();
+            // Récupère le dernier indice IRL
+            RecupIRLAsync();
+            // Récupère la date de souscription d'assurance
             RecupAssurance();
             return this.datas;
+        }
+
+
+        /// <summary>
+        /// Récupère le dernier indice IRL
+        /// </summary>
+        public async void RecupIRLAsync()
+        {
+            string uri = "https://api.insee.fr/series/BDM/data/SERIES_BDM/001515333";
+            string bearerToken = Global.bearerToken;
+
+            HttpClient client = new HttpClient();
+            // Configure les en-têtes de requête
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml"));
+            client.DefaultRequestHeaders.AcceptEncoding.Clear();
+            client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+
+            // Envoie une requête GET à l'URL
+            try
+            {
+                HttpResponseMessage httpResponse = await client.GetAsync(uri);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+                    Stream responseStream = await httpResponse.Content.ReadAsStreamAsync();
+                    // Décompresse le contenu gzip
+                    using (GZipStream gzipStream = new GZipStream(responseStream, CompressionMode.Decompress))
+                    using (StreamReader reader = new StreamReader(gzipStream))
+                    {
+                        string response = await reader.ReadToEndAsync();
+
+                        // Charger le XML dans un XmlDocument
+                        XmlDocument xmlDoc = new XmlDocument();
+                        xmlDoc.LoadXml(response);
+                        XmlNodeList elements = xmlDoc.GetElementsByTagName("Obs");
+                        foreach (XmlNode elt in elements)
+                        {
+                            // Accéder aux éléments des IRL
+                            if (!elt.Attributes["DATE_JO"].Value.Equals(""))
+                            {
+                                string period = elt.Attributes["TIME_PERIOD"].Value;
+                                string valeur = elt.Attributes["OBS_VALUE"].Value;
+                                this.datas.Add("IRL", valeur + " (" + period.Replace("Q", "T") + ")");
+                                return;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("La requête a échoué avec le code : " + httpResponse.StatusCode);
+                }
+            }
+            catch (HttpRequestException err)
+            {
+                Console.WriteLine("Une erreur s'est produite. " + err.Message);
+            }
         }
 
 

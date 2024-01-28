@@ -55,3 +55,6 @@ SELECT COUNT(idlocation) FROM location WHERE idbien IN
 SELECT SUM(chargeannuelle) + COALESCE((SELECT SUM(chargeannuelle) AS "Charges ponctuelles 2024" FROM chargesannuelles WHERE annee = "2024"),0) AS "Charges annuelles" 
 FROM chargesannuelles
 WHERE refFrequence != "Ponctuelle"
+
+# Récupérer les IRL
+https://bdm.insee.fr/series/sdmx/data/SERIES_BDM/001515333
