@@ -55,6 +55,7 @@ namespace GestionLocation
             // Types d'habitat
             cbxTypeHabitat.Items.Add("Appartement");
             cbxTypeHabitat.Items.Add("Maison");
+            cbxTypeHabitat.Items.Add("Chambre en colocation");
 
             // Régimes juridiques
             cbxRegimeJuri.Items.Add("Mono propriété");
@@ -99,9 +100,13 @@ namespace GestionLocation
             if (reader.GetString(11).Equals("Appartement")) {
                 cbxTypeHabitat.SelectedIndex = 0;
             }
-            else
+            else if (reader.GetString(11).Equals("Maison"))
             {
                 cbxTypeHabitat.SelectedIndex = 1;
+            }
+            else
+            {
+                cbxTypeHabitat.SelectedIndex = 2;
             }
             if (reader.GetString(12).Equals("Mono propriété"))
             { 
@@ -109,6 +114,7 @@ namespace GestionLocation
             }
             else
             {
+
                 cbxRegimeJuri.SelectedIndex = 1;
             }
             txtPerConstruc.Text = reader.GetString(13);

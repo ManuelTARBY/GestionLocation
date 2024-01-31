@@ -1,7 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -290,9 +289,19 @@ namespace GestionLocation
         /// </summary>
         public void GenererBail(string[] lesId)
         {
+            // Récupère les données à insérer dans le bail
+            RecupDatas(lesId);
+
+            // Vérifie le type de bail à créer
+            string type = "";
+            if (this.datas["NomBien"].Substring(0, 7).Equals("Chambre"))
+            {
+                type = " colocation";
+            }
+            
             // Crée le fichier
-            string cheminModele = Environment.CurrentDirectory + "/Baux/Bail.doc";
-            string cheminDestination = $"C:\\Users\\Don_F\\OneDrive\\Bureau\\Bail {lstLocataires.SelectedItem}.doc";
+            string cheminModele = Environment.CurrentDirectory + $"/Baux/Bail{type}.doc";
+            string cheminDestination = $"C:\\Users\\Don_F\\OneDrive\\Bureau\\Bail{type} {lstLocataires.SelectedItem}.doc";
             File.Copy(cheminModele, cheminDestination, true);
 
             // Remplit le bail
@@ -306,7 +315,6 @@ namespace GestionLocation
             Word.Document bail = wordApp.Documents.Open(cheminDestination);
 
             // Remplacement du texte
-            RecupDatas(lesId);
             Word.Find find = wordApp.Selection.Find;
             foreach (KeyValuePair<string, string> data in datas)
             {
@@ -361,8 +369,7 @@ namespace GestionLocation
         /// <summary>
         /// Récupère toutes les infos pour construire le bail
         /// </summary>
-        /// <returns>Dictionnaire contenant toutes les données</returns>
-        public Dictionary<string, string> RecupDatas(string[] lesId)
+        public void RecupDatas(string[] lesId)
         {
             // Données du locataire
             RecupLocataire(lesId[1]);
@@ -373,17 +380,20 @@ namespace GestionLocation
             // Données sur la location
             RecupLocation();
             // Récupère le dernier indice IRL
-            RecupIRLAsync();
+            RecupIRL();
+            //await RecupIRLAsync();
             // Récupère la date de souscription d'assurance
-            RecupAssurance();
-            return this.datas;
+            if (this.datas["NomBien"].Substring(0, 7).Equals("Chambre"))
+            {
+                RecupAssurance();
+            }
         }
 
 
         /// <summary>
         /// Récupère le dernier indice IRL
         /// </summary>
-        public async void RecupIRLAsync()
+        public void RecupIRL()
         {
             string uri = "https://api.insee.fr/series/BDM/data/SERIES_BDM/001515333";
             string bearerToken = Global.bearerToken;
@@ -399,16 +409,16 @@ namespace GestionLocation
             // Envoie une requête GET à l'URL
             try
             {
-                HttpResponseMessage httpResponse = await client.GetAsync(uri);
+                HttpResponseMessage httpResponse = client.GetAsync(uri).GetAwaiter().GetResult();
 
                 if (httpResponse.IsSuccessStatusCode)
                 {
-                    Stream responseStream = await httpResponse.Content.ReadAsStreamAsync();
+                    Stream responseStream = httpResponse.Content.ReadAsStreamAsync().GetAwaiter().GetResult();
                     // Décompresse le contenu gzip
                     using (GZipStream gzipStream = new GZipStream(responseStream, CompressionMode.Decompress))
                     using (StreamReader reader = new StreamReader(gzipStream))
                     {
-                        string response = await reader.ReadToEndAsync();
+                        string response = reader.ReadToEndAsync().GetAwaiter().GetResult();
 
                         // Charger le XML dans un XmlDocument
                         XmlDocument xmlDoc = new XmlDocument();
@@ -422,7 +432,7 @@ namespace GestionLocation
                                 string period = elt.Attributes["TIME_PERIOD"].Value;
                                 string valeur = elt.Attributes["OBS_VALUE"].Value;
                                 this.datas.Add("IRL", valeur + " (" + period.Replace("Q", "T") + ")");
-                                return;
+                                break;
                             }
                         }
                     }
@@ -446,8 +456,9 @@ namespace GestionLocation
         {
             DateAssurance fenDateAssur = new DateAssurance();
             fenDateAssur.ShowDialog();
-            this.datas.Add("DateSousAssur", fenDateAssur.lesDates[0]);
-            this.datas.Add("DateFinAssur", fenDateAssur.lesDates[1]);
+            this.datas.Add("DateSousAssur", fenDateAssur.datasAssur[0]);
+            this.datas.Add("DateFinAssur", fenDateAssur.datasAssur[1]);
+            this.datas.Add("MontantAssur", fenDateAssur.datasAssur[2]);
         }
 
 
@@ -506,7 +517,7 @@ namespace GestionLocation
         /// </summary>
         public void RecupLocation()
         {
-            if (lstCautions.SelectedItem.Equals("VISALE (Action Logement"))
+            if (this.datas["NomCaution"].Equals("VISALE"))
             {
                 this.datas.Add("DepotGarantie", "0");
             }
@@ -520,10 +531,19 @@ namespace GestionLocation
             if (diffDate < 365)
             {
                 this.datas.Add("DuréeContrat", $"{Math.Round((diffDate / 31.417), 1)} mois");
+                this.datas.Add("NbMoisDepGarantie", "0");
             }
             else
             {
-                this.datas.Add("DuréeContrat", "1 année reconductible par tacite reconduction par période de : 1 an"); ;
+                this.datas.Add("DuréeContrat", "1 année reconductible par tacite reconduction par période de : 1 an");
+                if (this.datas["NomCaution"].Equals("VISALE"))
+                {
+                    this.datas.Add("NbMoisDepGarantie", "0");
+                }
+                else
+                {
+                    this.datas.Add("NbMoisDepGarantie", "1");
+                }
             }
         }
 

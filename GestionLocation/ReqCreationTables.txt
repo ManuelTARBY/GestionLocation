@@ -26,7 +26,7 @@ CREATE TABLE bien (
   chargesimputables int DEFAULT NULL,
   chargeannuelles int DEFAULT NULL,
   bienarchive tinyint(1) DEFAULT NULL,
-  typehabitat varchar(11) COLLATE utf8mb4_unicode_ci NOT NULL,
+  typehabitat varchar(21) COLLATE utf8mb4_unicode_ci NOT NULL,
   regimejuridique varchar(14) COLLATE utf8mb4_unicode_ci NOT NULL,
   periodeconstruction varchar(4) COLLATE utf8mb4_unicode_ci NOT NULL,
   superficie varchar(8) COLLATE utf8mb4_unicode_ci NOT NULL,

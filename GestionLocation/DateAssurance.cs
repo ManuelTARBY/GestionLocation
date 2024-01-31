@@ -13,7 +13,7 @@ namespace GestionLocation
     public partial class DateAssurance : Form
     {
         // Variable contenant les valeurs qui seront retournées
-        public string[] lesDates = { "", "" };
+        public string[] datasAssur = { "", "", "" };
         
         /// <summary>
         /// Constructeur
@@ -32,7 +32,15 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnValider_Click(object sender, EventArgs e)
         {
-            this.Dispose();
+            if (!txtMontantAssur.Text.Equals("") && float.TryParse(txtMontantAssur.Text.Replace('.', ','), out float result))
+            {
+                this.datasAssur[2] = result.ToString().Replace(',', '.');
+                this.Dispose();
+            }
+            else
+            {
+                MessageBox.Show("Veuillez saisir un montant correct pour la prime d'assurance.");
+            }
         }
 
 
@@ -43,8 +51,8 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void DateAssurance_FormClosing(object sender, FormClosingEventArgs e)
         {
-            this.lesDates[0] = dateSouscri.Value.ToString("dd/MM/yyyy");
-            this.lesDates[1] = dateSouscri.Value.AddYears(1).AddDays(-1).ToString("dd/MM/yyyy");
+            this.datasAssur[0] = dateSouscri.Value.ToString("dd/MM/yyyy");
+            this.datasAssur[1] = dateSouscri.Value.AddYears(1).AddDays(-1).ToString("dd/MM/yyyy");
         }
     }
 }
