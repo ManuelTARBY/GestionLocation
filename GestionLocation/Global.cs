@@ -13,7 +13,7 @@ namespace GestionLocation
         private static string user;
         public static int HeightMaxSignature = 420;
         // Token de connexion à l'API de l'INSEE (pour récupérer l'IRL)
-        public static string bearerToken = "f6960065-2fab-3db3-a88a-908fd5d75461";
+        public static string bearerToken = "bc516553-8611-38df-aa4f-a0075fcbd8f1";
 
 
         /// <summary>

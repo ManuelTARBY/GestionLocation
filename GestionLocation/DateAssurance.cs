@@ -40,6 +40,7 @@ namespace GestionLocation
             else
             {
                 MessageBox.Show("Veuillez saisir un montant correct pour la prime d'assurance.");
+                txtMontantAssur.Focus();
             }
         }
 

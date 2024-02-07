@@ -439,7 +439,9 @@ namespace GestionLocation
                 }
                 else
                 {
-                    Console.WriteLine("La requête a échoué avec le code : " + httpResponse.StatusCode);
+                    this.datas.Add("IRL", "");
+                    MessageBox.Show("La requête permettant de récupérer l'IRL a échoué. Pensez à le renseigner vous-même " +
+                        "et à récupérer un nouveau jeton.");
                 }
             }
             catch (HttpRequestException err)

@@ -135,6 +135,7 @@ namespace GestionLocation
             this.txtMontantAssur.Name = "txtMontantAssur";
             this.txtMontantAssur.Size = new System.Drawing.Size(97, 26);
             this.txtMontantAssur.TabIndex = 11;
+            this.txtMontantAssur.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // DateAssurance
             // 
