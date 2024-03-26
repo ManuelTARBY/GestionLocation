@@ -50,7 +50,7 @@ namespace GestionLocation
             this.lesPaiements = new Dictionary<string, string>();
             // Instancie le dictionnaire contenant le détail de la location en clé et son id en valeur
             this.lesId = new Dictionary<string, int>();
-            AfficherLocations(false);
+            AfficherLocations();
             RemplirListePaiements();
             SelectionnerLocation();
         }
@@ -63,7 +63,7 @@ namespace GestionLocation
         {
             // Détermination de la requête
             this.req = "SELECT nombien, periodefacturee, montantdu, montantpaye, datepaiement, resteapayer, idpaiement, idlocation " +
-                "FROM paiement NATURAL JOIN location NATURAL JOIN bien WHERE locationarchivee = 0 ";
+                $"FROM paiement NATURAL JOIN location NATURAL JOIN bien WHERE locationarchivee = {Global.LocArchiv} ";
             if (this.idLocation != 0)
             {
                 this.req += $"AND idlocation = {this.idLocation}";
@@ -135,7 +135,7 @@ namespace GestionLocation
         /// <summary>
         /// Met à jour la liste des locations en fonction des critères sélectionnés par l'utilisateur
         /// </summary>
-        public void AfficherLocations(bool etat)
+        public void AfficherLocations()
         {
             // Vide le champ liste, paiements et le dictionnaire contenant les id
             lstLocations.Items.Clear();
@@ -146,7 +146,7 @@ namespace GestionLocation
             req.AppendLine("SELECT nombien AS `Bien`, nomcompletlocataire AS `Locataire`, debutlocation AS `Début de location`, " +
                 "finlocation AS `Fin de location`, nomcompletcaution AS `Caution`, idlocation AS `id`");
             req.AppendLine("FROM location JOIN locataire USING(idlocataire) JOIN bien USING(idbien) JOIN caution USING(idcaution)");
-            req.AppendLine($"WHERE locationarchivee = {etat} ORDER BY nombien");
+            req.AppendLine($"WHERE locationarchivee = {Global.LocArchiv} ORDER BY nombien");
             this.command = new MySqlCommand(req.ToString(), Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
@@ -160,7 +160,7 @@ namespace GestionLocation
             }
             reader.Close();
             // Paramètre le texte sur le messagePied du bouton afficher locations archivees/non archivées
-            if (etat)
+            if (Global.LocArchiv)
             {
                 btnFiltreArchive.Text = "Afficher les locations non archivées";
             }
@@ -243,14 +243,8 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnFiltreArchive_Click(object sender, EventArgs e)
         {
-            if (btnFiltreArchive.Text.Equals("Afficher les locations archivées"))
-            {
-                AfficherLocations(true);
-            }
-            else
-            {
-                AfficherLocations(false);
-            }
+            Global.LocArchiv = !Global.LocArchiv;
+            AfficherLocations();
         }
 
 
