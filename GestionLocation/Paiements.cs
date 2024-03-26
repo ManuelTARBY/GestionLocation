@@ -220,23 +220,6 @@ namespace GestionLocation
 
 
         /// <summary>
-        /// Gère la sélection d'une location
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void LstLocations_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (lstLocations.SelectedItem != null)
-            {
-                // Récupère le nouvel id de location
-                this.idLocation = this.lesId[lstLocations.SelectedItem.ToString()];
-                // Met à jour la liste des paiements
-                RemplirListePaiements();
-            }
-        }
-
-
-        /// <summary>
         /// Affiche les locations archivées ou non archivées
         /// </summary>
         /// <param name="sender"></param>
@@ -683,6 +666,23 @@ namespace GestionLocation
             pj.Dispose();
             // Fermeture de la session SMTP
             smtp.Disconnect(true);
+        }
+
+
+        /// <summary>
+        /// Gère la sélection d'une location
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SelectLocation(object sender, EventArgs e)
+        {
+            if (lstLocations.SelectedItem != null)
+            {
+                // Récupère le nouvel id de location
+                this.idLocation = this.lesId[lstLocations.SelectedItem.ToString()];
+                // Met à jour la liste des paiements
+                RemplirListePaiements();
+            }
         }
 
 

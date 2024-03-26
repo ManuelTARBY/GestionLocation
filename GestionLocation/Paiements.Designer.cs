@@ -71,7 +71,7 @@ namespace GestionLocation
             this.lstLocations.Name = "lstLocations";
             this.lstLocations.Size = new System.Drawing.Size(810, 144);
             this.lstLocations.TabIndex = 1;
-            this.lstLocations.MouseClick += new System.Windows.Forms.MouseEventHandler(this.LstLocations_MouseClick);
+            this.lstLocations.SelectedIndexChanged += new System.EventHandler(this.SelectLocation);
             // 
             // btnFermer
             // 
