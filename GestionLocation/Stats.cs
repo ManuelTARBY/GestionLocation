@@ -159,6 +159,18 @@ namespace GestionLocation
             chargesPonctuelles = reader.GetFloat(0);
             reader.Close();
             chargesAnnuelles = chargesFixes + chargesPonctuelles;
+            // Si c'est un bien qui est sélectionné et sa première année d'exploitation, faire un prorata des charges annuelles
+            if (cbxBien.SelectedIndex != 0 && cbxAnnee.SelectedIndex == 0)
+            {
+                // Récupère la date de la première mise en location
+                this.req = $"SELECT MIN(debutlocation) AS 'premiereloc' FROM location WHERE idbien = {this.bienSelectionne}";
+                this.command = new MySqlCommand(this.req, Global.Connexion);
+                reader = this.command.ExecuteReader();
+                reader.Read();
+                string moisDebutExploit = reader["premiereloc"].ToString().Substring(0, 2);
+                reader.Close();
+                chargesAnnuelles = chargesAnnuelles / 12 * (13 - int.Parse(moisDebutExploit));
+            }
             txtChargesAnnuelles.Text = chargesAnnuelles.ToString("N") + " €";
 
             // Affiche le cash flow annuel pour l'année sélectionnée
