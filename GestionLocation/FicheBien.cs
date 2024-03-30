@@ -267,13 +267,17 @@ namespace GestionLocation
             {
                 DateTime debutLoc = DateTime.ParseExact($"{reader.GetDateTime(4):d}", "d", null);
                 DateTime finLoc = DateTime.ParseExact($"{reader.GetDateTime(5):d}", "d", null);
-                lesDureesDeLoc.Add(finLoc.Subtract(debutLoc).Days + 1);
                 // Si la location est l'actuelle location
                 if (debutLoc < today && finLoc > today)
                 {
                     this.idLocActuelle = reader.GetString(0);
                     this.dureeLocActuelle = today.Subtract(debutLoc).Days + 1;
+                    if (finLoc > today.AddDays(30))
+                    {
+                        finLoc = today.AddDays(30);
+                    }
                 }
+                lesDureesDeLoc.Add(finLoc.Subtract(debutLoc).Days + 1);
             }
             reader.Close();
             // Calcul des durées mini, moyenne et maxi de location
