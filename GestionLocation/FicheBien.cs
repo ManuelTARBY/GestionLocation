@@ -373,7 +373,6 @@ namespace GestionLocation
         public string CalculDebutExploit()
         {
             string debutExploit;
-            //this.req = $"SELECT MIN(debutlocation) FROM (SELECT debutlocation FROM location WHERE idbien={this.leBien[0]}) AS req";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
@@ -397,13 +396,19 @@ namespace GestionLocation
         public string CalculFinExploit()
         {
             string finExploit;
-            //this.req = $"SELECT MAX(finlocation) FROM (SELECT finlocation FROM location WHERE idbien={this.leBien[0]}) AS req";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             try
             {
-                finExploit = $"{reader.GetDateTime(0):d}";
+                if (reader.GetDateTime(0) > DateTime.Now.AddDays(30))
+                {
+                    finExploit = DateTime.Now.AddDays(30).ToString("dd/MM/yyyy");
+                }
+                else
+                {
+                    finExploit = $"{reader.GetDateTime(0):d}";
+                }
             }
             catch
             {
