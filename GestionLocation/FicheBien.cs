@@ -1,6 +1,8 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Windows.Forms;
 
 namespace GestionLocation
@@ -31,41 +33,7 @@ namespace GestionLocation
             this.type = data[0];
             this.nbDeBiens = 1;
             RemplirChamps();
-            //CalculeTableCA();
         }
-
-
-        /*public void CalculeTableCA()
-        {
-            Dictionary<string, string> tabAnneeCa = new Dictionary<string, string>();
-            string anneeMin, anneeMax;
-            // Détermination des années pour la période d'exploitation
-            // Première année
-            this.req = $"SELECT MIN(debutlocation) AS 'AnneeMin' FROM location WHERE idbien = {this.leBien[0]}";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
-            reader.Read();
-            anneeMin = reader["AnneeMin"].ToString();
-            reader.Close();
-            // Dernière année
-            this.req = $"SELECT MAX(finlocation) AS 'AnneeMax' FROM location WHERE idbien = {this.leBien[0]}";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            reader = this.command.ExecuteReader();
-            reader.Read();
-            anneeMax = reader["AnneeMax"].ToString();
-            reader.Close();
-            anneeMin = anneeMin.Substring(6, 4);
-            anneeMax = anneeMax.Substring(6, 4);
-            for (int i = int.Parse(anneeMin); i <= int.Parse(anneeMax); i ++)
-            {
-                this.req = $"SELECT SUM(montantpaye) AS 'CA' FROM paiement WHERE periodefacturee LIKE '{i}%' AND idlocation IN (SELECT idlocation FROM location WHERE idbien = {this.leBien[0]})";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                reader = this.command.ExecuteReader();
-                reader.Read();
-                tabAnneeCa.Add(i.ToString(), reader["CA"].ToString() + " €");
-                reader.Close();
-            }
-        }*/
 
 
         /// <summary>
@@ -77,6 +45,7 @@ namespace GestionLocation
             RemplirLocation();
             RemplirLocataire();
             AppliquerCouleurs();
+            RemplirListeLocations();
         }
 
 
@@ -501,7 +470,7 @@ namespace GestionLocation
 
 
         /// <summary>
-        /// renvoie le couple idbien-nombien
+        /// Renvoie le couple idbien-nombien
         /// </summary>
         /// <returns>idbien - nombien</returns>
         public string[] GetLeBien()
@@ -541,6 +510,35 @@ namespace GestionLocation
             txtLoyerCC.Text = reader["Loyers CC"].ToString() + " €";
             txtChargesImputables.Text = reader["Imputables"].ToString() + " €";
             reader.Close();
+        }
+
+
+        /// <summary>
+        /// Remplit le DataGridView avec la liste des locations
+        /// </summary>
+        public void RemplirListeLocations()
+        {
+            if (this.type.Equals("bien"))
+            {
+                this.req = "SELECT CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', nomlocataire) AS 'Locataire', " +
+                    "debutlocation AS 'Début de location', LEAST(finlocation, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY)) AS 'Fin de location', " +
+                    "CONCAT(ROUND(DATEDIFF(LEAST(finlocation, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY)), debutlocation) / 30.417, 1), ' mois') AS 'Durée' " +
+                    $"FROM location NATURAL JOIN locataire WHERE idbien = {this.leBien[0]} ORDER BY debutlocation";
+                this.command = new MySqlCommand(this.req, Global.Connexion);
+                MySqlDataReader reader = this.command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        datListeLocations.Rows.Add(reader.GetString(0), reader.GetDateTime(1).ToString("dd/MM/yyyy"), reader.GetDateTime(2).ToString("dd/MM/yyyy"), reader.GetString(3));
+                    }
+                }
+                reader.Close();
+            }
+            else
+            {
+                datListeLocations.Visible = false;
+            }
         }
     }
 }

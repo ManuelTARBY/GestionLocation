@@ -23,8 +23,7 @@ namespace GestionLocation
         public Stats()
         {
             InitializeComponent();
-            RemplirComboBiens();
-            cbxListBiens.SelectedIndex = 0;
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
             RemplirComboAnnee();
         }
 
@@ -65,26 +64,6 @@ namespace GestionLocation
 
 
         /// <summary>
-        /// Remplit la combo avec les noms des biens
-        /// </summary>
-        private void RemplirComboBiens()
-        {
-            cbxListBiens.Items.Clear();
-            this.req = "SELECT nombien FROM bien ORDER BY nombien";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
-            bool finCurseur = !reader.Read();
-            while (!finCurseur)
-            {
-                cbxListBiens.Items.Add($"{reader["nombien"]}");
-                finCurseur = !reader.Read();
-            }
-            reader.Close();
-        }
-
-
-
-        /// <summary>
         /// Calcule le cash-flow annuel
         /// </summary>
         /// <param name="sender"></param>
@@ -112,7 +91,7 @@ namespace GestionLocation
             reader.Close();
             txtChargesAnnuelles.Text = chargesAnnuelles.ToString("N") + " €";
 
-            // Affiche le cash flow annuel pour l'année sélectionné
+            // Affiche le cash flow annuel pour l'année sélectionnée
             txtCFAnnuel.Text = (caAnnuel - chargesAnnuelles).ToString("N") + " €";
         }
     }
