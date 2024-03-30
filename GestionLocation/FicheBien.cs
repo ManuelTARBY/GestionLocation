@@ -529,7 +529,7 @@ namespace GestionLocation
             {
                 this.req = "SELECT CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', nomlocataire) AS 'Locataire', " +
                     "debutlocation AS 'Début de location', LEAST(finlocation, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY)) AS 'Fin de location', " +
-                    "CONCAT(ROUND(DATEDIFF(LEAST(finlocation, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY)), debutlocation) / 30.417, 1), ' mois') AS 'Durée' " +
+                    "CONCAT(ROUND(DATEDIFF(LEAST(finlocation, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY)), DATE_SUB(debutlocation, INTERVAL 1 DAY)) / 30.417, 1), ' mois') AS 'Durée' " +
                     $"FROM location NATURAL JOIN locataire WHERE idbien = {this.leBien[0]} ORDER BY debutlocation";
                 this.command = new MySqlCommand(this.req, Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
