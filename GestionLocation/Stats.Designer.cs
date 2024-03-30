@@ -41,6 +41,8 @@ namespace GestionLocation
             this.txtCAAnnuel = new System.Windows.Forms.TextBox();
             this.lblChargesAnnuelles = new System.Windows.Forms.Label();
             this.txtChargesAnnuelles = new System.Windows.Forms.TextBox();
+            this.lblBien = new System.Windows.Forms.Label();
+            this.cbxBien = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.vcaannuelBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gestionlocationDataSet)).BeginInit();
             this.SuspendLayout();
@@ -61,8 +63,9 @@ namespace GestionLocation
             // 
             // cbxAnnee
             // 
+            this.cbxAnnee.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxAnnee.FormattingEnabled = true;
-            this.cbxAnnee.Location = new System.Drawing.Point(25, 45);
+            this.cbxAnnee.Location = new System.Drawing.Point(12, 101);
             this.cbxAnnee.Name = "cbxAnnee";
             this.cbxAnnee.Size = new System.Drawing.Size(131, 28);
             this.cbxAnnee.TabIndex = 2;
@@ -71,7 +74,7 @@ namespace GestionLocation
             // lblAnnee
             // 
             this.lblAnnee.AutoSize = true;
-            this.lblAnnee.Location = new System.Drawing.Point(30, 22);
+            this.lblAnnee.Location = new System.Drawing.Point(17, 78);
             this.lblAnnee.Name = "lblAnnee";
             this.lblAnnee.Size = new System.Drawing.Size(56, 20);
             this.lblAnnee.TabIndex = 3;
@@ -125,11 +128,32 @@ namespace GestionLocation
             this.txtChargesAnnuelles.Size = new System.Drawing.Size(143, 26);
             this.txtChargesAnnuelles.TabIndex = 8;
             // 
+            // lblBien
+            // 
+            this.lblBien.AutoSize = true;
+            this.lblBien.Location = new System.Drawing.Point(17, 20);
+            this.lblBien.Name = "lblBien";
+            this.lblBien.Size = new System.Drawing.Size(41, 20);
+            this.lblBien.TabIndex = 11;
+            this.lblBien.Text = "Bien";
+            // 
+            // cbxBien
+            // 
+            this.cbxBien.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxBien.FormattingEnabled = true;
+            this.cbxBien.Location = new System.Drawing.Point(12, 43);
+            this.cbxBien.Name = "cbxBien";
+            this.cbxBien.Size = new System.Drawing.Size(131, 28);
+            this.cbxBien.TabIndex = 1;
+            this.cbxBien.SelectedIndexChanged += new System.EventHandler(this.CbxBien_SelectedIndexChanged);
+            // 
             // Stats
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(554, 238);
+            this.Controls.Add(this.cbxBien);
+            this.Controls.Add(this.lblBien);
             this.Controls.Add(this.lblChargesAnnuelles);
             this.Controls.Add(this.txtChargesAnnuelles);
             this.Controls.Add(this.lblCAAnnuel);
@@ -140,7 +164,6 @@ namespace GestionLocation
             this.Controls.Add(this.cbxAnnee);
             this.Name = "Stats";
             this.Text = "Stats";
-            this.Load += new System.EventHandler(this.Stats_Load);
             ((System.ComponentModel.ISupportInitialize)(this.vcaannuelBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gestionlocationDataSet)).EndInit();
             this.ResumeLayout(false);
@@ -160,5 +183,7 @@ namespace GestionLocation
         private System.Windows.Forms.TextBox txtCAAnnuel;
         private System.Windows.Forms.Label lblChargesAnnuelles;
         private System.Windows.Forms.TextBox txtChargesAnnuelles;
+        private System.Windows.Forms.Label lblBien;
+        private System.Windows.Forms.ComboBox cbxBien;
     }
 }
