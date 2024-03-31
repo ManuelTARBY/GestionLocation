@@ -1,12 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GestionLocation
@@ -18,7 +12,9 @@ namespace GestionLocation
         private string reqMini;
         private string reqMaxi;
         private MySqlCommand command;
-        private int bienSelectionne;
+        private readonly List<int> bienSelectionne;
+        private readonly List<string> lesBiens;
+        private readonly List<string> lesGroupes;
 
         /// <summary>
         /// Constructeur de la fenêtre Stats
@@ -27,30 +23,59 @@ namespace GestionLocation
         {
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            this.bienSelectionne = 0;
+            this.bienSelectionne = new List<int>();
+            this.lesBiens = new List<string>();
+            this.lesGroupes = new List<string>();
             RemplirComboBien();
             cbxBien.Focus();
         }
 
 
         /// <summary>
-        /// Remplit le combo de la liste des biens
+        /// Remplit le combo de la liste des biens et des groupes de bien
         /// </summary>
         public void RemplirComboBien()
         {
+            List<string> listeFinale = new List<string>();
             cbxBien.Items.Clear();
-            cbxBien.Items.Add("<Tous>");
-            this.req = "SELECT nombien FROM bien ORDER BY nombien";
+            
+            // Récupère les biens
+            this.req = "SELECT nombien FROM bien";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             if (reader.HasRows)
             {
                 while (reader.Read())
                 {
-                    cbxBien.Items.Add(reader["nombien"]);
+                    this.lesBiens.Add(reader.GetString(0));
                 }
             }
             reader.Close();
+
+            // Récupère les groupes de biens
+            this.req = "SELECT nomdugroupe FROM grpedebiens WHERE nomdugroupe != 'Tous les biens'";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            reader = this.command.ExecuteReader();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    this.lesGroupes.Add(reader.GetString(0));
+                }
+            }
+            reader.Close();
+
+            // Fusionne les listes et classe par ordre alphabétique
+            listeFinale.AddRange(this.lesBiens);
+            listeFinale.AddRange(this.lesGroupes);
+            listeFinale.Sort();
+
+            // Compose la combobox
+            cbxBien.Items.Add("<Tous>");
+            foreach (string elt in listeFinale)
+            {
+                cbxBien.Items.Add(elt);
+            }
         }
 
 
@@ -61,39 +86,52 @@ namespace GestionLocation
         {
             cbxAnnee.Items.Clear();
             int anneeMini, anneeMaxi;
-            // Si c'est un bien qui a été sélectionné
+            // Si ce n'est pas <Tous> qui a été sélectionné
             if (!cbxBien.SelectedIndex.Equals(0)) {
-                // Récupère l'id du bien sélectionné
-                this.req = $"SELECT idbien FROM bien WHERE nombien = \"{cbxBien.SelectedItem}\"";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                MySqlDataReader dreader = this.command.ExecuteReader();
-                dreader.Read();
-                this.bienSelectionne = (int)dreader["idbien"];
-                dreader.Close();
-                // Construit les requêtes
-                // Première année d'exploitation
-                this.reqMini = $"SELECT MIN(YEAR(debutlocation)) FROM location WHERE idbien = {this.bienSelectionne}";
-                // Dernière année d'exploitation (max = année en cours)
-                this.reqMaxi = $"SELECT LEAST(MAX(YEAR(finlocation)), YEAR(CURDATE())) FROM location WHERE idbien = {this.bienSelectionne}";
+                // Si c'est un bien qui a été sélectionné
+                if (this.lesBiens.Contains(cbxBien.SelectedItem.ToString()))
+                {
+                    // Récupère l'id du bien sélectionné
+                    this.req = $"SELECT idbien FROM bien WHERE nombien = \"{cbxBien.SelectedItem}\"";
+                }
+                // Si c'est un groupe de biens qui a été sélectionné
+                else
+                {
+                    // Récupère les id des biens qui composent le groupe
+                    this.req = "SELECT idbien FROM lignegroupe WHERE idgroupe = "+
+                        $"(SELECT idgroupe FROM grpedebiens WHERE nomdugroupe = \"{cbxBien.SelectedItem}\")";
+                }
             }
+            // Si on veut tous les biens
             else
             {
-                this.bienSelectionne = 0;
-                // Construit les requêtes
-                // Première année d'exploitation
-                this.reqMini = "SELECT MIN(YEAR(debutlocation)) FROM location";
-                // Dernière année d'exploitation (max = année en cours)
-                this.reqMaxi = "SELECT LEAST(MAX(YEAR(finlocation)), YEAR(CURDATE())) FROM location";
+                this.req = $"SELECT idbien FROM bien";
             }
 
-            // Détermine la première année d'exploitation
-            this.command = new MySqlCommand(this.reqMini, Global.Connexion);
+            // Récupère la liste des biens
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    this.bienSelectionne.Add((int)reader["idbien"]);
+                }
+            }
+            reader.Close();
+
+            // Détermine la première année d'exploitation
+            this.reqMini = $"SELECT MIN(YEAR(debutlocation)) FROM location " +
+                $"WHERE idbien IN ({string.Join(",", this.bienSelectionne.ConvertAll(v => v.ToString()))})";
+            this.command = new MySqlCommand(this.reqMini, Global.Connexion);
+            reader = this.command.ExecuteReader();
             reader.Read();
             anneeMini = reader.GetInt32(0);
             reader.Close();
 
             // Détermine la dernière année d'exploitation (sans dépasser l'année actuelle)
+            this.reqMaxi = $"SELECT LEAST(MAX(YEAR(finlocation)), YEAR(CURDATE())) FROM location " +
+                $"WHERE idbien IN ({string.Join(",", this.bienSelectionne.ConvertAll(v => v.ToString()))})";
             this.command = new MySqlCommand(this.reqMaxi, Global.Connexion);
             reader = this.command.ExecuteReader();
             reader.Read();
@@ -115,17 +153,13 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void CbxAnnee_SelectedIndexChanged(object sender, EventArgs e)
         {
-            float caAnnuel, chargesFixes, chargesPonctuelles, chargesAnnuelles;
+            // Déclarations
+            float caAnnuel = 0, chargesFixes = 0, chargesPonctuelles = 0, chargesAnnuelles = 0, ch = 0;
+
             // Détermine le CA annuel pour l'année sélectionnée
-            if (cbxBien.SelectedIndex.Equals(0))
-            {
-                this.req = $"SELECT SUM(montantpaye) FROM paiement WHERE periodefacturee LIKE '{cbxAnnee.SelectedItem}%'";
-            }
-            else
-            {
-                this.req = "SELECT SUM(montantpaye) FROM paiement NATURAL JOIN location NATURAL JOIN bien "+
-                          $"WHERE periodefacturee LIKE '{cbxAnnee.SelectedItem}%' AND idbien = {this.bienSelectionne}";
-            }
+            this.req = "SELECT SUM(montantpaye) FROM paiement NATURAL JOIN location NATURAL JOIN bien "+
+                      $"WHERE periodefacturee LIKE '{cbxAnnee.SelectedItem}%' AND "+
+                      $"idbien IN ({string.Join(",", this.bienSelectionne.ConvertAll(v => v.ToString()))})";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
@@ -135,48 +169,60 @@ namespace GestionLocation
 
             // Détermine les charges annuelles pour l'année sélectionnée
             // Charges fixes
-            this.req = "SELECT COALESCE(SUM(chargeannuelle), 0) FROM chargesannuelles "+
-                $"WHERE refFrequence != 'Ponctuelle'";
-            if (!cbxBien.SelectedIndex.Equals(0))
+            foreach (int bien in this.bienSelectionne)
             {
-                this.req += $" AND idbien = {this.bienSelectionne}";
-            }
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            reader = this.command.ExecuteReader();
-            reader.Read();
-            chargesFixes = reader.GetFloat(0);
-            reader.Close();
-            // Charges ponctuelles
-            this.req = "SELECT COALESCE(SUM(chargeannuelle), 0) FROM chargesannuelles "+
-                $"WHERE refFrequence = 'Ponctuelle' AND annee = {cbxAnnee.SelectedItem}";
-            if (!cbxBien.SelectedIndex.Equals(0))
-            {
-                this.req += $" AND idbien = {this.bienSelectionne}";
-            }
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            reader = this.command.ExecuteReader();
-            reader.Read();
-            chargesPonctuelles = reader.GetFloat(0);
-            reader.Close();
-            chargesAnnuelles = chargesFixes + chargesPonctuelles;
-            // Si c'est un bien qui est sélectionné et sa première année d'exploitation, faire un prorata des charges annuelles
-            if (cbxBien.SelectedIndex != 0 && cbxAnnee.SelectedIndex == 0)
-            {
-                // Récupère la date de la première mise en location
-                this.req = $"SELECT MIN(debutlocation) AS 'premiereloc' FROM location WHERE idbien = {this.bienSelectionne}";
+                // Récupère les charges fixes de l'année pour le bien
+                this.req = "SELECT COALESCE(SUM(chargeannuelle), 0) FROM chargesannuelles "+
+                    $"WHERE refFrequence != 'Ponctuelle' AND idbien = {bien}";
                 this.command = new MySqlCommand(this.req, Global.Connexion);
                 reader = this.command.ExecuteReader();
                 reader.Read();
-                string moisDebutExploit = reader["premiereloc"].ToString().Substring(0, 2);
+                ch = reader.GetFloat(0);
                 reader.Close();
-                chargesAnnuelles = chargesAnnuelles / 12 * (13 - int.Parse(moisDebutExploit));
+
+                // S'il s'agit de la première année d'exploitation, faire un prorata des charges annuelles
+                // Récupère la date de la première mise en location
+                this.req = $"SELECT MIN(debutlocation) AS 'premiereloc' FROM location WHERE idbien = {bien}";
+                this.command = new MySqlCommand(this.req, Global.Connexion);
+                reader = this.command.ExecuteReader();
+                reader.Read();
+                string moisDebutExploit = reader["premiereloc"].ToString();
+                reader.Close();
+
+                // Calcule le prorata de charges et l'additionne au total des charges fixes
+                if (int.Parse(cbxAnnee.SelectedItem.ToString()) == int.Parse(moisDebutExploit.Substring(6, 4)))
+                {
+                    chargesFixes += ch / 12 * (13 - int.Parse(moisDebutExploit.Substring(0, 2))); 
+                }
+                else if (int.Parse(cbxAnnee.SelectedItem.ToString()) < int.Parse(moisDebutExploit.Substring(6, 4)))
+                {
+                    chargesFixes += 0;
+                }
+                else
+                {
+                    chargesFixes += ch;
+                }
             }
+            
+            // Charges ponctuelles
+            foreach (int bien in this.bienSelectionne)
+            {
+                this.req = "SELECT COALESCE(SUM(chargeannuelle), 0) FROM chargesannuelles "+
+                    $"WHERE refFrequence = 'Ponctuelle' AND annee = {cbxAnnee.SelectedItem} AND idbien = {bien}";
+                this.command = new MySqlCommand(this.req, Global.Connexion);
+                reader = this.command.ExecuteReader();
+                reader.Read();
+                chargesPonctuelles += reader.GetFloat(0);
+                reader.Close();
+            }
+
+            // Calcule le total annuel
+            chargesAnnuelles = chargesFixes + chargesPonctuelles;
             txtChargesAnnuelles.Text = chargesAnnuelles.ToString("N") + " €";
 
             // Affiche le cash flow annuel pour l'année sélectionnée
             txtCFAnnuel.Text = (caAnnuel - chargesAnnuelles).ToString("N") + " €";
         }
-
 
 
         /// <summary>
@@ -189,6 +235,7 @@ namespace GestionLocation
             txtCAAnnuel.Text = "";
             txtChargesAnnuelles.Text = "";
             txtCFAnnuel.Text = "";
+            this.bienSelectionne.Clear();
             RemplirComboAnnee();
         }
     }
