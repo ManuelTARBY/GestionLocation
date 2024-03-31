@@ -22,6 +22,7 @@ namespace GestionLocation
         private MySqlCommand command;
         private readonly string[] rubLocataires = { "idlocataire", "prenomlocataire", "nomlocataire", "nomcompletlocataire", "adresselocataire", "cplocataire", "villelocataire", "datenaissancelocataire", "lieunaissancelocataire", "telephonelocataire", "emailocataire", "locatairearchive" };
         private readonly string[] stringDelimit = { ", " };
+        private string[] nomprenom;
 
         /// <summary>
         /// Constructeur de AjoutModifLocataire
@@ -109,6 +110,12 @@ namespace GestionLocation
                 }
                 // Exécute la requête
                 this.command = new MySqlCommand(this.req, Global.Connexion);
+                this.command.Parameters.AddWithValue("@prenom", this.nomprenom[0]);
+                this.command.Parameters.AddWithValue("@nom", this.nomprenom[1]);
+                this.command.Parameters.AddWithValue("@nomcomplet", this.nomprenom[2]);
+                this.command.Parameters.AddWithValue("@adresse", txtAdresse.Text);
+                this.command.Parameters.AddWithValue("@ville", txtVille.Text.ToUpper());
+                this.command.Parameters.AddWithValue("@lieunaissance", txtLieuNaissance.Text.ToUpper());
                 // préparation de la requête
                 this.command.Prepare();
                 // exécution de la requête
@@ -139,13 +146,13 @@ namespace GestionLocation
         /// </summary>
         private void ConstruitReqModif()
         {
-            string[] nomprenom = MiseEnFormeNomPrenom();
+            this.nomprenom = MiseEnFormeNomPrenom();
             this.req = $"{this.typeReq} locataire SET ";
-            this.req += $"idlocataire = {this.id}, prenomlocataire = \'{nomprenom[0]}\', nomlocataire = \'{nomprenom[1]}\', " +
-                $"adresselocataire = \'{txtAdresse.Text}\', cplocataire = \'{txtCp.Text}\', villelocataire = \'{txtVille.Text.ToUpper()}\', " +
-                $"datenaissancelocataire = \'{datDateNaissance.Value:yyyy-MM-dd}\', lieunaissancelocataire = \'{txtLieuNaissance.Text.ToUpper()}\', " +
+            this.req += $"idlocataire = {this.id}, prenomlocataire = @prenom, nomlocataire = @nom, " +
+                $"adresselocataire = @adresse, cplocataire = \'{txtCp.Text}\', villelocataire = @ville, " +
+                $"datenaissancelocataire = \'{datDateNaissance.Value:yyyy-MM-dd}\', lieunaissancelocataire = @lieunaissance, " +
                 $"telephonelocataire = \'{EspacerNumTel()}\', emailocataire = \'{txtEmail.Text}\', locatairearchive = {cbxArchive.Checked}, " +
-                $"nomcompletlocataire = \'{nomprenom[2]}\' WHERE idlocataire = {this.id}";
+                $"nomcompletlocataire = @nomcomplet WHERE idlocataire = {this.id}";
         }
 
         /// <summary>
@@ -153,15 +160,15 @@ namespace GestionLocation
         /// </summary>
         private void ConstruitReqAjout()
         {
-            string[] nomprenom = MiseEnFormeNomPrenom();
+            this.nomprenom = MiseEnFormeNomPrenom();
             this.req = $"{this.typeReq} locataire (";
             for (int i = 0; i < this.rubLocataires.Length - 1; i++)
             {
                 this.req += $"{rubLocataires[i]}, ";
             }
-            this.req += $"{rubLocataires[rubLocataires.Length - 1]}) VALUES ({this.id}, \"{nomprenom[0]}\", \"{nomprenom[1]}\"," +
-                $"\"{nomprenom[2]}\", \"{txtAdresse.Text}\", \"{txtCp.Text}\", \"{txtVille.Text.ToUpper()}\", \"{datDateNaissance.Value:yyyy-MM-dd}\"," +
-                $" \"{txtLieuNaissance.Text}\", \"{EspacerNumTel()}\", \"{txtEmail.Text}\", {cbxArchive.Checked})";
+            this.req += $"{rubLocataires[rubLocataires.Length - 1]}) VALUES ({this.id}, @prenom, @nom," +
+                $"@nomcomplet, @adresse, \"{txtCp.Text}\", @ville, \"{datDateNaissance.Value:yyyy-MM-dd}\"," +
+                $" @lieunaissance, \"{EspacerNumTel()}\", \"{txtEmail.Text}\", {cbxArchive.Checked})";
         }
 
         /// <summary>

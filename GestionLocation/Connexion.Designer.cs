@@ -42,7 +42,6 @@ namespace GestionLocation
             this.lblErreur = new System.Windows.Forms.Label();
             this.lblCptEssai = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -111,23 +110,11 @@ namespace GestionLocation
             this.pictureBox1.TabIndex = 6;
             this.pictureBox1.TabStop = false;
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(408, 41);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(151, 44);
-            this.button1.TabIndex = 7;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Visible = false;
-            this.button1.Click += new System.EventHandler(this.Button1_ClickAsync);
-            // 
             // Connexion
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(608, 278);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.lblCptEssai);
             this.Controls.Add(this.lblErreur);
@@ -156,6 +143,5 @@ namespace GestionLocation
         private System.Windows.Forms.Label lblErreur;
         private System.Windows.Forms.Label lblCptEssai;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Button button1;
     }
 }

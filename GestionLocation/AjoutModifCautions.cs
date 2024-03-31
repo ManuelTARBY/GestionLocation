@@ -22,6 +22,7 @@ namespace GestionLocation
         private readonly string[] rubCautions = { "idcaution", "prenomcaution", "nomcaution", "nomcompletcaution",
             "adressecaution", "cpcaution", "villecaution", "telephonecaution", "emailcaution", "cautionarchivee" };
         private readonly string[] stringDelimit = { ", " };
+        private string[] nomprenom;
 
         /// <summary>
         /// Constructeur de la fenêtre AjoutModifCautions
@@ -127,6 +128,11 @@ namespace GestionLocation
                 }
                 // Exécute la requête
                 this.command = new MySqlCommand(this.req, Global.Connexion);
+                this.command.Parameters.AddWithValue("@prenom", this.nomprenom[0]);
+                this.command.Parameters.AddWithValue("@nom", this.nomprenom[1]);
+                this.command.Parameters.AddWithValue("@nomcomplet", this.nomprenom[2]);
+                this.command.Parameters.AddWithValue("@adresse", txtAdresse.Text);
+                this.command.Parameters.AddWithValue("@ville", txtVille.Text.ToUpper());
                 // préparation de la requête
                 this.command.Prepare();
                 // exécution de la requête
@@ -141,12 +147,12 @@ namespace GestionLocation
         /// </summary>
         private void ConstruitReqModif()
         {
-            string[] nomprenom = MiseEnFormeNomPrenom();
+            this.nomprenom = MiseEnFormeNomPrenom();
             this.req = $"{this.typeReq} caution SET ";
-            this.req += $"idcaution = {this.id}, prenomcaution = \"{nomprenom[0]}\", nomcaution = \"{nomprenom[1]}\", " +
-                $"adressecaution = \"{txtAdresse.Text}\", cpcaution = \"{txtCp.Text}\", villecaution = \"{txtVille.Text.ToUpper()}\", " +
+            this.req += $"idcaution = {this.id}, prenomcaution = @prenom, nomcaution = @nom, " +
+                $"adressecaution = @adresse, cpcaution = \"{txtCp.Text}\", villecaution = @ville, " +
                 $"telephonecaution = \"{EspacerNumTel()}\", emailcaution = \"{txtEmail.Text}\", cautionarchivee = {cbxArchive.Checked}, " +
-                $"nomcompletcaution = \"{nomprenom[2]}\" WHERE idcaution = {this.id}";
+                $"nomcompletcaution = @nomcomplet WHERE idcaution = {this.id}";
         }
 
         /// <summary>
@@ -154,15 +160,15 @@ namespace GestionLocation
         /// </summary>
         private void ConstruitReqAjout()
         {
-            string[] nomprenom = MiseEnFormeNomPrenom();
+            this.nomprenom = MiseEnFormeNomPrenom();
             // Construit la chaîne de la requête
             this.req = $"{this.typeReq} caution (";
             for (int i = 0; i < this.rubCautions.Length - 1; i++)
             {
                 this.req += $"{rubCautions[i]}, ";
             }
-            this.req += $"{rubCautions[rubCautions.Length - 1]}) VALUES ({this.id}, \"{nomprenom[0]}\"," +
-                $"\"{nomprenom[1]}\", \"{nomprenom[2]}\", \"{txtAdresse.Text}\", \"{txtCp.Text}\", \"{txtVille.Text.ToUpper()}\"," +
+            this.req += $"{rubCautions[rubCautions.Length - 1]}) VALUES ({this.id}, @prenom," +
+                $"@nom, @nomcomplet, @adresse, \"{txtCp.Text}\", @ville," +
                 $" \"{EspacerNumTel()}\", \"{txtEmail.Text}\", {cbxArchive.Checked})";
         }
 

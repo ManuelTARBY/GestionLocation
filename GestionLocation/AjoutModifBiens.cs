@@ -164,6 +164,12 @@ namespace GestionLocation
                 }
                 // Exécute la requête
                 this.command = new MySqlCommand(this.req, Global.Connexion);
+                this.command.Parameters.AddWithValue("@nombien", Global.Capitalize(txtNom.Text));
+                this.command.Parameters.AddWithValue("@adresse", txtAdresse.Text);
+                this.command.Parameters.AddWithValue("@laville", txtVille.Text.ToUpper());
+                this.command.Parameters.AddWithValue("@description", txtDescriLogement.Text);
+                this.command.Parameters.AddWithValue("@eltequipement", txtElemEquip.Text);
+                this.command.Parameters.AddWithValue("@autre", txtAutre.Text);
                 // préparation de la requête
                 this.command.Prepare();
                 // exécution de la requête
@@ -218,14 +224,15 @@ namespace GestionLocation
         private void ConstruitReqModif()
         {
             this.req = $"{this.typeReq} bien SET ";
-            this.req += $"idbien = {this.id}, nombien = \"{txtNom.Text}\", loyerHC = \"{txtLoyerHC.Text}\", " +
-                $"charges = \"{txtCharges.Text}\", loyerCC = \"{txtLoyerCC.Text}\", adressebien = \"{txtAdresse.Text}\", " +
-                $"cpbien = \"{txtCp.Text}\", villebien = \"{txtVille.Text.ToUpper()}\", bienarchive = {cbxArchive.Checked}, " +
+            this.req += $"idbien = {this.id}, nombien = @nombien, loyerHC = \"{txtLoyerHC.Text}\", " +
+                $"charges = \"{txtCharges.Text}\", loyerCC = \"{txtLoyerCC.Text}\", adressebien = @adresse, " +
+                $"cpbien = \"{txtCp.Text}\", villebien = @laville, bienarchive = {cbxArchive.Checked}, " +
                 $"typehabitat = \"{cbxTypeHabitat.SelectedItem}\", regimejuridique = \"{cbxRegimeJuri.SelectedItem}\", " +
                 $"periodeconstruction = \"{txtPerConstruc.Text}\", superficie = \"{txtSuperficie.Text}\", " +
-                $"nbpiece = \"{txtNbPiece.Text}\", description = \"{txtDescriLogement.Text}\", " +
-                $"elementequip = \"{txtElemEquip.Text}\", autre = \"{txtAutre.Text}\"," +
-                $"prodchauff = \"{cbxProdChauff.SelectedItem}\", prodeauchaude = \"{cbxProdEauChaude.SelectedItem}\" WHERE idbien = {this.id}";
+                $"nbpiece = \"{txtNbPiece.Text}\", description = @description, " +
+                $"elementequip = @eltequipement, autre = @autre," +
+                $"prodchauff = \"{cbxProdChauff.SelectedItem}\", prodeauchaude = \"{cbxProdEauChaude.SelectedItem}\" "+
+                $"WHERE idbien = {this.id}";
         }
 
         /// <summary>
@@ -238,11 +245,10 @@ namespace GestionLocation
             {
                 this.req += $"{rubBiens[i]}, ";
             }
-            this.req += $"{rubBiens[rubBiens.Length-1]}) VALUES ({this.id}, \"{txtNom.Text}\", \"{txtLoyerHC.Text}\", \"{txtCharges.Text}\", " +
-                $"\"{txtLoyerCC.Text}\", \"{txtAdresse.Text}\", \"{txtCp.Text}\", \"{txtVille.Text.ToUpper()}\", {cbxArchive.Checked}, " +
+            this.req += $"{rubBiens[rubBiens.Length-1]}) VALUES ({this.id}, @nombien, \"{txtLoyerHC.Text}\", \"{txtCharges.Text}\", " +
+                $"\"{txtLoyerCC.Text}\", @adresse, \"{txtCp.Text}\", @laville, {cbxArchive.Checked}, " +
                 $"\"{cbxTypeHabitat.SelectedItem}\", \"{cbxRegimeJuri.SelectedItem}\", \"{txtPerConstruc.Text}\", \"{txtSuperficie.Text}\", " +
-                $"\"{txtNbPiece.Text}\", \"{txtNbPiece.Text}\", \"{txtDescriLogement.Text}\", \"{txtElemEquip.Text}\", " +
-                $"\"{txtAutre.Text}\", \"{cbxProdChauff.SelectedItem}\", \"{cbxProdEauChaude.SelectedItem}\")";
+                $"\"{txtNbPiece.Text}\", @description, @eltequipement, @autre, \"{cbxProdChauff.SelectedItem}\", \"{cbxProdEauChaude.SelectedItem}\")";
         }
 
 

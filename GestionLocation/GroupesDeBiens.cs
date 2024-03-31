@@ -71,7 +71,7 @@ namespace GestionLocation
                 cbxCompoGroupe.Items.Clear();
                 txtNomGroupe.Text = "";
                 lstContenuGroupe.Items.Clear();
-                this.req = $"SELECT nombien FROM bien WHERE idbien IN (SELECT idbien FROM lignegroupe WHERE idgroupe = (SELECT idgroupe FROM grpedebiens WHERE nomdugroupe = \'{lstGroupes.SelectedItem}\')) ORDER BY nombien";
+                this.req = $"SELECT nombien FROM bien WHERE idbien IN (SELECT idbien FROM lignegroupe WHERE idgroupe = (SELECT idgroupe FROM grpedebiens WHERE nomdugroupe = \"{lstGroupes.SelectedItem}\")) ORDER BY nombien";
                 this.command = new MySqlCommand(this.req, Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
                 bool finCurseur = !reader.Read();
@@ -128,14 +128,16 @@ namespace GestionLocation
                 switch (this.type)
                 {
                     case "update":
-                        this.req = $"UPDATE grpedebiens SET nomdugroupe = \'{txtNomGroupe.Text}\' WHERE idgroupe = {this.idGrpe}";
+                        /*this.req = $"UPDATE grpedebiens SET nomdugroupe = \'{txtNomGroupe.Text}\' WHERE idgroupe = {this.idGrpe}";*/
+                        this.req = $"UPDATE grpedebiens SET nomdugroupe = @nomgroupe WHERE idgroupe = {this.idGrpe}";
                         ExecuteReqUID();
                         this.req = $"DELETE FROM lignegroupe WHERE idgroupe = {this.idGrpe}";
                         ExecuteReqUID();
                         break;
                     case "insert":
                         // Met à jour la table grpedebiens
-                        this.req = $"INSERT INTO grpedebiens (idgroupe, nomdugroupe) VALUES ({this.idGrpe}, \'{txtNomGroupe.Text}\')";
+                        /*this.req = $"INSERT INTO grpedebiens (idgroupe, nomdugroupe) VALUES ({this.idGrpe}, \'{txtNomGroupe.Text}\')";*/
+                        this.req = $"INSERT INTO grpedebiens (idgroupe, nomdugroupe) VALUES ({this.idGrpe}, @nomgroupe)";
                         ExecuteReqUID();
                         // Met à jour la table lignegroupe
                         this.req = $"";
@@ -287,6 +289,7 @@ namespace GestionLocation
         {
             // Exécute la requête
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Parameters.AddWithValue("@nomgroupe", txtNomGroupe.Text);
             // préparation de la requête
             this.command.Prepare();
             // exécution de la requête
@@ -299,7 +302,7 @@ namespace GestionLocation
         /// </summary>
         public void RecupID()
         {
-            this.req = $"SELECT idgroupe FROM grpedebiens WHERE nomdugroupe = \'{lstGroupes.SelectedItem}\'";
+            this.req = $"SELECT idgroupe FROM grpedebiens WHERE nomdugroupe = \"{lstGroupes.SelectedItem}\"";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();

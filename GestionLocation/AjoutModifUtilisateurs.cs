@@ -238,8 +238,8 @@ namespace GestionLocation
         {
             this.req = $"{this.infos[0]} utilisateur (iduser, login, pwd, prenomuser, nomuser, adresseuser, cpuser, villeuser, emailuser, " +
                 $"pwdemail, adresseserveursmtp, port, clientid, clientsecret, signature) " +
-                $"VALUES ({lblID.Text}, \'{infos[2]}\', \'{infos[3]}\', \'{Global.Capitalize(txtPrenom.Text)}\', \'{txtNom.Text.ToUpper()}\', " +
-                $"\'{txtAdresse.Text}\', \'{txtCp.Text}\', \'{txtVille.Text.ToUpper()}\', \'{txtEmail.Text}\', \'{txtPwdEmail.Text}\', " +
+                $"VALUES ({lblID.Text}, \"{infos[2]}\", \"{infos[3]}\", \"{Global.Capitalize(txtPrenom.Text)}\", \"{txtNom.Text.ToUpper()}\", " +
+                $"\"{txtAdresse.Text}\", \'{txtCp.Text}\', \"{txtVille.Text.ToUpper()}\", \"{txtEmail.Text}\", \"{txtPwdEmail.Text}\", " +
                 $"\'{this.adresseSmtp}\', \'{this.port}\', \'{""}\' , \'{""}\', \'{txtSignature.Text}\')";
         }
 
