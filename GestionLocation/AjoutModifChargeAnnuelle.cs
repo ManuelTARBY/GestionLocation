@@ -135,18 +135,21 @@ namespace GestionLocation
                 switch (this.typeReq)
                 {
                     case "INSERT":
-                        this.req = "INSERT INTO chargesannuelles (idchargeannuelle, idbien, libelle, refFrequence, annee, montantcharge, chargeannuelle, imputable) " +
-                            $"VALUES ({lblID.Text}, {this.leBien[0]}, \'{txtLibelle.Text}\', " +
-                            $"\'{cobFrequence.SelectedItem}\', \'{txtAnnee.Text}\', \'{MontantPoint()}\', \'{annu}\', {cbxImputable.Checked})";
+                        this.req = "INSERT INTO chargesannuelles (idchargeannuelle, idbien, libelle, refFrequence, annee, "+
+                            "montantcharge, chargeannuelle, imputable) "+
+                            $"VALUES ({lblID.Text}, {this.leBien[0]}, @libelle, \'{cobFrequence.SelectedItem}\', "+
+                            $"\'{txtAnnee.Text}\', \'{MontantPoint()}\', \'{annu}\', {cbxImputable.Checked})";
                         break;
                     case "UPDATE":
-                        this.req = $"UPDATE chargesannuelles SET idbien = {leBien[0]}, libelle = \'{txtLibelle.Text}\', refFrequence = \'{cobFrequence.SelectedItem}\', " +
-                            $"annee=\'{txtAnnee.Text}\', montantcharge = \'{MontantPoint()}\', chargeannuelle = \'{annu}\', imputable = {cbxImputable.Checked} " +
-                            $"WHERE idchargeannuelle = {this.idCharge}";
+                        this.req = "UPDATE chargesannuelles "+
+                            $"SET idbien = {leBien[0]}, libelle = @libelle, refFrequence = \'{cobFrequence.SelectedItem}\', "+
+                            $"annee = \'{txtAnnee.Text}\', montantcharge = \'{MontantPoint()}\', chargeannuelle = \'{annu}\', "+
+                            $"imputable = {cbxImputable.Checked} WHERE idchargeannuelle = {this.idCharge}";
                         break;
                 }
                 // Exécute la requête
                 this.command = new MySqlCommand(this.req, Global.Connexion);
+                this.command.Parameters.AddWithValue("@libelle", txtLibelle.Text);
                 // Prépare la requête
                 this.command.Prepare();
                 // Exécute la requête
