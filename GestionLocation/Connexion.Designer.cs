@@ -122,10 +122,12 @@ namespace GestionLocation
             this.Controls.Add(this.txtPwd);
             this.Controls.Add(this.txtId);
             this.Controls.Add(this.btnConnexion);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(630, 334);
             this.MinimumSize = new System.Drawing.Size(630, 334);
             this.Name = "Connexion";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Connexion";
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Connexion_KeyPress);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

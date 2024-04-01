@@ -1,1 +1,0 @@
-﻿- Correction dans la requête de calcul d'une charge annuelle (fenêtre AjoutModifChargeAnnuelle)
