@@ -31,8 +31,6 @@ namespace GestionLocation
         {
             this.components = new System.ComponentModel.Container();
             this.vcaannuelBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.gestionlocationDataSet = new GestionLocation.gestionlocationDataSet();
-            this.v_ca_annuelTableAdapter = new GestionLocation.gestionlocationDataSetTableAdapters.v_ca_annuelTableAdapter();
             this.cbxAnnee = new System.Windows.Forms.ComboBox();
             this.lblAnnee = new System.Windows.Forms.Label();
             this.txtCFAnnuel = new System.Windows.Forms.TextBox();
@@ -43,23 +41,11 @@ namespace GestionLocation
             this.txtChargesAnnuelles = new System.Windows.Forms.TextBox();
             this.lblBien = new System.Windows.Forms.Label();
             this.cbxBien = new System.Windows.Forms.ComboBox();
-            ((System.ComponentModel.ISupportInitialize)(this.vcaannuelBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gestionlocationDataSet)).BeginInit();
             this.SuspendLayout();
             // 
             // vcaannuelBindingSource
             // 
             this.vcaannuelBindingSource.DataMember = "v_ca_annuel";
-            this.vcaannuelBindingSource.DataSource = this.gestionlocationDataSet;
-            // 
-            // gestionlocationDataSet
-            // 
-            this.gestionlocationDataSet.DataSetName = "gestionlocationDataSet";
-            this.gestionlocationDataSet.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
-            // 
-            // v_ca_annuelTableAdapter
-            // 
-            this.v_ca_annuelTableAdapter.ClearBeforeFill = true;
             // 
             // cbxAnnee
             // 
@@ -164,17 +150,13 @@ namespace GestionLocation
             this.Controls.Add(this.cbxAnnee);
             this.Name = "Stats";
             this.Text = "Stats";
-            ((System.ComponentModel.ISupportInitialize)(this.vcaannuelBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gestionlocationDataSet)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private gestionlocationDataSet gestionlocationDataSet;
         private System.Windows.Forms.BindingSource vcaannuelBindingSource;
-        private gestionlocationDataSetTableAdapters.v_ca_annuelTableAdapter v_ca_annuelTableAdapter;
         private System.Windows.Forms.ComboBox cbxAnnee;
         private System.Windows.Forms.Label lblAnnee;
         private System.Windows.Forms.TextBox txtCFAnnuel;

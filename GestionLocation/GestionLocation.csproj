@@ -222,11 +222,6 @@
     <Compile Include="FicheBien.Designer.cs">
       <DependentUpon>FicheBien.cs</DependentUpon>
     </Compile>
-    <Compile Include="gestionlocationDataSet.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>gestionlocationDataSet.xsd</DependentUpon>
-    </Compile>
     <Compile Include="Global.cs" />
     <Compile Include="GroupesDeBiens.cs">
       <SubType>Form</SubType>
@@ -344,17 +339,6 @@
     <EmbeddedResource Include="Stats.resx">
       <DependentUpon>Stats.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="gestionlocationDataSet.xsc">
-      <DependentUpon>gestionlocationDataSet.xsd</DependentUpon>
-    </None>
-    <None Include="gestionlocationDataSet.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>gestionlocationDataSet.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="gestionlocationDataSet.xss">
-      <DependentUpon>gestionlocationDataSet.xsd</DependentUpon>
-    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
