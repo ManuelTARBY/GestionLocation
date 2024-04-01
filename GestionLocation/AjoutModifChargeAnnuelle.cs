@@ -46,6 +46,7 @@ namespace GestionLocation
         {
             this.req = $"SELECT libelle FROM frequencepaiement";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
             while (!finCurseur)
@@ -80,6 +81,7 @@ namespace GestionLocation
         {
             this.req = $"SELECT MAX(idchargeannuelle) FROM (SELECT idchargeannuelle FROM chargesannuelles) AS req";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             string idNouv;
@@ -102,6 +104,7 @@ namespace GestionLocation
         {
             this.req = $"SELECT libelle, montantcharge, refFrequence, imputable, annee FROM chargesannuelles WHERE idchargeannuelle = {this.idCharge}";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             txtLibelle.Text = $"{reader["libelle"]}";
@@ -190,6 +193,7 @@ namespace GestionLocation
             // Récupère l'occurrence de la charge
             this.req = $"SELECT occurrence FROM frequencepaiement WHERE libelle = \'{cobFrequence.SelectedItem}\'";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             float occurrence = (float)reader["occurrence"];
@@ -229,6 +233,7 @@ namespace GestionLocation
             float charges = 0;
             this.req = $"SELECT chargeannuelle FROM chargesannuelles WHERE idbien = {leBien[0]}";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
             while (!finCurseur)
@@ -237,11 +242,11 @@ namespace GestionLocation
                 finCurseur = !reader.Read();
             }
             reader.Close();
-
             // Calcule la charge imputable au locataire pour le bien
             this.req += " AND imputable = True";
             float chImputables = 0;
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             reader = this.command.ExecuteReader();
             finCurseur = !reader.Read();
             while (!finCurseur)

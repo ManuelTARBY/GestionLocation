@@ -37,6 +37,7 @@ namespace GestionLocation
         {
             string req = $"SELECT * FROM utilisateur WHERE iduser={this.idUser}";
             this.command = new MySqlCommand(req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             Global.User = $"{reader.GetString(3)} {reader.GetString(4)}";
@@ -60,6 +61,7 @@ namespace GestionLocation
             req.AppendLine("WHERE locationarchivee = 0");
             req.AppendLine("ORDER BY nombien");
             this.command = new MySqlCommand(req.ToString(), Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             /* lecture de la première ligne du curseur (finCurseur passe à false en fin de
             curseur) */
@@ -385,6 +387,7 @@ namespace GestionLocation
             infos[1] = idUser;
             string req = $"SELECT * FROM utilisateur WHERE iduser = {this.idUser}";
             this.command = new MySqlCommand(req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             for (int i = 1; i < infos.Length - 1; i++)

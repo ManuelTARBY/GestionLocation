@@ -41,6 +41,7 @@ namespace GestionLocation
             {
                 this.req = "SELECT MAX(req.idlocataire) FROM (SELECT idlocataire FROM locataire) AS req";
                 this.command = new MySqlCommand(this.req, Global.Connexion);
+                this.command.Prepare();
                 MySqlDataReader reader = this.command.ExecuteReader();
                 reader.Read();
                 this.id = reader.GetInt32(0) + 1;
@@ -61,6 +62,7 @@ namespace GestionLocation
         {
             this.req = $"SELECT * FROM locataire WHERE idlocataire = {this.id}";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             // affichage des champs récupérés dans la ligne

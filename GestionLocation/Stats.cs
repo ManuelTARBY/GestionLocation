@@ -42,6 +42,7 @@ namespace GestionLocation
             // Récupère les biens
             this.req = "SELECT nombien FROM bien";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             if (reader.HasRows)
             {
@@ -55,6 +56,7 @@ namespace GestionLocation
             // Récupère les groupes de biens
             this.req = "SELECT nomdugroupe FROM grpedebiens WHERE nomdugroupe != 'Tous les biens'";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             reader = this.command.ExecuteReader();
             if (reader.HasRows)
             {
@@ -110,6 +112,7 @@ namespace GestionLocation
 
             // Récupère la liste des biens
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             if (reader.HasRows)
             {
@@ -124,6 +127,7 @@ namespace GestionLocation
             this.reqMini = $"SELECT MIN(YEAR(debutlocation)) FROM location " +
                 $"WHERE idbien IN ({string.Join(",", this.bienSelectionne.ConvertAll(v => v.ToString()))})";
             this.command = new MySqlCommand(this.reqMini, Global.Connexion);
+            this.command.Prepare();
             reader = this.command.ExecuteReader();
             reader.Read();
             anneeMini = reader.GetInt32(0);
@@ -133,6 +137,7 @@ namespace GestionLocation
             this.reqMaxi = $"SELECT LEAST(MAX(YEAR(finlocation)), YEAR(CURDATE())) FROM location " +
                 $"WHERE idbien IN ({string.Join(",", this.bienSelectionne.ConvertAll(v => v.ToString()))})";
             this.command = new MySqlCommand(this.reqMaxi, Global.Connexion);
+            this.command.Prepare();
             reader = this.command.ExecuteReader();
             reader.Read();
             anneeMaxi = reader.GetInt32(0);
@@ -161,6 +166,7 @@ namespace GestionLocation
                       $"WHERE periodefacturee LIKE '{cbxAnnee.SelectedItem}%' AND "+
                       $"idbien IN ({string.Join(",", this.bienSelectionne.ConvertAll(v => v.ToString()))})";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             caAnnuel = reader.GetFloat(0);
@@ -175,6 +181,7 @@ namespace GestionLocation
                 this.req = "SELECT COALESCE(SUM(chargeannuelle), 0) FROM chargesannuelles "+
                     $"WHERE refFrequence != 'Ponctuelle' AND idbien = {bien}";
                 this.command = new MySqlCommand(this.req, Global.Connexion);
+                this.command.Prepare();
                 reader = this.command.ExecuteReader();
                 reader.Read();
                 ch = reader.GetFloat(0);
@@ -184,6 +191,7 @@ namespace GestionLocation
                 // Récupère la date de la première mise en location
                 this.req = $"SELECT MIN(debutlocation) AS 'premiereloc' FROM location WHERE idbien = {bien}";
                 this.command = new MySqlCommand(this.req, Global.Connexion);
+                this.command.Prepare();
                 reader = this.command.ExecuteReader();
                 reader.Read();
                 string moisDebutExploit = reader["premiereloc"].ToString();
@@ -210,6 +218,7 @@ namespace GestionLocation
                 this.req = "SELECT COALESCE(SUM(chargeannuelle), 0) FROM chargesannuelles "+
                     $"WHERE refFrequence = 'Ponctuelle' AND annee = {cbxAnnee.SelectedItem} AND idbien = {bien}";
                 this.command = new MySqlCommand(this.req, Global.Connexion);
+                this.command.Prepare();
                 reader = this.command.ExecuteReader();
                 reader.Read();
                 chargesPonctuelles += reader.GetFloat(0);

@@ -48,6 +48,7 @@ namespace GestionLocation
             {
                 this.req = "SELECT MAX(idlocation) + 1 FROM location";
                 this.command = new MySqlCommand(this.req, Global.Connexion);
+                this.command.Prepare();
                 MySqlDataReader reader = this.command.ExecuteReader();
                 reader.Read();
                 this.id = reader.GetInt32(0);
@@ -76,6 +77,7 @@ namespace GestionLocation
             lstBiens.Items.Clear();
             this.req = "SELECT nombien FROM bien WHERE bienarchive = 0 ORDER BY nombien";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
             while (!finCurseur)
@@ -98,6 +100,7 @@ namespace GestionLocation
             lstLocataires.Items.Clear();
             this.req = "SELECT nomcompletlocataire FROM locataire WHERE locatairearchive = 0 ORDER BY nomcompletlocataire";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             /* lecture de la première ligne du curseur (finCurseur passe à false en fin de
             curseur) */
@@ -124,6 +127,7 @@ namespace GestionLocation
             lstCautions.Items.Clear();
             this.req = "SELECT nomcompletcaution FROM caution WHERE cautionarchivee = 0 ORDER BY nomcompletcaution";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
             while (!finCurseur)
@@ -148,6 +152,7 @@ namespace GestionLocation
             lstCautions.SelectedIndex = lstCautions.Items.IndexOf(RetrouveCaution());
             this.req = $"SELECT * FROM location WHERE idlocation = {this.id}";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             datDebut.Value = reader.GetDateTime(4);
@@ -173,6 +178,7 @@ namespace GestionLocation
         {
             this.req = $"SELECT nombien FROM bien WHERE idbien = (SELECT idbien FROM location WHERE idlocation = {this.id})";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             string nombien = ($"{reader["nombien"]}");
@@ -190,6 +196,7 @@ namespace GestionLocation
         {
             this.req = $"SELECT * FROM bien WHERE idbien = {id}";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             this.datas.Add("NomBien", $"{reader["nombien"]}");
@@ -220,6 +227,7 @@ namespace GestionLocation
         {
             this.req = $"SELECT nomcompletlocataire FROM locataire WHERE idlocataire = (SELECT idlocataire FROM location WHERE idlocation = {this.id})";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             string nomLocataire = ($"{reader["nomcompletlocataire"]}");
@@ -235,6 +243,7 @@ namespace GestionLocation
         {
             this.req = $"SELECT nomcompletcaution FROM caution WHERE idcaution = (SELECT idcaution FROM location WHERE idlocation = {this.id})";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             string nomCaution = ($"{reader["nomcompletcaution"]}");
@@ -471,6 +480,7 @@ namespace GestionLocation
         {
             this.req = $"SELECT * FROM locataire WHERE idlocataire = {id}";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             this.datas.Add("PrenomLocat", $"{reader["prenomlocataire"]}");
@@ -492,6 +502,7 @@ namespace GestionLocation
         {
             this.req = $"SELECT * FROM caution WHERE idcaution = {id}";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             this.datas.Add("PrenomCaution", $"{reader["prenomcaution"]}");
@@ -657,6 +668,7 @@ namespace GestionLocation
         private string ReqSelectUnElement()
         {
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             string resultat = reader.GetString(0);
@@ -724,6 +736,7 @@ namespace GestionLocation
             this.req = $"SELECT * FROM paiement WHERE idlocation = {id}";
             List<string[]> resBdd = new List<string[]>();
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
             while (!finCurseur)
@@ -741,6 +754,7 @@ namespace GestionLocation
                 // Crée un nouvel id de paiement
                 this.req = "SELECT MAX(idpaiement) FROM (SELECT idpaiement FROM paiement) AS req";
                 this.command = new MySqlCommand(this.req, Global.Connexion);
+                this.command.Prepare();
                 reader = this.command.ExecuteReader();
                 reader.Read();
                 int idPaiement = int.Parse(reader.GetString(0)) + 1;
@@ -782,6 +796,7 @@ namespace GestionLocation
                         int idPaiement;
                         this.req = "SELECT MAX(idpaiement) FROM (SELECT idpaiement FROM paiement) AS req";
                         this.command = new MySqlCommand(this.req, Global.Connexion);
+                        this.command.Prepare();
                         reader = this.command.ExecuteReader();
                         reader.Read();
                         idPaiement = int.Parse(reader.GetString(0)) + 1;
@@ -838,6 +853,7 @@ namespace GestionLocation
             // Récupère le loyer charges comprises à partir du nom du bien
             this.req = $"SELECT loyercc FROM bien WHERE nombien = \'{leBien}\'";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             float loyercc = (float) reader["loyercc"];
@@ -924,6 +940,7 @@ namespace GestionLocation
             float resteAPayer;
             this.req = $"SELECT montantpaye FROM paiement WHERE idpaiement = {idPaiement}";
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             float montantpaye = float.Parse(reader["montantpaye"].ToString());
