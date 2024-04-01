@@ -1,9 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Drawing;
-using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GestionLocation
@@ -14,6 +12,7 @@ namespace GestionLocation
         private MySqlCommand command;
         private readonly Connexion fenConnexion;
         private readonly string idUser;
+        private string req;
         
         /// <summary>
         /// Constructeur de la fenêtre Accueil
@@ -55,27 +54,21 @@ namespace GestionLocation
         public void AfficherLocations()
         {
             lstLocations.Items.Clear();
-            StringBuilder req = new StringBuilder();
-            req.AppendLine("SELECT nombien AS `Bien`, nomcompletlocataire AS `Locataire`, debutlocation AS `Début de location`, finlocation AS `Fin de location`, nomcompletcaution AS `Caution`");
-            req.AppendLine("FROM location JOIN locataire USING(idlocataire) JOIN bien USING(idbien) JOIN caution USING(idcaution)");
-            req.AppendLine("WHERE locationarchivee = 0");
-            req.AppendLine("ORDER BY nombien");
-            this.command = new MySqlCommand(req.ToString(), Global.Connexion);
+            this.req = "SELECT nombien, CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', nomlocataire) AS 'locataire', "+
+                "debutlocation, finlocation, CONCAT(SUBSTRING_INDEX(prenomcaution, ',', 1), ' ', nomcaution) AS 'caution' " +
+                "FROM location JOIN locataire USING(idlocataire) JOIN bien USING(idbien) JOIN caution USING(idcaution)"+
+                "WHERE locationarchivee = 0 ORDER BY nombien";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
-            /* lecture de la première ligne du curseur (finCurseur passe à false en fin de
-            curseur) */
             bool finCurseur = !reader.Read();
-            // boucle tant que la ligne lue contient quelque chose
-            // (donc tant que la fin du curseur n'est pas atteinte)
             while (!finCurseur)
             {
                 // affichage des champs récupérés dans la ligne
-                lstLocations.Items.Add($"{reader["Bien"]} || {reader["Locataire"]} || Du {reader.GetDateTime(2):d} au {reader.GetDateTime(3):d} || Caution : {reader["Caution"]}");
-                // lecture de la ligne suivante dans le curseur
+                lstLocations.Items.Add($"{reader["nombien"]} || {reader["locataire"]} "+
+                    $" || Du {reader.GetDateTime(2):d} au {reader.GetDateTime(3):d} || Caution : {reader["caution"]}");
                 finCurseur = !reader.Read();
             }
-            // fermeture du curseur
             reader.Close();
         }
 

@@ -1,12 +1,8 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GestionLocation
@@ -43,27 +39,29 @@ namespace GestionLocation
             lstLocations.Items.Clear();
             lesId.Clear();
             // Construit la requête
-            StringBuilder req = new StringBuilder();
-            req.AppendLine("SELECT nombien AS `Bien`, nomcompletlocataire AS `Locataire`, debutlocation AS `Début de location`, finlocation AS `Fin de location`, nomcompletcaution AS `Caution`, idlocation AS `id`");
-            req.AppendLine("FROM location JOIN locataire USING(idlocataire) JOIN bien USING(idbien) JOIN caution USING(idcaution)");
+            this.req = "SELECT nombien, CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', nomlocataire) AS `locataire`, " +
+                "debutlocation AS `Début de location`, finlocation AS `Fin de location`, " +
+                "CONCAT(SUBSTRING_INDEX(prenomcaution, ',', 1), ' ', nomcaution) AS 'caution', idlocation AS `id`" +
+                "FROM location NATURAL JOIN locataire NATURAL JOIN bien NATURAL JOIN caution ";
             if (clbBiens.CheckedItems.Count > 0)
             {
-                req.AppendLine(Where());
+                this.req += Where();
             }
             else
             {
                 lstLocations.Items.Clear();
                 return;
             }
-            req.AppendLine("ORDER BY nombien");
-            this.command = new MySqlCommand(req.ToString(), Global.Connexion);
+            this.req += "ORDER BY nombien";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
             while (!finCurseur)
             {
-                // Affiche les champs récupérés dans la ligne
-                string item = $"{reader["Bien"]} || {reader["Locataire"]} || Du {reader.GetDateTime(2):d} au {reader.GetDateTime(3):d} || Caution : {reader["Caution"]}";
+                // Affiche la liste des locations
+                string item = $"{reader["nombien"]} || {reader["locataire"]} || Du {reader.GetDateTime(2):d} au "+
+                    $"{reader.GetDateTime(3):d} || Caution : {reader["caution"]}";
                 lstLocations.Items.Add(item);
                 lesId.Add(item, (int)(reader["id"]));
                 finCurseur = !reader.Read();

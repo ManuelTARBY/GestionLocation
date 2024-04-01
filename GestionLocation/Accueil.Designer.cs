@@ -44,12 +44,12 @@ namespace GestionLocation
             this.btnStats = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanelBoutons = new System.Windows.Forms.TableLayoutPanel();
             this.btnUser = new System.Windows.Forms.Button();
             this.btnGroupes = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
+            this.tableLayoutPanelBoutons.SuspendLayout();
             this.SuspendLayout();
             // 
             // lstLocations
@@ -58,11 +58,12 @@ namespace GestionLocation
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lstLocations.Enabled = false;
+            this.lstLocations.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lstLocations.FormattingEnabled = true;
-            this.lstLocations.ItemHeight = 20;
+            this.lstLocations.ItemHeight = 22;
             this.lstLocations.Location = new System.Drawing.Point(3, 215);
             this.lstLocations.Name = "lstLocations";
-            this.lstLocations.Size = new System.Drawing.Size(976, 164);
+            this.lstLocations.Size = new System.Drawing.Size(976, 158);
             this.lstLocations.TabIndex = 2;
             // 
             // btnFermerAppli
@@ -71,7 +72,7 @@ namespace GestionLocation
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnFermerAppli.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.btnFermerAppli.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnFermerAppli.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnFermerAppli.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.btnFermerAppli.Location = new System.Drawing.Point(779, 89);
             this.btnFermerAppli.Name = "btnFermerAppli";
@@ -85,9 +86,10 @@ namespace GestionLocation
             // 
             this.lblLocEnCours.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblLocEnCours.AutoSize = true;
-            this.lblLocEnCours.Location = new System.Drawing.Point(3, 192);
+            this.lblLocEnCours.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblLocEnCours.Location = new System.Drawing.Point(3, 187);
             this.lblLocEnCours.Name = "lblLocEnCours";
-            this.lblLocEnCours.Size = new System.Drawing.Size(143, 20);
+            this.lblLocEnCours.Size = new System.Drawing.Size(176, 25);
             this.lblLocEnCours.TabIndex = 6;
             this.lblLocEnCours.Text = "Locations en cours";
             // 
@@ -96,6 +98,7 @@ namespace GestionLocation
             this.btnLocations.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnLocations.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnLocations.Location = new System.Drawing.Point(3, 3);
             this.btnLocations.Name = "btnLocations";
             this.btnLocations.Size = new System.Drawing.Size(188, 80);
@@ -111,6 +114,7 @@ namespace GestionLocation
             this.btnBiens.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBiens.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnBiens.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnBiens.Location = new System.Drawing.Point(197, 3);
             this.btnBiens.Name = "btnBiens";
@@ -127,6 +131,7 @@ namespace GestionLocation
             this.btnLocataires.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnLocataires.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnLocataires.Location = new System.Drawing.Point(391, 3);
             this.btnLocataires.Name = "btnLocataires";
             this.btnLocataires.Size = new System.Drawing.Size(188, 80);
@@ -142,6 +147,7 @@ namespace GestionLocation
             this.btnCautions.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCautions.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCautions.Location = new System.Drawing.Point(585, 3);
             this.btnCautions.Name = "btnCautions";
             this.btnCautions.Size = new System.Drawing.Size(188, 80);
@@ -157,6 +163,7 @@ namespace GestionLocation
             this.btnCharges.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCharges.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCharges.Location = new System.Drawing.Point(3, 89);
             this.btnCharges.Name = "btnCharges";
             this.btnCharges.Size = new System.Drawing.Size(188, 81);
@@ -172,6 +179,7 @@ namespace GestionLocation
             this.btnPaiements.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPaiements.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnPaiements.Location = new System.Drawing.Point(197, 89);
             this.btnPaiements.Name = "btnPaiements";
             this.btnPaiements.Size = new System.Drawing.Size(188, 81);
@@ -187,6 +195,7 @@ namespace GestionLocation
             this.btnStats.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnStats.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnStats.Location = new System.Drawing.Point(585, 89);
             this.btnStats.Name = "btnStats";
             this.btnStats.Size = new System.Drawing.Size(188, 81);
@@ -223,7 +232,7 @@ namespace GestionLocation
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 85F));
-            this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanelBoutons, 0, 0);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
@@ -231,40 +240,42 @@ namespace GestionLocation
             this.tableLayoutPanel2.Size = new System.Drawing.Size(976, 179);
             this.tableLayoutPanel2.TabIndex = 17;
             // 
-            // tableLayoutPanel3
+            // tableLayoutPanelBoutons
             // 
-            this.tableLayoutPanel3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.tableLayoutPanelBoutons.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel3.ColumnCount = 5;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel3.Controls.Add(this.btnUser, 4, 0);
-            this.tableLayoutPanel3.Controls.Add(this.btnPaiements, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.btnLocations, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.btnBiens, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.btnCharges, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.btnLocataires, 2, 0);
-            this.tableLayoutPanel3.Controls.Add(this.btnCautions, 3, 0);
-            this.tableLayoutPanel3.Controls.Add(this.btnGroupes, 2, 1);
-            this.tableLayoutPanel3.Controls.Add(this.btnStats, 3, 1);
-            this.tableLayoutPanel3.Controls.Add(this.btnFermerAppli, 4, 1);
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 2;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(970, 173);
-            this.tableLayoutPanel3.TabIndex = 6;
+            this.tableLayoutPanelBoutons.BackColor = System.Drawing.SystemColors.Control;
+            this.tableLayoutPanelBoutons.ColumnCount = 5;
+            this.tableLayoutPanelBoutons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanelBoutons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanelBoutons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanelBoutons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanelBoutons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanelBoutons.Controls.Add(this.btnUser, 4, 0);
+            this.tableLayoutPanelBoutons.Controls.Add(this.btnPaiements, 1, 1);
+            this.tableLayoutPanelBoutons.Controls.Add(this.btnLocations, 0, 0);
+            this.tableLayoutPanelBoutons.Controls.Add(this.btnBiens, 1, 0);
+            this.tableLayoutPanelBoutons.Controls.Add(this.btnCharges, 0, 1);
+            this.tableLayoutPanelBoutons.Controls.Add(this.btnLocataires, 2, 0);
+            this.tableLayoutPanelBoutons.Controls.Add(this.btnCautions, 3, 0);
+            this.tableLayoutPanelBoutons.Controls.Add(this.btnGroupes, 2, 1);
+            this.tableLayoutPanelBoutons.Controls.Add(this.btnStats, 3, 1);
+            this.tableLayoutPanelBoutons.Controls.Add(this.btnFermerAppli, 4, 1);
+            this.tableLayoutPanelBoutons.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanelBoutons.Name = "tableLayoutPanelBoutons";
+            this.tableLayoutPanelBoutons.RowCount = 2;
+            this.tableLayoutPanelBoutons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanelBoutons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanelBoutons.Size = new System.Drawing.Size(970, 173);
+            this.tableLayoutPanelBoutons.TabIndex = 6;
             // 
             // btnUser
             // 
             this.btnUser.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnUser.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnUser.Location = new System.Drawing.Point(779, 3);
             this.btnUser.Name = "btnUser";
             this.btnUser.Size = new System.Drawing.Size(188, 80);
@@ -278,6 +289,7 @@ namespace GestionLocation
             this.btnGroupes.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnGroupes.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnGroupes.Location = new System.Drawing.Point(391, 89);
             this.btnGroupes.Name = "btnGroupes";
             this.btnGroupes.Size = new System.Drawing.Size(188, 81);
@@ -296,12 +308,13 @@ namespace GestionLocation
             this.Controls.Add(this.tableLayoutPanel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Accueil";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Accueil";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Accueil_FormClosing);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
-            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanelBoutons.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -320,7 +333,7 @@ namespace GestionLocation
         private System.Windows.Forms.Button btnStats;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanelBoutons;
         private System.Windows.Forms.Button btnGroupes;
         private System.Windows.Forms.Button btnUser;
     }
