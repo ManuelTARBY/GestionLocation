@@ -32,6 +32,7 @@ namespace GestionLocation
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ModifPaiements));
             this.lblLocation = new System.Windows.Forms.Label();
             this.datPaiement = new System.Windows.Forms.DateTimePicker();
             this.lblDatePaiement = new System.Windows.Forms.Label();
@@ -249,8 +250,9 @@ namespace GestionLocation
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(577, 476);
             this.Controls.Add(this.tableLayoutPanel1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ModifPaiements";
-            this.Text = "Modification d'un paiement";
+            this.Text = "Modification d\'un paiement";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();

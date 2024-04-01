@@ -31,6 +31,7 @@ namespace GestionLocation
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AjoutModifBiens));
             this.btnValider = new System.Windows.Forms.Button();
             this.lblID = new System.Windows.Forms.Label();
             this.txtNom = new System.Windows.Forms.TextBox();
@@ -558,6 +559,7 @@ namespace GestionLocation
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1045, 936);
             this.Controls.Add(this.tableLayoutPanel2);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "AjoutModifBiens";
             this.Text = "AjoutModifBiens";
             this.tableLayoutPanel1.ResumeLayout(false);

@@ -32,6 +32,7 @@ namespace GestionLocation
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AjoutModifLocataires));
             this.btnValider = new System.Windows.Forms.Button();
             this.lblArchive = new System.Windows.Forms.Label();
             this.cbxArchive = new System.Windows.Forms.CheckBox();
@@ -325,6 +326,7 @@ namespace GestionLocation
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(516, 481);
             this.Controls.Add(this.tableLayoutPanel1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "AjoutModifLocataires";
             this.Text = "AjoutModifLocataires";
             this.tableLayoutPanel1.ResumeLayout(false);

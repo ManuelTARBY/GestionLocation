@@ -30,6 +30,7 @@ namespace GestionLocation
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Stats));
             this.vcaannuelBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.cbxAnnee = new System.Windows.Forms.ComboBox();
             this.lblAnnee = new System.Windows.Forms.Label();
@@ -41,6 +42,7 @@ namespace GestionLocation
             this.txtChargesAnnuelles = new System.Windows.Forms.TextBox();
             this.lblBien = new System.Windows.Forms.Label();
             this.cbxBien = new System.Windows.Forms.ComboBox();
+            ((System.ComponentModel.ISupportInitialize)(this.vcaannuelBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // vcaannuelBindingSource
@@ -148,8 +150,10 @@ namespace GestionLocation
             this.Controls.Add(this.txtCFAnnuel);
             this.Controls.Add(this.lblAnnee);
             this.Controls.Add(this.cbxAnnee);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Stats";
             this.Text = "Stats";
+            ((System.ComponentModel.ISupportInitialize)(this.vcaannuelBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

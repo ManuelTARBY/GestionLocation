@@ -29,6 +29,7 @@ namespace GestionLocation
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FicheBien));
             this.lblNomBien = new System.Windows.Forms.Label();
             this.txtLoyerHC = new System.Windows.Forms.TextBox();
             this.txtCharges = new System.Windows.Forms.TextBox();
@@ -771,6 +772,7 @@ namespace GestionLocation
             this.ClientSize = new System.Drawing.Size(846, 776);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FicheBien";
             this.Text = "Fiche du bien";
             this.tableLayoutPanel1.ResumeLayout(false);

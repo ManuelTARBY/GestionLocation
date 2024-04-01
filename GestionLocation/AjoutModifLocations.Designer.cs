@@ -31,6 +31,7 @@ namespace GestionLocation
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AjoutModifLocations));
             this.lstBiens = new System.Windows.Forms.ListBox();
             this.lstLocataires = new System.Windows.Forms.ListBox();
             this.lstCautions = new System.Windows.Forms.ListBox();
@@ -289,6 +290,7 @@ namespace GestionLocation
             this.ClientSize = new System.Drawing.Size(828, 348);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.lblID);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "AjoutModifLocations";
             this.Text = "Ajout / Modification d\'une location";
             this.tableLayoutPanel1.ResumeLayout(false);

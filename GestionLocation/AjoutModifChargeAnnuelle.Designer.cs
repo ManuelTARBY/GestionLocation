@@ -29,6 +29,7 @@ namespace GestionLocation
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AjoutModifChargeAnnuelle));
             this.lblID = new System.Windows.Forms.Label();
             this.lblBien = new System.Windows.Forms.Label();
             this.lblMontant = new System.Windows.Forms.Label();
@@ -233,6 +234,7 @@ namespace GestionLocation
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(422, 341);
             this.Controls.Add(this.tableLayoutPanel1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "AjoutModifChargeAnnuelle";
             this.Text = "ChargeAnnuelle";
             this.tableLayoutPanel1.ResumeLayout(false);
