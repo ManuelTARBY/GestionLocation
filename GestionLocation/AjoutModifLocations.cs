@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,7 +7,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 using Word = Microsoft.Office.Interop.Word;
@@ -307,7 +307,7 @@ namespace GestionLocation
             {
                 type = " colocation";
             }
-            
+
             // Crée le fichier
             string cheminModele = Environment.CurrentDirectory + $"/Baux/Bail{type}.doc";
             string cheminDestination = $"C:\\Users\\Don_F\\OneDrive\\Bureau\\Bail{type} {lstLocataires.SelectedItem}.doc";
@@ -404,58 +404,101 @@ namespace GestionLocation
         /// </summary>
         public void RecupIRL()
         {
-            string uri = "https://api.insee.fr/series/BDM/data/SERIES_BDM/001515333";
-            string bearerToken = Global.bearerToken;
+            // Récupère un jeton
+            bool resultat = RecupJetonAPIInsee();
 
-            HttpClient client = new HttpClient();
-            // Configure les en-têtes de requête
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml"));
-            client.DefaultRequestHeaders.AcceptEncoding.Clear();
-            client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-
-            // Envoie une requête GET à l'URL
-            try
+            if (resultat == true)
             {
-                HttpResponseMessage httpResponse = client.GetAsync(uri).GetAwaiter().GetResult();
+                // Récupère le dernier IRL
+                string uri = "https://api.insee.fr/series/BDM/data/SERIES_BDM/001515333";
+                string bearerToken = Global.bearerToken;
 
-                if (httpResponse.IsSuccessStatusCode)
+                HttpClient client = new HttpClient();
+                // Configure les en-têtes de requête
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml"));
+                client.DefaultRequestHeaders.AcceptEncoding.Clear();
+                client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+
+                // Envoie une requête GET à l'URL
+                try
                 {
-                    Stream responseStream = httpResponse.Content.ReadAsStreamAsync().GetAwaiter().GetResult();
-                    // Décompresse le contenu gzip
-                    using (GZipStream gzipStream = new GZipStream(responseStream, CompressionMode.Decompress))
-                    using (StreamReader reader = new StreamReader(gzipStream))
-                    {
-                        string response = reader.ReadToEndAsync().GetAwaiter().GetResult();
+                    HttpResponseMessage httpResponse = client.GetAsync(uri).GetAwaiter().GetResult();
 
-                        // Charger le XML dans un XmlDocument
-                        XmlDocument xmlDoc = new XmlDocument();
-                        xmlDoc.LoadXml(response);
-                        XmlNodeList elements = xmlDoc.GetElementsByTagName("Obs");
-                        foreach (XmlNode elt in elements)
+                    if (httpResponse.IsSuccessStatusCode)
+                    {
+                        Stream responseStream = httpResponse.Content.ReadAsStreamAsync().GetAwaiter().GetResult();
+                        // Décompresse le contenu gzip
+                        using (GZipStream gzipStream = new GZipStream(responseStream, CompressionMode.Decompress))
+                        using (StreamReader reader = new StreamReader(gzipStream))
                         {
-                            // Accéder aux éléments des IRL
-                            if (!elt.Attributes["DATE_JO"].Value.Equals(""))
+                            string response = reader.ReadToEndAsync().GetAwaiter().GetResult();
+
+                            // Charger le XML dans un XmlDocument
+                            XmlDocument xmlDoc = new XmlDocument();
+                            xmlDoc.LoadXml(response);
+                            XmlNodeList elements = xmlDoc.GetElementsByTagName("Obs");
+                            foreach (XmlNode elt in elements)
                             {
-                                string period = elt.Attributes["TIME_PERIOD"].Value;
-                                string valeur = elt.Attributes["OBS_VALUE"].Value;
-                                this.datas.Add("IRL", valeur + " (" + period.Replace("Q", "T") + ")");
-                                break;
+                                // Accéder aux éléments des IRL
+                                if (!elt.Attributes["DATE_JO"].Value.Equals(""))
+                                {
+                                    string period = elt.Attributes["TIME_PERIOD"].Value;
+                                    string valeur = elt.Attributes["OBS_VALUE"].Value;
+                                    this.datas.Add("IRL", valeur + " (" + period.Replace("Q", "T") + ")");
+                                    break;
+                                }
                             }
                         }
                     }
+                    else
+                    {
+                        this.datas.Add("IRL", "");
+                        MessageBox.Show("La requête permettant de récupérer l'IRL a échoué. Pensez à le renseigner vous-même.");
+                    }
                 }
-                else
+                catch (HttpRequestException err)
                 {
-                    this.datas.Add("IRL", "");
-                    MessageBox.Show("La requête permettant de récupérer l'IRL a échoué. Pensez à le renseigner vous-même " +
-                        "et à récupérer un nouveau jeton.");
+                    MessageBox.Show("Une erreur s'est produite lors de la récupération de l'IRL via l'API de l'INSEE. " + err.Message);
                 }
             }
-            catch (HttpRequestException err)
+        }
+
+
+        /// <summary>
+        /// Récupère un jeton pour utiliser l'API de l'INSEE
+        /// </summary>
+        public bool RecupJetonAPIInsee()
+        {
+            HttpClient client = new HttpClient();
+            var parameters = new FormUrlEncodedContent(new[]
             {
-                Console.WriteLine("Une erreur s'est produite. " + err.Message);
+                new KeyValuePair<string, string>("grant_type", "client_credentials")
+            });
+
+            // Encodage de l'authorization
+            var authorization = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{Global.consumerkey}:{Global.secretclient}"));
+
+            // Ajout de l'en-tête Authorization
+            client.DefaultRequestHeaders.Add("Authorization", $"Basic {authorization}");
+
+            // Envoi de la requête POST à l'URL spécifiée
+            HttpResponseMessage response = client.PostAsync("https://api.insee.fr/token", parameters).Result;
+
+            // Lecture de la réponse
+            if (response.IsSuccessStatusCode)
+            {
+                string responseBody = response.Content.ReadAsStringAsync().Result;
+                dynamic jsonObject = JsonConvert.DeserializeObject(responseBody);
+                Global.bearerToken = jsonObject["access_token"];
+                return true;
+            }
+            else
+            {
+                MessageBox.Show("Erreur lors de la récupération du jeton d'accès à l'API de l'INSEE. "+
+                    "Vous devrez renseigner l'IRL vous-même. "+ response.ReasonPhrase);
+                return false;
             }
         }
 
@@ -637,7 +680,7 @@ namespace GestionLocation
         /// Construit la requête de modification
         /// </summary>
         private void ConstruitReqModif(string[] lesId)
-        {   
+        {
             this.req = $"{this.typeReq} location SET ";
             this.req += $"idlocation = {this.id}, idbien = \"{lesId[0]}\", idcaution = \"{lesId[2]}\", idlocataire = \"{lesId[1]}\", " +
                 $"debutlocation = \"{datDebut.Value:yyyy-MM-dd}\", finlocation = \"{datFin.Value:yyyy-MM-dd}\", " +
@@ -684,7 +727,8 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnFermer_Click(object sender, EventArgs e)
         {
-            this.Dispose();
+            RecupJetonAPIInsee();
+            //this.Dispose();
         }
 
 
@@ -856,7 +900,7 @@ namespace GestionLocation
             this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
-            float loyercc = (float) reader["loyercc"];
+            float loyercc = (float)reader["loyercc"];
             reader.Close();
 
             // Détermine si c'est un mois "entrant", "sortant", "entier" ou "partiel" (mois = premier et dernier de la location)
@@ -894,13 +938,13 @@ namespace GestionLocation
                 case "partiel":
                     int jourFin = int.Parse($"{datFin.Value:yyyy-MM-dd}".Substring(8, 2));
                     int nbDeJours = jourFin - jourEntree + 1;
-                    montantDu = ((float) loyercc / nbDeJoursMax) * nbDeJours;
+                    montantDu = ((float)loyercc / nbDeJoursMax) * nbDeJours;
                     break;
                 default:
                     montantDu = loyercc;
                     break;
             }
-            return (float) Math.Round(montantDu, 2);
+            return (float)Math.Round(montantDu, 2);
         }
 
 
@@ -971,8 +1015,8 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void LstCautions_SelectedIndexChanged(object sender, EventArgs e)
         {
-             lblContratVisale.Visible = lstCautions.SelectedItem.Equals("VISALE (Action Logement)");
-             txtContratVisale.Visible = lstCautions.SelectedItem.Equals("VISALE (Action Logement)");
+            lblContratVisale.Visible = lstCautions.SelectedItem.Equals("VISALE (Action Logement)");
+            txtContratVisale.Visible = lstCautions.SelectedItem.Equals("VISALE (Action Logement)");
             if (!lstCautions.SelectedItem.Equals("VISALE (Action Logement)"))
             {
                 txtContratVisale.Text = "";

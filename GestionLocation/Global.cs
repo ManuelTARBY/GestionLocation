@@ -12,8 +12,11 @@ namespace GestionLocation
         private static string serveurSmtp;
         private static string user;
         public static int HeightMaxSignature = 420;
+        // Consumer key et secret key
+        public static string consumerkey = "w39Gz3nkKnJrjIgfPIDOnM6qUzca";
+        public static string secretclient = "xrCxn5Q1hm1TN1DCd5fOKwQ75Psa";
         // Token de connexion à l'API de l'INSEE (pour récupérer l'IRL)
-        public static string bearerToken = "5d5f23c9-e359-36c1-aaee-3c441bb2cc15";
+        public static string bearerToken = "";
         public static bool LocArchiv = false;
 
 
