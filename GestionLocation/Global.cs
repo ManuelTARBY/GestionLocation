@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using System;
 
 namespace GestionLocation
 {
@@ -17,6 +18,8 @@ namespace GestionLocation
         public static string secretclient = "xrCxn5Q1hm1TN1DCd5fOKwQ75Psa";
         // Token de connexion à l'API de l'INSEE (pour récupérer l'IRL)
         public static string bearerToken = "";
+        // Date du dernier token
+        public static DateTime dateBearerToken = new DateTime(2000, 1, 1, 12, 0, 0);
         public static bool LocArchiv = false;
 
 

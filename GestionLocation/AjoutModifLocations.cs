@@ -301,9 +301,8 @@ namespace GestionLocation
             // Récupère les données à insérer dans le bail
             RecupDatas(lesId);
 
-            // Vérifie le type de bail à créer
             string type = "";
-            if (this.datas["NomBien"].Substring(0, 7).Equals("Chambre"))
+            if (this.datas["TypeHabitat"].Equals("Chambre en colocation"))
             {
                 type = " colocation";
             }
@@ -390,7 +389,6 @@ namespace GestionLocation
             RecupLocation();
             // Récupère le dernier indice IRL
             RecupIRL();
-            //await RecupIRLAsync();
             // Récupère la date de souscription d'assurance
             if (this.datas["NomBien"].Substring(0, 7).Equals("Chambre"))
             {
@@ -404,10 +402,16 @@ namespace GestionLocation
         /// </summary>
         public void RecupIRL()
         {
-            // Récupère un jeton
-            bool resultat = RecupJetonAPIInsee();
 
-            if (resultat == true)
+            bool resultat = true;
+
+            // Récupère un jeton si l'ancien date de moins de 7 jours
+            if (DateTime.Now > Global.dateBearerToken.AddSeconds(604300) )
+            {
+                resultat = RecupJetonAPIInsee();
+            }
+
+            if (resultat)
             {
                 // Récupère le dernier IRL
                 string uri = "https://api.insee.fr/series/BDM/data/SERIES_BDM/001515333";
@@ -492,6 +496,7 @@ namespace GestionLocation
                 string responseBody = response.Content.ReadAsStringAsync().Result;
                 dynamic jsonObject = JsonConvert.DeserializeObject(responseBody);
                 Global.bearerToken = jsonObject["access_token"];
+                Global.dateBearerToken = DateTime.Now;
                 return true;
             }
             else
@@ -727,8 +732,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnFermer_Click(object sender, EventArgs e)
         {
-            RecupJetonAPIInsee();
-            //this.Dispose();
+            this.Dispose();
         }
 
 
