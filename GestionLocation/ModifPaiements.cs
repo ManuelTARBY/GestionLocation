@@ -136,7 +136,7 @@ namespace GestionLocation
                 // Si le loyer est réglé, demande s'il faut envoyer la quittance par mail au locataire
                 if (loyerregle == true)
                 {
-                    // Demande pour envoi de la quittance de loyer
+                   /* // Demande pour envoi de la quittance de loyer
                     DialogResult result = MessageBox.Show($"Voulez-vous envoyer une quittance au locataire ?", "Envoi de quittance", MessageBoxButtons.YesNo);
                     if (result == DialogResult.Yes)
                     {
@@ -149,7 +149,7 @@ namespace GestionLocation
                         {
                             MessageBox.Show("Impossible d'envoyer la quittance au locataire, vous n'avez pas renseigné son adresse mail.");
                         }
-                    }
+                    }*/
                 }
                 // Ferme la fenêtre
                 this.Dispose();

@@ -1,14 +1,8 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.IO;
-using System.IO.Compression;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml;
-using System.Xml.Linq;
+
 
 namespace GestionLocation
 {
@@ -41,7 +35,6 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnConnexion_Click(object sender, EventArgs e)
         {
-            Console.WriteLine(this.cptEssai);
             lblErreur.Text = "";
             if (txtId.Text != "")
             {
@@ -219,117 +212,7 @@ namespace GestionLocation
             return this.idUser;
         }
 
-        private async void Button2_ClickAsync(object sender, EventArgs e)
-        {
-            string uri = "https://api.insee.fr/series/BDM/data/SERIES_BDM/001515333";
-            string bearerToken = "f6960065-2fab-3db3-a88a-908fd5d75461";
-
-            HttpClient client = new HttpClient();
-            // Configure les en-têtes de requête
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml"));
-            client.DefaultRequestHeaders.AcceptEncoding.Clear();
-            client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-
-            // Envoie une requête GET à l'URL
-            try
-            {
-                HttpResponseMessage httpResponse = await client.GetAsync(uri);
-
-                if (httpResponse.IsSuccessStatusCode)
-                {
-                    Stream responseStream = await httpResponse.Content.ReadAsStreamAsync();
-                    // Décompresse le contenu gzip
-                    using (GZipStream gzipStream = new GZipStream(responseStream, CompressionMode.Decompress))
-                    using (StreamReader reader = new StreamReader(gzipStream))
-                    {
-                        string response = await reader.ReadToEndAsync();
-
-                        // Charger le XML dans un XmlDocument
-                        XmlDocument xmlDoc = new XmlDocument();
-                        xmlDoc.LoadXml(response);
-                        XmlNodeList elements = xmlDoc.GetElementsByTagName("Obs");
-                        foreach (XmlNode elt in elements)
-                        {
-                            // Accéder aux éléments des IRL
-                            if (!elt.Attributes["DATE_JO"].Value.Equals(""))
-                            {
-                                string period = elt.Attributes["TIME_PERIOD"].Value;
-                                string valeur = elt.Attributes["OBS_VALUE"].Value;
-                                Console.WriteLine(period.Replace("Q", "T") + " : " + valeur);
-                                return;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("La requête a échoué avec le code : " + httpResponse.StatusCode);
-                }
-            }
-            catch (HttpRequestException err)
-            {
-                Console.WriteLine("Une erreur s'est produite. " + err.Message);
-            }
-        }
-
-        private async void Button1_ClickAsync(object sender, EventArgs e)
-        {
-            string uri = "https://api.insee.fr/token";
-            string client_key = "w39Gz3nkKnJrjIgfPIDOnM6qUzca";
-            string client_secret = "xrCxn5Q1hm1TN1DCd5fOKwQ75Psa";
-
-            HttpClient client = new HttpClient();
-            // Configure les en-têtes de requête
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{client_key}:{client_secret}")));
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml"));
-            client.DefaultRequestHeaders.AcceptEncoding.Clear();
-            client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-
-            // Envoie une requête GET à l'URL
-            try
-            {
-                HttpResponseMessage httpResponse = await client.GetAsync(uri);
-
-                if (httpResponse.IsSuccessStatusCode)
-                {
-                    Stream responseStream = await httpResponse.Content.ReadAsStreamAsync();
-                    // Décompresse le contenu gzip
-                    using (GZipStream gzipStream = new GZipStream(responseStream, CompressionMode.Decompress))
-                    using (StreamReader reader = new StreamReader(gzipStream))
-                    {
-                        string response = await reader.ReadToEndAsync();
-
-                        // Charger le XML dans un XmlDocument
-                        XmlDocument xmlDoc = new XmlDocument();
-                        xmlDoc.LoadXml(response);
-                        XmlNodeList elements = xmlDoc.GetElementsByTagName("Obs");
-                        foreach (XmlNode elt in elements)
-                        {
-                            // Accéder aux éléments des IRL
-                            if (!elt.Attributes["DATE_JO"].Value.Equals(""))
-                            {
-                                string period = elt.Attributes["TIME_PERIOD"].Value;
-                                string valeur = elt.Attributes["OBS_VALUE"].Value;
-                                return;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("La requête a échoué avec le code : " + httpResponse.StatusCode);
-                }
-            }
-            catch (HttpRequestException err)
-            {
-                Console.WriteLine("Une erreur s'est produite. " + err.Message);
-            }
-        }
-
-
+       
         /// <summary>
         /// Vérifie si les répertoires contenant les quittances et les signatures existent et les crée si besoin
         /// </summary>
