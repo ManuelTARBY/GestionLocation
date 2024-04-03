@@ -15,8 +15,8 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B980962E-FDA1-4680-B30E-21460A996FF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B980962E-FDA1-4680-B30E-21460A996FF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B980962E-FDA1-4680-B30E-21460A996FF3}.Debug|Any CPU.ActiveCfg = Gestion Location|x64
+		{B980962E-FDA1-4680-B30E-21460A996FF3}.Debug|Any CPU.Build.0 = Gestion Location|x64
 		{B980962E-FDA1-4680-B30E-21460A996FF3}.Debug|x64.ActiveCfg = Debug|x64
 		{B980962E-FDA1-4680-B30E-21460A996FF3}.Debug|x64.Build.0 = Debug|x64
 		{B980962E-FDA1-4680-B30E-21460A996FF3}.Gestion Location|Any CPU.ActiveCfg = Gestion Location|Any CPU

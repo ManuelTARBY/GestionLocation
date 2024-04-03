@@ -42,6 +42,8 @@ namespace GestionLocation
             this.txtChargesAnnuelles = new System.Windows.Forms.TextBox();
             this.lblBien = new System.Windows.Forms.Label();
             this.cbxBien = new System.Windows.Forms.ComboBox();
+            this.lblTauxRemplissage = new System.Windows.Forms.Label();
+            this.txtTauxRemplissage = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.vcaannuelBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
@@ -53,7 +55,7 @@ namespace GestionLocation
             // 
             this.cbxAnnee.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxAnnee.FormattingEnabled = true;
-            this.cbxAnnee.Location = new System.Drawing.Point(12, 101);
+            this.cbxAnnee.Location = new System.Drawing.Point(25, 103);
             this.cbxAnnee.Name = "cbxAnnee";
             this.cbxAnnee.Size = new System.Drawing.Size(131, 28);
             this.cbxAnnee.TabIndex = 2;
@@ -62,26 +64,28 @@ namespace GestionLocation
             // lblAnnee
             // 
             this.lblAnnee.AutoSize = true;
-            this.lblAnnee.Location = new System.Drawing.Point(17, 78);
+            this.lblAnnee.Location = new System.Drawing.Point(30, 80);
             this.lblAnnee.Name = "lblAnnee";
             this.lblAnnee.Size = new System.Drawing.Size(56, 20);
-            this.lblAnnee.TabIndex = 3;
+            this.lblAnnee.TabIndex = 18;
             this.lblAnnee.Text = "Année";
             // 
             // txtCFAnnuel
             // 
-            this.txtCFAnnuel.Location = new System.Drawing.Point(304, 161);
+            this.txtCFAnnuel.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.txtCFAnnuel.Location = new System.Drawing.Point(304, 169);
             this.txtCFAnnuel.Name = "txtCFAnnuel";
+            this.txtCFAnnuel.ReadOnly = true;
             this.txtCFAnnuel.Size = new System.Drawing.Size(143, 26);
-            this.txtCFAnnuel.TabIndex = 4;
+            this.txtCFAnnuel.TabIndex = 5;
             // 
             // lblCFAnnuel
             // 
             this.lblCFAnnuel.AutoSize = true;
-            this.lblCFAnnuel.Location = new System.Drawing.Point(300, 136);
+            this.lblCFAnnuel.Location = new System.Drawing.Point(300, 144);
             this.lblCFAnnuel.Name = "lblCFAnnuel";
             this.lblCFAnnuel.Size = new System.Drawing.Size(135, 20);
-            this.lblCFAnnuel.TabIndex = 5;
+            this.lblCFAnnuel.TabIndex = 19;
             this.lblCFAnnuel.Text = "Cash Flow annuel";
             // 
             // lblCAAnnuel
@@ -95,15 +99,17 @@ namespace GestionLocation
             // 
             // txtCAAnnuel
             // 
+            this.txtCAAnnuel.BackColor = System.Drawing.SystemColors.ScrollBar;
             this.txtCAAnnuel.Location = new System.Drawing.Point(304, 45);
             this.txtCAAnnuel.Name = "txtCAAnnuel";
+            this.txtCAAnnuel.ReadOnly = true;
             this.txtCAAnnuel.Size = new System.Drawing.Size(143, 26);
-            this.txtCAAnnuel.TabIndex = 6;
+            this.txtCAAnnuel.TabIndex = 3;
             // 
             // lblChargesAnnuelles
             // 
             this.lblChargesAnnuelles.AutoSize = true;
-            this.lblChargesAnnuelles.Location = new System.Drawing.Point(300, 78);
+            this.lblChargesAnnuelles.Location = new System.Drawing.Point(300, 82);
             this.lblChargesAnnuelles.Name = "lblChargesAnnuelles";
             this.lblChargesAnnuelles.Size = new System.Drawing.Size(141, 20);
             this.lblChargesAnnuelles.TabIndex = 9;
@@ -111,15 +117,17 @@ namespace GestionLocation
             // 
             // txtChargesAnnuelles
             // 
-            this.txtChargesAnnuelles.Location = new System.Drawing.Point(304, 103);
+            this.txtChargesAnnuelles.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.txtChargesAnnuelles.Location = new System.Drawing.Point(304, 107);
             this.txtChargesAnnuelles.Name = "txtChargesAnnuelles";
+            this.txtChargesAnnuelles.ReadOnly = true;
             this.txtChargesAnnuelles.Size = new System.Drawing.Size(143, 26);
-            this.txtChargesAnnuelles.TabIndex = 8;
+            this.txtChargesAnnuelles.TabIndex = 4;
             // 
             // lblBien
             // 
             this.lblBien.AutoSize = true;
-            this.lblBien.Location = new System.Drawing.Point(17, 20);
+            this.lblBien.Location = new System.Drawing.Point(30, 22);
             this.lblBien.Name = "lblBien";
             this.lblBien.Size = new System.Drawing.Size(41, 20);
             this.lblBien.TabIndex = 11;
@@ -129,17 +137,37 @@ namespace GestionLocation
             // 
             this.cbxBien.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxBien.FormattingEnabled = true;
-            this.cbxBien.Location = new System.Drawing.Point(12, 43);
+            this.cbxBien.Location = new System.Drawing.Point(25, 45);
             this.cbxBien.Name = "cbxBien";
             this.cbxBien.Size = new System.Drawing.Size(131, 28);
             this.cbxBien.TabIndex = 1;
             this.cbxBien.SelectedIndexChanged += new System.EventHandler(this.CbxBien_SelectedIndexChanged);
             // 
+            // lblTauxRemplissage
+            // 
+            this.lblTauxRemplissage.AutoSize = true;
+            this.lblTauxRemplissage.Location = new System.Drawing.Point(300, 206);
+            this.lblTauxRemplissage.Name = "lblTauxRemplissage";
+            this.lblTauxRemplissage.Size = new System.Drawing.Size(101, 20);
+            this.lblTauxRemplissage.TabIndex = 20;
+            this.lblTauxRemplissage.Text = "Remplissage";
+            // 
+            // txtTauxRemplissage
+            // 
+            this.txtTauxRemplissage.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.txtTauxRemplissage.Location = new System.Drawing.Point(304, 231);
+            this.txtTauxRemplissage.Name = "txtTauxRemplissage";
+            this.txtTauxRemplissage.ReadOnly = true;
+            this.txtTauxRemplissage.Size = new System.Drawing.Size(143, 26);
+            this.txtTauxRemplissage.TabIndex = 6;
+            // 
             // Stats
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(554, 238);
+            this.ClientSize = new System.Drawing.Size(514, 295);
+            this.Controls.Add(this.txtTauxRemplissage);
+            this.Controls.Add(this.lblTauxRemplissage);
             this.Controls.Add(this.cbxBien);
             this.Controls.Add(this.lblBien);
             this.Controls.Add(this.lblChargesAnnuelles);
@@ -152,6 +180,7 @@ namespace GestionLocation
             this.Controls.Add(this.cbxAnnee);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Stats";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Stats";
             ((System.ComponentModel.ISupportInitialize)(this.vcaannuelBindingSource)).EndInit();
             this.ResumeLayout(false);
@@ -171,5 +200,7 @@ namespace GestionLocation
         private System.Windows.Forms.TextBox txtChargesAnnuelles;
         private System.Windows.Forms.Label lblBien;
         private System.Windows.Forms.ComboBox cbxBien;
+        private System.Windows.Forms.Label lblTauxRemplissage;
+        private System.Windows.Forms.TextBox txtTauxRemplissage;
     }
 }

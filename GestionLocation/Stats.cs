@@ -152,6 +152,22 @@ namespace GestionLocation
 
 
         /// <summary>
+        /// Déclenche l'alimentation de la combo de liste des années
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CbxBien_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            txtCAAnnuel.Text = "";
+            txtChargesAnnuelles.Text = "";
+            txtCFAnnuel.Text = "";
+            txtTauxRemplissage.Text = "";
+            this.bienSelectionne.Clear();
+            RemplirComboAnnee();
+        }
+
+
+        /// <summary>
         /// Calcule le cash-flow annuel
         /// </summary>
         /// <param name="sender"></param>
@@ -159,7 +175,7 @@ namespace GestionLocation
         private void CbxAnnee_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Déclarations
-            float caAnnuel = 0, chargesFixes = 0, chargesPonctuelles = 0, chargesAnnuelles = 0, ch = 0;
+            float caAnnuel = 0, chargesFixes = 0, chargesPonctuelles = 0, chargesAnnuelles = 0, ch = 0, caMax = 0;
 
             // Détermine le CA annuel pour l'année sélectionnée
             this.req = "SELECT SUM(montantpaye) FROM paiement NATURAL JOIN location NATURAL JOIN bien "+
@@ -172,6 +188,17 @@ namespace GestionLocation
             caAnnuel = reader.GetFloat(0);
             reader.Close();
             txtCAAnnuel.Text = caAnnuel.ToString("N") + " €";
+
+            // Détermine le CA max possible sur une année
+            this.req = "SELECT SUM(loyercc) * 12 AS 'LoyersMax' FROM bien " +
+                      $"WHERE idbien IN ({string.Join(",", this.bienSelectionne.ConvertAll(v => v.ToString()))})";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
+            reader = this.command.ExecuteReader();
+            reader.Read();
+            caMax = reader.GetFloat(0);
+            reader.Close();
+            txtTauxRemplissage.Text = (caAnnuel / caMax * 100).ToString("N1") + "%";
 
             // Détermine les charges annuelles pour l'année sélectionnée
             // Charges fixes
@@ -231,21 +258,6 @@ namespace GestionLocation
 
             // Affiche le cash flow annuel pour l'année sélectionnée
             txtCFAnnuel.Text = (caAnnuel - chargesAnnuelles).ToString("N") + " €";
-        }
-
-
-        /// <summary>
-        /// Déclenche l'alimentation de la combo de liste des années
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CbxBien_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            txtCAAnnuel.Text = "";
-            txtChargesAnnuelles.Text = "";
-            txtCFAnnuel.Text = "";
-            this.bienSelectionne.Clear();
-            RemplirComboAnnee();
         }
     }
 }
