@@ -1,7 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
@@ -62,8 +61,9 @@ namespace GestionLocation
         public void RemplirListePaiements()
         {
             // Détermination de la requête
-            this.req = "SELECT nombien, periodefacturee, montantdu, montantpaye, datepaiement, resteapayer, idpaiement, idlocation " +
-                $"FROM paiement NATURAL JOIN location NATURAL JOIN bien WHERE locationarchivee = {Global.LocArchiv} ";
+            this.req = "SELECT nombien, periodefacturee, montantdu, montantpaye, datepaiement, resteapayer, idpaiement, idlocation, " +
+                $"CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', SUBSTRING_INDEX(nomlocataire, ',', 1)) AS 'Locataire'" +
+                $"FROM paiement NATURAL JOIN location NATURAL JOIN bien NATURAL JOIN locataire WHERE locationarchivee = {Global.LocArchiv} ";
             if (this.idLocation != 0)
             {
                 this.req += $"AND idlocation = {this.idLocation}";
@@ -81,6 +81,7 @@ namespace GestionLocation
                 }
             }
             this.req += " ORDER BY periodefacturee, nombien";
+
             // Affiche les enregistrements de la table Paiement et récupère les idpaiement et idlocation dans un dictionnaire
             EnvoiReqSelectPaiements();
         }
@@ -103,7 +104,7 @@ namespace GestionLocation
                 {
                     dateRegle = "-";
                 }
-                string ligne = $"({reader["idlocation"]}) {reader["nombien"]} || Période : {reader.GetDateTime(1):MMMM yyyy} || " +
+                string ligne = $"{reader["nombien"]} ({reader["Locataire"]}) || {reader.GetDateTime(1):MMMM yyyy} || " +
                     $"Montant dû : {reader.GetString(2)} || Montant payé : {reader.GetString(3)} || Date : {dateRegle}" +
                     $" || Restant dû : {reader.GetString(5)}";
                 lstPaiements.Items.Add(ligne);
@@ -142,12 +143,12 @@ namespace GestionLocation
             lstPaiements.Items.Clear();
             lesId.Clear();
             // Construit la requête
-            StringBuilder req = new StringBuilder();
-            req.AppendLine("SELECT nombien AS `Bien`, nomcompletlocataire AS `Locataire`, debutlocation AS `Début de location`, " +
-                "finlocation AS `Fin de location`, nomcompletcaution AS `Caution`, idlocation AS `id`");
-            req.AppendLine("FROM location JOIN locataire USING(idlocataire) JOIN bien USING(idbien) JOIN caution USING(idcaution)");
-            req.AppendLine($"WHERE locationarchivee = {Global.LocArchiv} ORDER BY nombien");
-            this.command = new MySqlCommand(req.ToString(), Global.Connexion);
+            this.req = "SELECT nombien AS `Bien`, CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', SUBSTRING_INDEX(nomlocataire, ',', 1)) "+
+                "AS `Locataire`, debutlocation AS `Début de location`, " +
+                "finlocation AS `Fin de location`, nomcompletcaution AS `Caution`, idlocation AS `id` " +
+                "FROM location JOIN locataire USING(idlocataire) JOIN bien USING(idbien) JOIN caution USING(idcaution) " +
+                $"WHERE locationarchivee = {Global.LocArchiv} ORDER BY nombien";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
             while (!finCurseur)
@@ -239,8 +240,9 @@ namespace GestionLocation
         private void BtnNonRegle_Click(object sender, EventArgs e)
         {
             
-            this.req = "SELECT nombien, periodefacturee, montantdu, montantpaye, datepaiement, resteapayer, idpaiement, idlocation " +
-                "FROM paiement NATURAL JOIN location NATURAL JOIN bien ";
+            this.req = "SELECT nombien, periodefacturee, montantdu, montantpaye, datepaiement, resteapayer, idpaiement, idlocation, " +
+                "CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', SUBSTRING_INDEX(nomlocataire, ',', 1)) AS 'Locataire'" +
+                "FROM paiement NATURAL JOIN location NATURAL JOIN bien NATURAL JOIN locataire ";
             if (lstLocations.SelectedItem != null)
             {
                 this.req += $"WHERE loyerregle = False AND idlocation = {this.lesId[lstLocations.SelectedItem.ToString()]} " +
@@ -691,10 +693,7 @@ namespace GestionLocation
         /// </summary>
         public void RecupIdLocation()
         {
-            char[] separatingStrings = { '(', ')' };
-            string texte = lstPaiements.SelectedItem.ToString();
-            string[] lesMots = texte.Split(separatingStrings, StringSplitOptions.RemoveEmptyEntries);
-            this.idLocation = int.Parse(lesMots[0]);
+            this.idLocation = int.Parse(this.lesPaiements[lstPaiements.SelectedItem.ToString()]);
         }
 
 

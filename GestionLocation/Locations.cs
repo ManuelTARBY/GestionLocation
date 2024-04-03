@@ -142,11 +142,13 @@ namespace GestionLocation
                 PremiereCond();
                 if (this.rbnArchive.Checked)
                 {
-                    this.where += "locationarchivee = 1 ";
+                    // Global.LocArchiv = true;
+                    this.where += $"locationarchivee = 1 ";
                 }
                 else if (this.rbnNonArchive.Checked)
                 {
-                    this.where += "locationarchivee = 0 ";
+                    // Global.LocArchiv = false;
+                    this.where += $"locationarchivee = 0 ";
                 }
             }
         }
