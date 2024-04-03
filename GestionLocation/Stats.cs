@@ -13,6 +13,7 @@ namespace GestionLocation
         private string reqMaxi;
         private MySqlCommand command;
         private readonly List<int> bienSelectionne;
+        private readonly List<int> biensPossibles;
         private readonly List<string> lesBiens;
         private readonly List<string> lesGroupes;
 
@@ -24,6 +25,7 @@ namespace GestionLocation
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.bienSelectionne = new List<int>();
+            this.biensPossibles = new List<int>();
             this.lesBiens = new List<string>();
             this.lesGroupes = new List<string>();
             RemplirComboBien();
@@ -190,8 +192,27 @@ namespace GestionLocation
             txtCAAnnuel.Text = caAnnuel.ToString("N") + " €";
 
             // Détermine le CA max possible sur une année
-            this.req = "SELECT SUM(loyercc) * 12 AS 'LoyersMax' FROM bien " +
-                      $"WHERE idbien IN ({string.Join(",", this.bienSelectionne.ConvertAll(v => v.ToString()))})";
+            // Détermine les biens exploités pour l'année sélectionnée
+            this.biensPossibles.Clear();
+            this.req = "SELECT DISTINCT(idbien) FROM bien NATURAL JOIN location NATURAL JOIN paiement "+
+                $"WHERE idbien IN ({string.Join(",", this.bienSelectionne.ConvertAll(v => v.ToString()))}) " +
+                $"AND YEAR(periodefacturee) = {cbxAnnee.SelectedItem} OR "+
+                $"idbien IN ({string.Join(",", this.bienSelectionne.ConvertAll(v => v.ToString()))}) "+
+                $"AND YEAR(periodefacturee) = {cbxAnnee.SelectedItem}";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
+            reader = this.command.ExecuteReader();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    this.biensPossibles.Add(reader.GetInt32(0));
+                }
+            }
+            reader.Close();
+            // Récupère le CA max pour tous les biens exploités de l'année sélectionnée
+            this.req = "SELECT SUM(loyercc) * 12 FROM bien " +
+                      $"WHERE idbien IN ({string.Join(",", biensPossibles.ConvertAll(v => v.ToString()))})";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             this.command.Prepare();
             reader = this.command.ExecuteReader();
