@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace GestionLocation
 {
@@ -23,6 +24,15 @@ namespace GestionLocation
         public Stats()
         {
             InitializeComponent();
+            chartCF.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            chartCF.Series["Series1"].Name = "CA annuel";
+            // Crée la série pour les charges annuelles
+            Series serieCharges = new Series("Charges annuelles")
+            {
+                ChartType = SeriesChartType.Line
+            };
+            // Ajoute la série des charges annuelles
+            chartCF.Series.Add(serieCharges);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.bienSelectionne = new List<int>();
             this.biensPossibles = new List<int>();
@@ -146,10 +156,21 @@ namespace GestionLocation
             reader.Close();
 
             // Remplit la combo de la première année à l'année actuelle
+            List<int> lesAnnees = new List<int>();
             for (int i = anneeMini; i <= anneeMaxi; i++)
             {
                 cbxAnnee.Items.Add(i);
+                lesAnnees.Add(i);
             }
+
+            // Met à jour la chart du cash-flow par année
+            // Réglez les valeurs minimales et maximales de l'axe des abscisses
+            chartCF.ChartAreas[0].AxisX.Minimum = anneeMini;
+            chartCF.ChartAreas[0].AxisX.Maximum = anneeMaxi;
+
+            // Assurez-vous que les valeurs de l'axe des abscisses sont affichées correctement
+            chartCF.ChartAreas[0].AxisX.Interval = 1;
+            CompleterChartCF(lesAnnees);
         }
 
 
@@ -170,6 +191,37 @@ namespace GestionLocation
 
 
         /// <summary>
+        /// Met à jour la chart
+        /// </summary>
+        public void CompleterChartCF(List<int> lesAnnees)
+        {
+            chartCF.Series["CA annuel"].Points.Clear();
+            chartCF.Series["Charges annuelles"].Points.Clear();
+            // Récupère le CA par année
+            Dictionary<int, float> lesCA = new Dictionary<int, float>();
+            foreach (int annee in lesAnnees)
+            {
+                this.req = "SELECT SUM(montantpaye) FROM paiement NATURAL JOIN location NATURAL JOIN bien " +
+                      $"WHERE periodefacturee LIKE '{annee}%' AND " +
+                      $"idbien IN ({string.Join(",", this.bienSelectionne.ConvertAll(v => v.ToString()))})";
+                this.command = new MySqlCommand(this.req, Global.Connexion);
+                this.command.Prepare();
+                MySqlDataReader reader = this.command.ExecuteReader();
+                reader.Read();
+                lesCA.Add(annee, reader.GetFloat(0));
+                reader.Close();
+            }
+
+            // Intègre les données par année dans le graphique
+            foreach (var uneAnnee in lesCA)
+            {
+                chartCF.Series["CA annuel"].Points.AddXY(uneAnnee.Key, uneAnnee.Value);
+                chartCF.Series["Charges annuelles"].Points.AddXY(uneAnnee.Key, GetChargesAnnuelles(uneAnnee.Key));
+            }
+        }
+
+
+        /// <summary>
         /// Calcule le cash-flow annuel
         /// </summary>
         /// <param name="sender"></param>
@@ -177,7 +229,8 @@ namespace GestionLocation
         private void CbxAnnee_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Déclarations
-            float caAnnuel = 0, chargesFixes = 0, chargesPonctuelles = 0, chargesAnnuelles = 0, ch = 0, caMax = 0;
+            float caAnnuel = 0, caMax = 0, chargesAnnuelles = 0;
+            //float chargesFixes = 0, chargesPonctuelles = 0, chargesAnnuelles = 0, ch = 0, caMax = 0;
 
             // Détermine le CA annuel pour l'année sélectionnée
             this.req = "SELECT SUM(montantpaye) FROM paiement NATURAL JOIN location NATURAL JOIN bien "+
@@ -208,8 +261,9 @@ namespace GestionLocation
                 {
                     this.biensPossibles.Add(reader.GetInt32(0));
                 }
+                reader.Close();
             }
-            reader.Close();
+
             // Récupère le CA max pour tous les biens exploités de l'année sélectionnée
             this.req = "SELECT SUM(loyercc) * 12 FROM bien " +
                       $"WHERE idbien IN ({string.Join(",", biensPossibles.ConvertAll(v => v.ToString()))})";
@@ -219,14 +273,29 @@ namespace GestionLocation
             reader.Read();
             caMax = reader.GetFloat(0);
             reader.Close();
+
+            // Calcule le taux de remplissage
             txtTauxRemplissage.Text = (caAnnuel / caMax * 100).ToString("N1") + "%";
 
-            // Détermine les charges annuelles pour l'année sélectionnée
+            // Calcule les charges annuelles
+            chargesAnnuelles = GetChargesAnnuelles(int.Parse(cbxAnnee.SelectedItem.ToString()));
+            txtChargesAnnuelles.Text = chargesAnnuelles.ToString("N") + " €";
+
+            // Affiche le cash flow annuel pour l'année sélectionnée
+            txtCFAnnuel.Text = (caAnnuel - chargesAnnuelles).ToString("N") + " €";
+        }
+
+        public float GetChargesAnnuelles(int annee)
+        {
+            // Déclarations
+            float ch, chargesFixes = 0, chargesPonctuelles = 0, chargesAnnuelles;
+            MySqlDataReader reader;
+            
             // Charges fixes
             foreach (int bien in this.bienSelectionne)
             {
                 // Récupère les charges fixes de l'année pour le bien
-                this.req = "SELECT COALESCE(SUM(chargeannuelle), 0) FROM chargesannuelles "+
+                this.req = "SELECT COALESCE(SUM(chargeannuelle), 0) FROM chargesannuelles " +
                     $"WHERE refFrequence != 'Ponctuelle' AND idbien = {bien}";
                 this.command = new MySqlCommand(this.req, Global.Connexion);
                 this.command.Prepare();
@@ -246,11 +315,11 @@ namespace GestionLocation
                 reader.Close();
 
                 // Calcule le prorata de charges et l'additionne au total des charges fixes
-                if (int.Parse(cbxAnnee.SelectedItem.ToString()) == int.Parse(moisDebutExploit.Substring(6, 4)))
+                if (annee == int.Parse(moisDebutExploit.Substring(6, 4)))
                 {
-                    chargesFixes += ch / 12 * (13 - int.Parse(moisDebutExploit.Substring(0, 2))); 
+                    chargesFixes += ch / 12 * (13 - int.Parse(moisDebutExploit.Substring(0, 2)));
                 }
-                else if (int.Parse(cbxAnnee.SelectedItem.ToString()) < int.Parse(moisDebutExploit.Substring(6, 4)))
+                else if (annee < int.Parse(moisDebutExploit.Substring(6, 4)))
                 {
                     chargesFixes += 0;
                 }
@@ -259,12 +328,12 @@ namespace GestionLocation
                     chargesFixes += ch;
                 }
             }
-            
+
             // Charges ponctuelles
             foreach (int bien in this.bienSelectionne)
             {
-                this.req = "SELECT COALESCE(SUM(chargeannuelle), 0) FROM chargesannuelles "+
-                    $"WHERE refFrequence = 'Ponctuelle' AND annee = {cbxAnnee.SelectedItem} AND idbien = {bien}";
+                this.req = "SELECT COALESCE(SUM(chargeannuelle), 0) FROM chargesannuelles " +
+                    $"WHERE refFrequence = 'Ponctuelle' AND annee = {annee} AND idbien = {bien}";
                 this.command = new MySqlCommand(this.req, Global.Connexion);
                 this.command.Prepare();
                 reader = this.command.ExecuteReader();
@@ -275,10 +344,8 @@ namespace GestionLocation
 
             // Calcule le total annuel
             chargesAnnuelles = chargesFixes + chargesPonctuelles;
-            txtChargesAnnuelles.Text = chargesAnnuelles.ToString("N") + " €";
-
-            // Affiche le cash flow annuel pour l'année sélectionnée
-            txtCFAnnuel.Text = (caAnnuel - chargesAnnuelles).ToString("N") + " €";
+            return chargesAnnuelles;
         }
     }
+
 }

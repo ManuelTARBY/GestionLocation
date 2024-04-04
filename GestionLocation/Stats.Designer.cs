@@ -29,9 +29,10 @@ namespace GestionLocation
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Stats));
-            this.vcaannuelBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.cbxAnnee = new System.Windows.Forms.ComboBox();
             this.lblAnnee = new System.Windows.Forms.Label();
             this.txtCFAnnuel = new System.Windows.Forms.TextBox();
@@ -44,12 +45,9 @@ namespace GestionLocation
             this.cbxBien = new System.Windows.Forms.ComboBox();
             this.lblTauxRemplissage = new System.Windows.Forms.Label();
             this.txtTauxRemplissage = new System.Windows.Forms.TextBox();
-            ((System.ComponentModel.ISupportInitialize)(this.vcaannuelBindingSource)).BeginInit();
+            this.chartCF = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            ((System.ComponentModel.ISupportInitialize)(this.chartCF)).BeginInit();
             this.SuspendLayout();
-            // 
-            // vcaannuelBindingSource
-            // 
-            this.vcaannuelBindingSource.DataMember = "v_ca_annuel";
             // 
             // cbxAnnee
             // 
@@ -161,11 +159,31 @@ namespace GestionLocation
             this.txtTauxRemplissage.Size = new System.Drawing.Size(143, 26);
             this.txtTauxRemplissage.TabIndex = 6;
             // 
+            // chartCF
+            // 
+            this.chartCF.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            chartArea1.Name = "ChartArea1";
+            this.chartCF.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.chartCF.Legends.Add(legend1);
+            this.chartCF.Location = new System.Drawing.Point(12, 289);
+            this.chartCF.Name = "chartCF";
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.chartCF.Series.Add(series1);
+            this.chartCF.Size = new System.Drawing.Size(490, 300);
+            this.chartCF.TabIndex = 21;
+            this.chartCF.Text = "Graphique CF";
+            // 
             // Stats
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(514, 295);
+            this.ClientSize = new System.Drawing.Size(514, 622);
+            this.Controls.Add(this.chartCF);
             this.Controls.Add(this.txtTauxRemplissage);
             this.Controls.Add(this.lblTauxRemplissage);
             this.Controls.Add(this.cbxBien);
@@ -182,14 +200,13 @@ namespace GestionLocation
             this.Name = "Stats";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Stats";
-            ((System.ComponentModel.ISupportInitialize)(this.vcaannuelBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartCF)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.BindingSource vcaannuelBindingSource;
         private System.Windows.Forms.ComboBox cbxAnnee;
         private System.Windows.Forms.Label lblAnnee;
         private System.Windows.Forms.TextBox txtCFAnnuel;
@@ -202,5 +219,6 @@ namespace GestionLocation
         private System.Windows.Forms.ComboBox cbxBien;
         private System.Windows.Forms.Label lblTauxRemplissage;
         private System.Windows.Forms.TextBox txtTauxRemplissage;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chartCF;
     }
 }
