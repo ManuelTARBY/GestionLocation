@@ -24,7 +24,7 @@ namespace GestionLocation
         public Stats()
         {
             InitializeComponent();
-            chartCF.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            chartCF.Series["Series1"].ChartType = SeriesChartType.Line;
             chartCF.Series["Series1"].Name = "CA annuel";
             // Crée la série pour les charges annuelles
             Series serieCharges = new Series("Charges annuelles")
@@ -285,6 +285,12 @@ namespace GestionLocation
             txtCFAnnuel.Text = (caAnnuel - chargesAnnuelles).ToString("N") + " €";
         }
 
+
+        /// <summary>
+        /// Calcule le total des charges payées sur une année
+        /// </summary>
+        /// <param name="annee">Année pour laquelle on veut calculer le montant des charges annuelles</param>
+        /// <returns>Montant des charges annuelles</returns>
         public float GetChargesAnnuelles(int annee)
         {
             // Déclarations

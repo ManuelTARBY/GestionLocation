@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -9,7 +10,7 @@ namespace GestionLocation
     {
 
         private MySqlCommand command;
-        private readonly string[] leBien;
+        private readonly Dictionary<string, string> infoBien;
         private readonly string idCharge;
         private string req;
         private readonly string typeReq;
@@ -25,7 +26,7 @@ namespace GestionLocation
             InitializeComponent();
             this.Text = "Ajout/Modification d'une charge";
             this.fenListeCharges = fenListeCharges;
-            this.leBien = fenListeCharges.GetLeBien();
+            this.infoBien = fenListeCharges.GetLeBien();
             this.idCharge = idCharge;
             if (this.idCharge.Equals("0"))
             {
@@ -62,7 +63,7 @@ namespace GestionLocation
         /// </summary>
         public void RemplirChamps()
         {
-            txtBien.Text = this.leBien[1];
+            txtBien.Text = this.infoBien["nom"];
             if (this.idCharge.Equals("0"))
             {
                 lblID.Text = $"{AttribuerIDCharge()}";
@@ -140,12 +141,12 @@ namespace GestionLocation
                     case "INSERT":
                         this.req = "INSERT INTO chargesannuelles (idchargeannuelle, idbien, libelle, refFrequence, annee, "+
                             "montantcharge, chargeannuelle, imputable) "+
-                            $"VALUES ({lblID.Text}, {this.leBien[0]}, @libelle, \'{cobFrequence.SelectedItem}\', "+
+                            $"VALUES ({lblID.Text}, {this.infoBien["id"]}, @libelle, \'{cobFrequence.SelectedItem}\', "+
                             $"\'{txtAnnee.Text}\', \'{MontantPoint()}\', \'{annu}\', {cbxImputable.Checked})";
                         break;
                     case "UPDATE":
                         this.req = "UPDATE chargesannuelles "+
-                            $"SET idbien = {leBien[0]}, libelle = @libelle, refFrequence = \'{cobFrequence.SelectedItem}\', "+
+                            $"SET idbien = {this.infoBien["id"]}, libelle = @libelle, refFrequence = \'{cobFrequence.SelectedItem}\', "+
                             $"annee = \'{txtAnnee.Text}\', montantcharge = \'{MontantPoint()}\', chargeannuelle = \'{annu}\', "+
                             $"imputable = {cbxImputable.Checked} WHERE idchargeannuelle = {this.idCharge}";
                         break;
@@ -231,7 +232,8 @@ namespace GestionLocation
         {
             // Calcule la charge annuelle du bien
             float charges = 0;
-            this.req = $"SELECT chargeannuelle FROM chargesannuelles WHERE idbien = {leBien[0]}";
+            this.req = "SELECT chargeannuelle FROM chargesannuelles " +
+                $"WHERE idbien = {this.infoBien["id"]} AND refFrequence != 'Ponctuelle'";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
@@ -242,6 +244,7 @@ namespace GestionLocation
                 finCurseur = !reader.Read();
             }
             reader.Close();
+
             // Calcule la charge imputable au locataire pour le bien
             this.req += " AND imputable = True";
             float chImputables = 0;
@@ -257,7 +260,8 @@ namespace GestionLocation
             reader.Close();
 
             // Met à jour la table bien
-            this.req = $"UPDATE bien SET chargeannuelles = \'{Math.Round(charges)}\', chargesimputables = \'{Math.Round(chImputables / 12)}\' WHERE idbien = {leBien[0]}";
+            this.req = $"UPDATE bien SET chargeannuelles = \'{Math.Round(charges)}\', chargesimputables = \'{Math.Round(chImputables / 12)}\' " +
+                $"WHERE idbien = {this.infoBien["id"]}";
             // Exécute la requête
             this.command = new MySqlCommand(this.req, Global.Connexion);
             // Prépare la requête

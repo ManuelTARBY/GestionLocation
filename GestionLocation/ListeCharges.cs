@@ -1,20 +1,17 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace GestionLocation
 {
     public partial class ListeCharges : Form
     {
-
-        private readonly string[] leBien = new string[2];
         private string req;
         private MySqlCommand command;
-        private readonly Dictionary<string, string> lesCharges, lesBiens, chargeBien;
+        private readonly Dictionary<string, string> lesCharges, lesBiens, chargeBien, infoBien;
         private readonly FicheBien fenFicheBien;
-        
+
 
         /// <summary>
         /// Constructeur de ListeCharges
@@ -23,11 +20,12 @@ namespace GestionLocation
         public ListeCharges(Form fenetre)
         {
             InitializeComponent();
+            this.infoBien = new Dictionary<string, string>();
             // Si le paramètre contient la fenêtre de type FicheBien
             if (typeof(FicheBien).IsInstanceOfType(fenetre))
             {
                 this.fenFicheBien = fenetre as FicheBien;
-                this.leBien = this.fenFicheBien.GetLeBien();
+                this.infoBien = this.fenFicheBien.GetInfoBien();
             }
             this.Text = "Liste des charges";
             this.lesCharges = new Dictionary<string, string>();
@@ -45,8 +43,9 @@ namespace GestionLocation
         public void AfficheTitre()
         {
             string titre = "Liste des charges";
-            if (this.leBien[1] != null) { 
-                titre += $" - {this.leBien[1].ToUpper()}";
+            if (this.infoBien.ContainsKey("nom") && this.infoBien["nom"] != null)
+            {
+                titre += $" - {this.infoBien["nom"].ToUpper()}";
             }
             lblNomBien.Text = titre;
         }
@@ -61,55 +60,57 @@ namespace GestionLocation
             lstCharges.Items.Clear();
             this.lesCharges.Clear();
             this.chargeBien.Clear();
-            string type = this.fenFicheBien.GetTypeBien();
-            // Si le bien est un bien
-            if (type == "bien")
+            if (this.infoBien.ContainsKey("type") && this.infoBien["type"] != null)
             {
-                this.req = $"SELECT idchargeannuelle, nombien, libelle, montantcharge, refFrequence FROM chargesannuelles " +
-                    $"NATURAL JOIN bien WHERE (refFrequence != 'Ponctuelle' OR refFrequence = 'Ponctuelle' AND annee = YEAR(NOW())) ";
-                if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
+                // Si le bien est un bien
+                if (this.infoBien["type"] == "bien")
                 {
-                    this.req += $"AND idbien={this.leBien[0]} ";
-                }
-            }
-            // Si le bien est un groupe de biens
-            else if (type == "groupe")
-            {
-                // Récupère la liste des biens qui composent le groupe
-                List<int> lesIdBiens = new List<int>();
-                this.req = $"SELECT idbien FROM lignegroupe WHERE idgroupe = {this.leBien[0]}";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                MySqlDataReader rdrGroupe = this.command.ExecuteReader();
-                if (rdrGroupe.HasRows)
-                {
-                    while (rdrGroupe.Read())
+                    this.req = $"SELECT idchargeannuelle, nombien, libelle, montantcharge, refFrequence FROM chargesannuelles " +
+                        $"NATURAL JOIN bien WHERE (refFrequence != 'Ponctuelle' OR refFrequence = 'Ponctuelle' AND annee = YEAR(NOW())) ";
+                    if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
                     {
-                        lesIdBiens.Add(int.Parse(rdrGroupe["idbien"].ToString()));
+                        this.req += $"AND idbien={this.infoBien["id"]} ";
                     }
-                    rdrGroupe.Close();
                 }
-                // Récupère la liste des charges pour le groupe de bien
-                this.req = "SELECT idchargeannuelle, nombien, libelle, montantcharge, refFrequence FROM chargesannuelles " +
-                    $"NATURAL JOIN bien WHERE (refFrequence != 'Ponctuelle' OR refFrequence = 'Ponctuelle' AND annee = YEAR(NOW())) ";
-                if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
+                // Si le bien est un groupe de biens
+                else if (this.infoBien["type"] == "groupe")
                 {
-                    this.req += $"AND idbien IN ({string.Join(",", lesIdBiens.ConvertAll(v => v.ToString()))}) ";
+                    // Récupère la liste des biens qui composent le groupe
+                    List<int> lesIdBiens = new List<int>();
+                    this.req = $"SELECT idbien FROM lignegroupe WHERE idgroupe = {this.infoBien["id"]}";
+                    this.command = new MySqlCommand(this.req, Global.Connexion);
+                    MySqlDataReader rdrGroupe = this.command.ExecuteReader();
+                    if (rdrGroupe.HasRows)
+                    {
+                        while (rdrGroupe.Read())
+                        {
+                            lesIdBiens.Add(int.Parse(rdrGroupe["idbien"].ToString()));
+                        }
+                        rdrGroupe.Close();
+                    }
+                    // Récupère la liste des charges pour le groupe de bien
+                    this.req = "SELECT idchargeannuelle, nombien, libelle, montantcharge, refFrequence FROM chargesannuelles " +
+                        $"NATURAL JOIN bien WHERE (refFrequence != 'Ponctuelle' OR refFrequence = 'Ponctuelle' AND annee = YEAR(NOW())) ";
+                    if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
+                    {
+                        this.req += $"AND idbien IN ({string.Join(",", lesIdBiens.ConvertAll(v => v.ToString()))}) ";
+                    }
                 }
+                this.req += "ORDER BY libelle, nombien";
+                this.command = new MySqlCommand(this.req, Global.Connexion);
+                MySqlDataReader reader = this.command.ExecuteReader();
+                string ligneCharge;
+                while (reader.Read())
+                {
+                    // Remplit la listbox
+                    ligneCharge = $"{reader["nombien"]} || {reader["libelle"]} || Montant : {reader["montantcharge"]} € || Fréquence : {reader["refFrequence"]}";
+                    lstCharges.Items.Add(ligneCharge);
+                    // Remplit le dictionnaire avec le contenu du listbox: idchargesannuelles
+                    lesCharges.Add(ligneCharge, reader.GetString(0));
+                    chargeBien.Add(ligneCharge, reader.GetString(1));
+                }
+                reader.Close();
             }
-            this.req += "ORDER BY libelle, nombien";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
-            string ligneCharge;
-            while (reader.Read())
-            {
-                // Remplit la listbox
-                ligneCharge = $"{reader["nombien"]} || {reader["libelle"]} || Montant : {reader["montantcharge"]} € || Fréquence : {reader["refFrequence"]}";
-                lstCharges.Items.Add(ligneCharge);
-                // Remplit le dictionnaire avec le contenu du listbox: idchargesannuelles
-                lesCharges.Add(ligneCharge, reader.GetString(0));
-                chargeBien.Add(ligneCharge, reader.GetString(1));
-            }
-            reader.Close();
         }
 
 
@@ -126,8 +127,7 @@ namespace GestionLocation
             }
             else
             {
-                this.leBien[0] = lesBiens[lstBiens.SelectedItem.ToString()];
-                this.leBien[1] = lstBiens.SelectedItem.ToString();
+                MajBienSelectionne();
                 AjoutModifChargeAnnuelle fenCharge = new AjoutModifChargeAnnuelle(this);
                 fenCharge.ShowDialog();
             }
@@ -148,9 +148,9 @@ namespace GestionLocation
         /// Permet de récupérer le bien
         /// </summary>
         /// <returns>Le bien</returns>
-        public string[] GetLeBien()
+        public Dictionary<string, string> GetLeBien()
         {
-            return this.leBien;
+            return this.infoBien;
         }
 
 
@@ -167,7 +167,7 @@ namespace GestionLocation
             }
             else
             {
-                RecupDonneesBien();
+                MajBienSelectionne();
                 AjoutModifChargeAnnuelle fenCharge = new AjoutModifChargeAnnuelle(this, lesCharges[lstCharges.SelectedItem.ToString()]);
                 fenCharge.ShowDialog();
             }
@@ -259,7 +259,8 @@ namespace GestionLocation
             reader.Close();
 
             // Met à jour la table bien
-            this.req = $"UPDATE bien SET chargeannuelles = \'{Math.Round(charges, 2)}\', chargesimputables = \'{Math.Round(chImputables / 12, 2)}\' WHERE idbien = {leBien[0]}";
+            this.req = $"UPDATE bien SET chargeannuelles = \'{Math.Round(charges, 2)}\', " +
+                $"chargesimputables = \'{Math.Round(chImputables / 12, 2)}\' WHERE idbien = {this.infoBien["id"]}";
             // Exécute la requête
             ExecuteReqIUD();
         }
@@ -281,6 +282,7 @@ namespace GestionLocation
         /// </summary>
         private void RemplirListeBiens()
         {
+            this.lesBiens.Clear();
             this.req = "SELECT idbien, nombien FROM bien ORDER BY nombien";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
@@ -297,7 +299,7 @@ namespace GestionLocation
             if (fenFicheBien != null)
             {
                 // Positionne le focus sur le bien en question
-                int index = lstBiens.FindString(leBien[1]);
+                int index = lstBiens.FindString(this.infoBien["nom"]);
                 if (index != -1)
                 {
                     lstBiens.SetSelected(index, true);
@@ -319,8 +321,7 @@ namespace GestionLocation
             }
             else
             {
-                this.leBien[1] = lstBiens.SelectedItem.ToString();
-                this.leBien[0] = lesBiens[lstBiens.SelectedItem.ToString()];
+                MajBienSelectionne();
                 RecupListeCharges();
                 AfficheTitre();
             }
@@ -328,17 +329,36 @@ namespace GestionLocation
 
 
         /// <summary>
-        /// Retrouve l'id d'un bien à partir de son nom
+        /// Met à jour les infos sur le bien sélectionné
         /// </summary>
-        public void RecupDonneesBien()
+        public void MajBienSelectionne()
         {
-            this.leBien[0] = chargeBien[lstCharges.SelectedItem.ToString()];
-            this.req = $"SELECT * FROM bien WHERE idbien = {this.leBien[0]}";
+            this.infoBien.Clear();
+            // Récupère les informations sur le bien/groupe sur lequel s'applique le filtre
+            this.infoBien.Add("nom", lstBiens.SelectedItem.ToString());
+            this.req = $"SELECT idbien FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
-            reader.Read();
-            this.leBien[1] = reader.GetString(1);
-            reader.Close();
+            if (reader.HasRows)
+            {
+                this.infoBien.Add("type", "bien");
+                reader.Read();
+                this.infoBien.Add("id", reader["idbien"].ToString());
+                reader.Close();
+            }
+            else
+            {
+                this.infoBien.Add("type", "groupe");
+                this.req = $"SELECT idgroupe FROM grpedebiens WHERE nomdugroupe = \"{lstBiens.SelectedItem}\"";
+                this.command = new MySqlCommand(this.req, Global.Connexion);
+                reader = this.command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    this.infoBien.Add("id", reader["idgroupe"].ToString());
+                    reader.Close();
+                }
+            }
         }
     }
 }
