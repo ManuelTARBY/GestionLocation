@@ -9,7 +9,7 @@ namespace GestionLocation
     {
         private string req;
         private MySqlCommand command;
-        private readonly Dictionary<string, string> lesCharges, lesBiens, chargeBien, infoBien;
+        private readonly Dictionary<string, string> lesCharges, chargeBien, infoBien;
         private readonly FicheBien fenFicheBien;
 
 
@@ -29,7 +29,6 @@ namespace GestionLocation
             }
             this.Text = "Liste des charges";
             this.lesCharges = new Dictionary<string, string>();
-            this.lesBiens = new Dictionary<string, string>();
             this.chargeBien = new Dictionary<string, string>();
             RemplirListeBiens();
             RecupListeCharges();
@@ -89,7 +88,7 @@ namespace GestionLocation
                         rdrGroupe.Close();
                     }
                     // Récupère la liste des charges pour le groupe de bien
-                    this.req = "SELECT idchargeannuelle, nombien, libelle, montantcharge, refFrequence FROM chargesannuelles " +
+                    this.req = "SELECT idchargeannuelle, nombien, libelle, montantcharge, refFrequence, idchargeannuelle FROM chargesannuelles " +
                         $"NATURAL JOIN bien WHERE (refFrequence != 'Ponctuelle' OR refFrequence = 'Ponctuelle' AND annee = YEAR(NOW())) ";
                     if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
                     {
@@ -106,7 +105,7 @@ namespace GestionLocation
                     ligneCharge = $"{reader["nombien"]} || {reader["libelle"]} || Montant : {reader["montantcharge"]} € || Fréquence : {reader["refFrequence"]}";
                     lstCharges.Items.Add(ligneCharge);
                     // Remplit le dictionnaire avec le contenu du listbox: idchargesannuelles
-                    lesCharges.Add(ligneCharge, reader.GetString(0));
+                    lesCharges.Add(ligneCharge, reader["idchargeannuelle"].ToString());
                     chargeBien.Add(ligneCharge, reader.GetString(1));
                 }
                 reader.Close();
@@ -234,29 +233,29 @@ namespace GestionLocation
         {
             // Calcule la charge annuelle du bien
             float charges = 0;
-            this.req = $"SELECT chargeannuelle FROM chargesannuelles WHERE idbien = {chargeBien[lstCharges.SelectedItem.ToString()]}";
+            this.req = "SELECT SUM(chargeannuelle) AS 'TotalCharges' FROM chargesannuelles WHERE idbien = " +
+                $"(SELECT idbien FROM bien WHERE nombien = '{chargeBien[lstCharges.SelectedItem.ToString()]}') " +
+                "AND refFrequence != 'Ponctuelle'";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
-            bool finCurseur = !reader.Read();
-            while (!finCurseur)
+            if (reader.HasRows)
             {
-                charges += float.Parse(reader["chargeannuelle"].ToString());
-                finCurseur = !reader.Read();
+                reader.Read();
+                charges = float.Parse(reader["TotalCharges"].ToString());
+                reader.Close();
             }
-            reader.Close();
 
             // Calcule la charge imputable au locataire du bien
             this.req += " AND imputable = True";
             float chImputables = 0;
             this.command = new MySqlCommand(this.req, Global.Connexion);
             reader = this.command.ExecuteReader();
-            finCurseur = !reader.Read();
-            while (!finCurseur)
+            if (reader.HasRows)
             {
-                chImputables += float.Parse(reader["chargeannuelle"].ToString());
-                finCurseur = !reader.Read();
+                reader.Read();
+                chImputables = float.Parse(reader["TotalCharges"].ToString());
+                reader.Close();
             }
-            reader.Close();
 
             // Met à jour la table bien
             this.req = $"UPDATE bien SET chargeannuelles = \'{Math.Round(charges, 2)}\', " +
@@ -282,18 +281,37 @@ namespace GestionLocation
         /// </summary>
         private void RemplirListeBiens()
         {
-            this.lesBiens.Clear();
-            this.req = "SELECT idbien, nombien FROM bien ORDER BY nombien";
+            List<string> listeBienGrpeDeBiens = new List<string>();
+            // Récupère les biens
+            this.req = "SELECT nombien FROM bien";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
             while (!finCurseur)
             {
-                lesBiens.Add(reader.GetString(1), reader.GetString(0));
-                lstBiens.Items.Add(reader["nombien"].ToString());
+                listeBienGrpeDeBiens.Add(reader["nombien"].ToString());
                 finCurseur = !reader.Read();
             }
             reader.Close();
+
+            // Récupère les groupes de biens
+            this.req = "SELECT nomdugroupe FROM grpedebiens";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            reader = this.command.ExecuteReader();
+            finCurseur = !reader.Read();
+            while (!finCurseur)
+            {
+                listeBienGrpeDeBiens.Add(reader["nomdugroupe"].ToString());
+                finCurseur = !reader.Read();
+            }
+            reader.Close();
+
+            listeBienGrpeDeBiens.Sort();
+
+            foreach (string bien in listeBienGrpeDeBiens)
+            {
+                lstBiens.Items.Add(bien);
+            }
 
             // Si la fenêtre a été ouverte depuis la fiche d'un bien
             if (fenFicheBien != null)
@@ -348,6 +366,7 @@ namespace GestionLocation
             }
             else
             {
+                reader.Close();
                 this.infoBien.Add("type", "groupe");
                 this.req = $"SELECT idgroupe FROM grpedebiens WHERE nomdugroupe = \"{lstBiens.SelectedItem}\"";
                 this.command = new MySqlCommand(this.req, Global.Connexion);

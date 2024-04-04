@@ -286,7 +286,7 @@ namespace GestionLocation
             switch (this.infoBien["type"])
             {
                 case "bien":
-                    this.req = $"SELECT * FROM bien WHERE idbien ={this.infoBien["id"]}";
+                    this.req = $"SELECT * FROM bien WHERE idbien = {this.infoBien["id"]}";
                     this.command = new MySqlCommand(this.req, Global.Connexion);
                     this.command.Prepare();
                     MySqlDataReader reader = this.command.ExecuteReader();
@@ -416,10 +416,14 @@ namespace GestionLocation
                 if (debutLoc < today && finLoc > today)
                 {
                     this.idLocActuelle = reader.GetString(0);
-                    this.dureeLocActuelle = today.Subtract(debutLoc).Days + 1;
                     if (finLoc > today.AddDays(30))
                     {
                         finLoc = today.AddDays(30);
+                        this.dureeLocActuelle = finLoc.Subtract(debutLoc).Days + 1;
+                    }
+                    else
+                    {
+                        this.dureeLocActuelle = today.Subtract(debutLoc).Days + 1;
                     }
                 }
                 lesDureesDeLoc.Add(finLoc.Subtract(debutLoc).Days + 1);
@@ -678,7 +682,7 @@ namespace GestionLocation
                 this.req = "SELECT CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', nomlocataire) AS 'Locataire', " +
                     "debutlocation AS 'Début de location', LEAST(finlocation, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY)) AS 'Fin de location', " +
                     "CONCAT(ROUND(DATEDIFF(LEAST(finlocation, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY)), DATE_SUB(debutlocation, INTERVAL 1 DAY)) / 30.417, 1), ' mois') AS 'Durée' " +
-                    $"FROM location NATURAL JOIN locataire WHERE idbien = {this.infoBien["id"]} ORDER BY debutlocation";
+                    $"FROM location NATURAL JOIN locataire WHERE idbien = {this.infoBien["id"]} ORDER BY debutlocation DESC";
                 this.command = new MySqlCommand(this.req, Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
                 if (reader.HasRows)

@@ -202,8 +202,7 @@ namespace GestionLocation
             float totalAnnuel = (occurrence * MontantVirg());
             totalAnnuel = (float)Math.Round(totalAnnuel, 2);
             string annu = totalAnnuel.ToString();
-            annu = annu.Replace(',', '.');
-            return annu;
+            return annu.Replace(',', '.');
         }
 
         /// <summary>
@@ -232,18 +231,17 @@ namespace GestionLocation
         {
             // Calcule la charge annuelle du bien
             float charges = 0;
-            this.req = "SELECT chargeannuelle FROM chargesannuelles " +
+            this.req = "SELECT SUM(chargeannuelle) AS 'TotalCharges' FROM chargesannuelles " +
                 $"WHERE idbien = {this.infoBien["id"]} AND refFrequence != 'Ponctuelle'";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
-            bool finCurseur = !reader.Read();
-            while (!finCurseur)
+            if (reader.HasRows)
             {
-                charges += float.Parse(reader["chargeannuelle"].ToString());
-                finCurseur = !reader.Read();
+                reader.Read();
+                charges = float.Parse(reader["TotalCharges"].ToString());
+                reader.Close();
             }
-            reader.Close();
 
             // Calcule la charge imputable au locataire pour le bien
             this.req += " AND imputable = True";
@@ -251,13 +249,12 @@ namespace GestionLocation
             this.command = new MySqlCommand(this.req, Global.Connexion);
             this.command.Prepare();
             reader = this.command.ExecuteReader();
-            finCurseur = !reader.Read();
-            while (!finCurseur)
+            if (reader.HasRows)
             {
-                chImputables += float.Parse(reader["chargeannuelle"].ToString());
-                finCurseur = !reader.Read();
+                reader.Read();
+                chImputables = float.Parse(reader["TotalCharges"].ToString());
+                reader.Close();
             }
-            reader.Close();
 
             // Met à jour la table bien
             this.req = $"UPDATE bien SET chargeannuelles = \'{Math.Round(charges)}\', chargesimputables = \'{Math.Round(chImputables / 12)}\' " +
