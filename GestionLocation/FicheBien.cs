@@ -90,12 +90,13 @@ namespace GestionLocation
         /// <summary>
         /// Récupère le nom complet d'un locataire à partir de son id
         /// </summary>
-        /// <param name="idLocat">Iddu locataire à trouver</param>
+        /// <param name="idLocat">Id du locataire à trouver</param>
         /// <returns>Nom complet du locataire</returns>
         public string RecupLocataire(string idLocat)
         {
             string leNom;
-            this.req = $"SELECT nomcompletlocataire FROM locataire WHERE idlocataire ={idLocat}";
+            this.req = "SELECT CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', SUBSTRING_INDEX(nomlocataire, ',' , 1)) "+
+                $"FROM locataire WHERE idlocataire ={idLocat}";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
