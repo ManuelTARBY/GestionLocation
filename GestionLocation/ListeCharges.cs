@@ -65,8 +65,8 @@ namespace GestionLocation
             // Si le bien est un bien
             if (type == "bien")
             {
-                this.req = $"SELECT idchargeannuelle, idbien, libelle, montantcharge, refFrequence FROM chargesannuelles " +
-                    $"WHERE (refFrequence != 'Ponctuelle' OR refFrequence = 'Ponctuelle' AND annee = YEAR(NOW())) ";
+                this.req = $"SELECT idchargeannuelle, nombien, libelle, montantcharge, refFrequence FROM chargesannuelles " +
+                    $"NATURAL JOIN bien WHERE (refFrequence != 'Ponctuelle' OR refFrequence = 'Ponctuelle' AND annee = YEAR(NOW())) ";
                 if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
                 {
                     this.req += $"AND idbien={this.leBien[0]} ";
@@ -89,22 +89,21 @@ namespace GestionLocation
                     rdrGroupe.Close();
                 }
                 // Récupère la liste des charges pour le groupe de bien
-                this.req = "SELECT idchargeannuelle, idbien, libelle, montantcharge, refFrequence FROM chargesannuelles " +
-                    $"WHERE (refFrequence != 'Ponctuelle' OR refFrequence = 'Ponctuelle' AND annee = YEAR(NOW())) ";
+                this.req = "SELECT idchargeannuelle, nombien, libelle, montantcharge, refFrequence FROM chargesannuelles " +
+                    $"NATURAL JOIN bien WHERE (refFrequence != 'Ponctuelle' OR refFrequence = 'Ponctuelle' AND annee = YEAR(NOW())) ";
                 if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
                 {
                     this.req += $"AND idbien IN ({string.Join(",", lesIdBiens.ConvertAll(v => v.ToString()))}) ";
                 }
             }
-            this.req += "ORDER BY libelle";
+            this.req += "ORDER BY libelle, nombien";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             string ligneCharge;
             while (reader.Read())
             {
-                string bien = lesBiens.FirstOrDefault(x => x.Value == reader["idbien"].ToString()).Key;
                 // Remplit la listbox
-                ligneCharge = $"{bien} || {reader["libelle"]} || Montant : {reader["montantcharge"]} € || Fréquence : {reader["refFrequence"]}";
+                ligneCharge = $"{reader["nombien"]} || {reader["libelle"]} || Montant : {reader["montantcharge"]} € || Fréquence : {reader["refFrequence"]}";
                 lstCharges.Items.Add(ligneCharge);
                 // Remplit le dictionnaire avec le contenu du listbox: idchargesannuelles
                 lesCharges.Add(ligneCharge, reader.GetString(0));
