@@ -284,7 +284,9 @@ namespace GestionLocation
             this.ClientSize = new System.Drawing.Size(435, 304);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MinimumSize = new System.Drawing.Size(457, 360);
             this.Name = "Biens";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Biens";
             this.gbrBienArchive.ResumeLayout(false);
             this.gbrBienArchive.PerformLayout();

@@ -61,11 +61,40 @@ namespace GestionLocation
             lstCharges.Items.Clear();
             this.lesCharges.Clear();
             this.chargeBien.Clear();
-            this.req = $"SELECT idchargeannuelle, idbien, libelle, montantcharge, refFrequence FROM chargesannuelles " +
-                $"WHERE (refFrequence != 'Ponctuelle' OR refFrequence = 'Ponctuelle' AND annee = YEAR(NOW())) ";
-            if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
+            string type = this.fenFicheBien.GetTypeBien();
+            // Si le bien est un bien
+            if (type == "bien")
             {
-                this.req += $"AND idbien={this.leBien[0]} ";
+                this.req = $"SELECT idchargeannuelle, idbien, libelle, montantcharge, refFrequence FROM chargesannuelles " +
+                    $"WHERE (refFrequence != 'Ponctuelle' OR refFrequence = 'Ponctuelle' AND annee = YEAR(NOW())) ";
+                if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
+                {
+                    this.req += $"AND idbien={this.leBien[0]} ";
+                }
+            }
+            // Si le bien est un groupe de biens
+            else if (type == "groupe")
+            {
+                // Récupère la liste des biens qui composent le groupe
+                List<int> lesIdBiens = new List<int>();
+                this.req = $"SELECT idbien FROM lignegroupe WHERE idgroupe = {this.leBien[0]}";
+                this.command = new MySqlCommand(this.req, Global.Connexion);
+                MySqlDataReader rdrGroupe = this.command.ExecuteReader();
+                if (rdrGroupe.HasRows)
+                {
+                    while (rdrGroupe.Read())
+                    {
+                        lesIdBiens.Add(int.Parse(rdrGroupe["idbien"].ToString()));
+                    }
+                    rdrGroupe.Close();
+                }
+                // Récupère la liste des charges pour le groupe de bien
+                this.req = "SELECT idchargeannuelle, idbien, libelle, montantcharge, refFrequence FROM chargesannuelles " +
+                    $"WHERE (refFrequence != 'Ponctuelle' OR refFrequence = 'Ponctuelle' AND annee = YEAR(NOW())) ";
+                if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
+                {
+                    this.req += $"AND idbien IN ({string.Join(",", lesIdBiens.ConvertAll(v => v.ToString()))}) ";
+                }
             }
             this.req += "ORDER BY libelle";
             this.command = new MySqlCommand(this.req, Global.Connexion);
@@ -270,7 +299,10 @@ namespace GestionLocation
             {
                 // Positionne le focus sur le bien en question
                 int index = lstBiens.FindString(leBien[1]);
-                lstBiens.SetSelected(index, true);
+                if (index != -1)
+                {
+                    lstBiens.SetSelected(index, true);
+                }
             }
         }
 

@@ -35,6 +35,16 @@ namespace GestionLocation
 
 
         /// <summary>
+        /// Revoie le type de bien sélectionné
+        /// </summary>
+        /// <returns>Chaîne contenant le type de bien sélectionné</returns>
+        public string GetTypeBien()
+        {
+            return this.type;
+        }
+
+
+        /// <summary>
         /// Remplit tous les champs de la fenêtre
         /// </summary>
         public void RemplirChamps()
