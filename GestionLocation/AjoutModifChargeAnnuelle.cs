@@ -134,7 +134,9 @@ namespace GestionLocation
         {
             if (VerifChamps())
             {
+                // Valeur annuelle de la charge
                 string annu = CalculerMontantAnnuel();
+
                 // Prépare la requête d'ajout ou de modification de l'enregistrement de ChargesAnnuelles
                 switch (this.typeReq)
                 {
@@ -151,14 +153,14 @@ namespace GestionLocation
                             $"imputable = {cbxImputable.Checked} WHERE idchargeannuelle = {this.idCharge}";
                         break;
                 }
+                
                 // Exécute la requête
                 this.command = new MySqlCommand(this.req, Global.Connexion);
                 this.command.Parameters.AddWithValue("@libelle", txtLibelle.Text);
-                // Prépare la requête
                 this.command.Prepare();
-                // Exécute la requête
                 this.command.ExecuteNonQuery();
                 this.fenListeCharges.RecupListeCharges();
+
                 // Met à jour la liste des charges pour le bien
                 MajChargesDuBien();
                 FicheBien laFicheBien = this.fenListeCharges.GetFenFicheBien();

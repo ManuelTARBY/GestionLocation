@@ -126,32 +126,9 @@ namespace GestionLocation
                 MessageBox.Show("Veuillez sélectionner le bien concerné par la charge.");
                 return;
             }
-            // Recherche si le bien sélectionné est un bien ou un groupe
-            this.req = $"SELECT idbien FROM bien WHERE nombien = \'{lstBiens.SelectedItem}\'";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            this.command.Prepare();
-            MySqlDataReader reader = this.command.ExecuteReader();
-            if (reader.HasRows)
-            {
-                MajBienSelectionne();
-                AjoutModifChargeAnnuelle fenCharge = new AjoutModifChargeAnnuelle(this);
-                fenCharge.ShowDialog();
-            }
-            else
-            {
-                MessageBox.Show("Le bien sélectionné est un groupe de biens. Veuillez sélectionner un bien pour lui ajouter une charge.");
-                return;
-            }
-        }
-
-
-        /// <summary>
-        /// Permet de récupérer la chaîne de connexion
-        /// </summary>
-        /// <returns>Chaîne de connexion</returns>
-        public MySqlConnection GetConnexion()
-        {
-            return Global.Connexion;
+            MajBienSelectionne();
+            AjoutModifChargeAnnuelle fenCharge = new AjoutModifChargeAnnuelle(this);
+            fenCharge.ShowDialog();
         }
 
 
@@ -175,13 +152,11 @@ namespace GestionLocation
             if (lstCharges.SelectedItem == null)
             {
                 MessageBox.Show("Veuillez sélectionner une charge pour pouvoir la modifier.");
+                return;
             }
-            else
-            {
-                MajBienSelectionne();
-                AjoutModifChargeAnnuelle fenCharge = new AjoutModifChargeAnnuelle(this, lesCharges[lstCharges.SelectedItem.ToString()]);
-                fenCharge.ShowDialog();
-            }
+            MajBienSelectionne();
+            AjoutModifChargeAnnuelle fenCharge = new AjoutModifChargeAnnuelle(this, lesCharges[lstCharges.SelectedItem.ToString()]);
+            fenCharge.ShowDialog();
         }
 
 
@@ -306,20 +281,9 @@ namespace GestionLocation
             }
             reader.Close();
 
-            // Récupère les groupes de biens
-            this.req = "SELECT nomdugroupe FROM grpedebiens";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            reader = this.command.ExecuteReader();
-            finCurseur = !reader.Read();
-            while (!finCurseur)
-            {
-                listeBienGrpeDeBiens.Add(reader["nomdugroupe"].ToString());
-                finCurseur = !reader.Read();
-            }
-            reader.Close();
-
             listeBienGrpeDeBiens.Sort();
 
+            // Ajoute les biens dans la liste
             foreach (string bien in listeBienGrpeDeBiens)
             {
                 lstBiens.Items.Add(bien);

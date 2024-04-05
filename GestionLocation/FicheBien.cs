@@ -34,6 +34,10 @@ namespace GestionLocation
                 { "id", data[1] },
                 { "nom", data[2] }
             };
+            if (this.infoBien["type"] == "groupe")
+            {
+                btnListeCharges.Visible = false;
+            }
             this.bienSelectionne = new List<int>();
             chartCF.Series["Series1"].ChartType = SeriesChartType.Line;
             chartCF.Series["Series1"].Name = "CA annuel";
