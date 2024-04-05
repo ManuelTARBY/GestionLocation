@@ -452,24 +452,6 @@ namespace GestionLocation
             txtVacanceLocative.Text = $"{vacancePrc} %";
         }
 
-        /// <summary>
-        /// Récupère les
-        /// </summary>
-        /// <returns></returns>
-        public List<string> RecupLesBiens()
-        {
-            List<string> lesBiens = new List<string>();
-            this.req = $"SELECT idbien FROM lignegroupe WHERE idgroupe = {this.infoBien["id"]}";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
-            while (reader.Read())
-            {
-                lesBiens.Add(reader["idbien"].ToString());
-            }
-            reader.Close();
-            return lesBiens;
-        }
-
 
         /// <summary>
         /// Convertit un nombre de jours en mois
@@ -626,23 +608,13 @@ namespace GestionLocation
 
 
         /// <summary>
-        /// Renvoie le couple idbien-nombien
-        /// </summary>
-        /// <returns>idbien - nombien</returns>
-        public List<int> GetLeBien()
-        {
-            return this.bienSelectionne;
-        }
-
-
-        /// <summary>
         /// Remplit le champ des charges annuelles pour un groupe de biens
         /// </summary>
         /// <returns>Montant des charges annuelles pour ce groupe de biens</returns>
         public string RecupChargesAnnuGrpe()
         {
             string totalCh;
-            this.req = $"SELECT SUM(chargeannuelle) AS total FROM chargesannuelles " +
+            this.req = $"SELECT SUM(chargeannuelles) AS 'total' FROM bien " +
                 $"WHERE idbien IN ({string.Join(",", this.bienSelectionne.ConvertAll(v => v.ToString()))})";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();

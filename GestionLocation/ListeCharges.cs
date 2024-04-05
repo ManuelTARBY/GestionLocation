@@ -97,6 +97,7 @@ namespace GestionLocation
                 }
                 this.req += "ORDER BY libelle, nombien";
                 this.command = new MySqlCommand(this.req, Global.Connexion);
+                this.command.Prepare();
                 MySqlDataReader reader = this.command.ExecuteReader();
                 string ligneCharge;
                 while (reader.Read())
@@ -123,12 +124,23 @@ namespace GestionLocation
             if (lstBiens.SelectedItem == null)
             {
                 MessageBox.Show("Veuillez sélectionner le bien concerné par la charge.");
+                return;
             }
-            else
+            // Recherche si le bien sélectionné est un bien ou un groupe
+            this.req = $"SELECT idbien FROM bien WHERE nombien = \'{lstBiens.SelectedItem}\'";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
+            MySqlDataReader reader = this.command.ExecuteReader();
+            if (reader.HasRows)
             {
                 MajBienSelectionne();
                 AjoutModifChargeAnnuelle fenCharge = new AjoutModifChargeAnnuelle(this);
                 fenCharge.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("Le bien sélectionné est un groupe de biens. Veuillez sélectionner un bien pour lui ajouter une charge.");
+                return;
             }
         }
 
