@@ -249,11 +249,11 @@ namespace GestionLocation
         public void AppliquerCouleurs()
         {
             // Charges imputables
-            int charges = int.Parse(txtCharges.Text.Replace(" €", ""));
-            int chImput = 0;
+            float charges = float.Parse(txtCharges.Text.Replace(" €", ""));
+            float chImput = 0;
             if (!txtChargesImputables.Text.Equals("-"))
             {
-                chImput = int.Parse(txtChargesImputables.Text.Replace(" €", ""));
+                chImput = float.Parse(txtChargesImputables.Text.Replace(" €", ""));
             }
             if (chImput > charges)
             {
@@ -297,12 +297,12 @@ namespace GestionLocation
                     reader.Read();
                     // Remplissage des champs récupérés dans la ligne
                     lblNomBien.Text = $"{this.infoBien["nom"].ToUpper()}   -   {reader.GetString(5)} {reader.GetString(6)} {reader.GetString(7).ToUpper()}";
-                    txtLoyerHC.Text = $"{reader.GetString(2)} €";
-                    txtCharges.Text = $"{reader.GetString(3)} €";
-                    txtLoyerCC.Text = $"{reader.GetString(4)} €";
+                    txtLoyerHC.Text = $"{reader.GetFloat(2):N} €";
+                    txtCharges.Text = $"{reader.GetFloat(3):N} €";
+                    txtLoyerCC.Text = $"{reader.GetFloat(4):N} €";
                     try
                     {
-                        txtChargesImputables.Text = $"{reader.GetString(8)} €";
+                        txtChargesImputables.Text = $"{reader.GetFloat(8):N} €";
                     }
                     catch
                     {
@@ -310,7 +310,7 @@ namespace GestionLocation
                     }
                     try
                     {
-                        txtChargesAnnuelles.Text = $"{reader.GetString(9)} €";
+                        txtChargesAnnuelles.Text = $"{reader.GetFloat(9):N} €";
                     }
                     catch
                     {
@@ -336,7 +336,7 @@ namespace GestionLocation
                     lblFinExploit.Visible = false;
                     txtFinExploit.Visible = false;
                     lblNomBien.Text = $"{this.infoBien["nom"].ToUpper()}";
-                    txtChargesAnnuelles.Text = RecupChargesAnnuGrpe() + " €";
+                    txtChargesAnnuelles.Text = RecupChargesAnnuGrpe().ToString("N") + " €";
                     RemplirLoyerChargeGrpe();
                     break;
                 default:
@@ -354,9 +354,12 @@ namespace GestionLocation
             // Calcule le nombre de locations
             CalculNbLoc();
             double[] dureeExploit;
+            double exploitJours = 0;
+            double exploitAnnees = 0;
             switch (this.infoBien["type"])
             {
                 case "bien":
+                    this.nbDeBiens = 1;
                     // Calcule le début d'exploitation
                     this.req = $"SELECT MIN(debutlocation) FROM (SELECT debutlocation FROM location WHERE idbien={this.infoBien["id"]}) AS reqC";
                     txtDebutExploit.Text = CalculDebutExploit();
@@ -367,12 +370,10 @@ namespace GestionLocation
 
                     // Calcule la durée d'exploitation
                     dureeExploit = CalculDureeExploit(txtDebutExploit.Text, txtFinExploit.Text);
-                    txtDureeExploitEnJours.Text = dureeExploit[0].ToString();
-                    txtDureeExploitEnAnnees.Text = String.Format("{0:0.#}", dureeExploit[1]);
+                    exploitJours = dureeExploit[0];
+                    exploitAnnees = dureeExploit[1];
                     break;
                 case "groupe":
-                    double exploitAnnees = 0, exploitJours = 0;
-                    //List<string> lesBiens = GetListeDesBiensSelectionnes();
                     this.nbDeBiens = this.bienSelectionne.Count;
                     string[] lesDebutExploit = new string[nbDeBiens];
                     string[] lesFinExploit = new string[nbDeBiens];
@@ -389,12 +390,13 @@ namespace GestionLocation
                         exploitJours += dureeExploit[0];
                         exploitAnnees += dureeExploit[1];
                     }
-                    txtDureeExploitEnJours.Text = String.Format("{0:0.}", exploitJours / nbDeBiens);
-                    txtDureeExploitEnAnnees.Text = String.Format("{0:0.#}", exploitAnnees / nbDeBiens);
                     break;
                 default:
                     break;
             }
+            // Affichages des durées d'exploitation
+            txtDureeExploitEnJours.Text = String.Format("{0: # ###}", exploitJours);
+            txtDureeExploitEnAnnees.Text = String.Format("{0:0.#}", exploitAnnees);
 
             // Récupération des durées de location
             switch (this.infoBien["type"])
@@ -451,8 +453,8 @@ namespace GestionLocation
             {
                 dureeTotaleDeLoc /= this.nbDeBiens;
             }
-            float vacanceJours = int.Parse(txtDureeExploitEnJours.Text) - dureeTotaleDeLoc;
-            float vacancePrc = (float)Math.Round(vacanceJours / int.Parse(txtDureeExploitEnJours.Text) * 100, 1);
+            double vacanceJours = exploitJours / this.nbDeBiens - dureeTotaleDeLoc;
+            float vacancePrc = (float)Math.Round(vacanceJours / (exploitJours / this.nbDeBiens) * 100, 1);
             txtVacanceLocative.Text = $"{vacancePrc} %";
         }
 
@@ -615,15 +617,16 @@ namespace GestionLocation
         /// Remplit le champ des charges annuelles pour un groupe de biens
         /// </summary>
         /// <returns>Montant des charges annuelles pour ce groupe de biens</returns>
-        public string RecupChargesAnnuGrpe()
+        public float RecupChargesAnnuGrpe()
         {
-            string totalCh;
+            float totalCh;
             this.req = $"SELECT SUM(chargeannuelles) AS 'total' FROM bien " +
                 $"WHERE idbien IN ({string.Join(",", this.bienSelectionne.ConvertAll(v => v.ToString()))})";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
-            totalCh = reader["total"].ToString();
+            //totalCh = reader["total"].ToString();
+            totalCh = reader.GetFloat(0);
             reader.Close();
             return totalCh;
         }
@@ -640,10 +643,14 @@ namespace GestionLocation
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
-            txtLoyerHC.Text = reader["Loyers HC"].ToString() + " €";
-            txtCharges.Text = reader["Total charges"].ToString() + " €";
-            txtLoyerCC.Text = reader["Loyers CC"].ToString() + " €";
-            txtChargesImputables.Text = reader["Imputables"].ToString() + " €";
+            //txtLoyerHC.Text = reader["Loyers HC"].ToString() + " €";
+            txtLoyerHC.Text = reader.GetInt32(0).ToString("N") + " €";
+            //txtCharges.Text = reader["Total charges"].ToString() + " €";
+            txtCharges.Text = reader.GetInt32(1).ToString("N") + " €";
+            //txtLoyerCC.Text = reader["Loyers CC"].ToString() + " €";
+            txtLoyerCC.Text = reader.GetInt32(2).ToString("N") + " €";
+            //txtChargesImputables.Text = reader["Imputables"].ToString() + " €";
+            txtChargesImputables.Text = reader.GetInt32(3).ToString("N") + " €";
             reader.Close();
         }
 
