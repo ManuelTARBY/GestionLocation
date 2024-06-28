@@ -11,8 +11,6 @@ namespace GestionLocation
 
         private MySqlCommand command;
         private string req;
-        // Stocke [id, nom]
-        //private readonly string[] leBien = new string[2];
         private readonly Dictionary<string, string> infoBien;
         // Id de la location actuelle
         private string idLocActuelle;

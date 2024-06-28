@@ -388,7 +388,7 @@ namespace GestionLocation
             // Données sur la location
             RecupLocation();
             // Récupère le dernier indice IRL
-            RecupIRL();
+            /*RecupIRL();*/
             // Récupère la date de souscription d'assurance
             if (this.datas["NomBien"].Substring(0, 7).Equals("Chambre"))
             {
@@ -526,16 +526,18 @@ namespace GestionLocation
         /// </summary>
         public void RecupLocataire(string id)
         {
+            DateTime dateNaissLoc;
             this.req = $"SELECT * FROM locataire WHERE idlocataire = {id}";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
+            dateNaissLoc = reader.GetDateTime(7);
+            this.datas.Add("DaNaisLocat", dateNaissLoc.ToString("dd/MM/yyyy"));
             this.datas.Add("PrenomLocat", $"{reader["prenomlocataire"]}");
             this.datas.Add("NomLocat", $"{reader["nomlocataire"]}");
             this.datas.Add("NomPrenomLocat", $"{reader["prenomlocataire"]} {reader["nomlocataire"]}");
             this.datas.Add("AdresseLocat", $"{reader["adresselocataire"]} {reader["cplocataire"]} {reader["villelocataire"]}");
-            this.datas.Add("DaNaisLocat", $"{reader["datenaissancelocataire"]}");
             this.datas.Add("LieuNaisLocat", $"{reader["lieunaissancelocataire"].ToString().ToUpper()}");
             this.datas.Add("TelLocat", $"{reader["telephonelocataire"]}");
             this.datas.Add("EmailLocat", $"{reader["emailocataire"]}");
