@@ -23,7 +23,7 @@ CREATE TABLE bien (
   adressebien varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   cpbien varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   villebien varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  chargesimputables int DEFAULT NULL,
+  chargesimputables float(13,2) DEFAULT NULL,
   chargeannuelles int DEFAULT NULL,
   bienarchive tinyint(1) DEFAULT NULL,
   typehabitat varchar(21) COLLATE utf8mb4_unicode_ci NOT NULL,
