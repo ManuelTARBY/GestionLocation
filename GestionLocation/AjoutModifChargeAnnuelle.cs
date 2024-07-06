@@ -235,7 +235,7 @@ namespace GestionLocation
             // Calcule la charge annuelle du bien
             float charges = 0;
             this.req = "SELECT SUM(chargeannuelle) AS 'TotalCharges' FROM chargesannuelles " +
-                $"WHERE idbien = {this.infoBien["id"]} AND (annee = YEAR(NOW()) OR annee = 0 OR annee IS NULL)";
+                $"WHERE idbien = {this.infoBien["id"]} AND (annee = YEAR(NOW()) OR annee = 0)";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();

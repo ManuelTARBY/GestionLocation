@@ -64,13 +64,14 @@ namespace GestionLocation
                 // Si le bien est un bien
                 if (this.infoBien["type"] == "bien")
                 {
-                    this.req = $"SELECT idchargeannuelle, nombien, libelle, montantcharge, refFrequence FROM chargesannuelles " +
-                        $"NATURAL JOIN bien WHERE (annee = YEAR(NOW()) OR annee = 0 OR annee IS NULL) ";
+                    this.req = $"SELECT idchargeannuelle, nombien, libelle, montantcharge, refFrequence, annee " +
+                        "FROM chargesannuelles NATURAL JOIN bien ";
                     if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
                     {
-                        this.req += $"AND idbien={this.infoBien["id"]} ";
+                        this.req += $"WHERE idbien={this.infoBien["id"]} ";
                     }
                 }
+
                 // Si le bien est un groupe de biens
                 else if (this.infoBien["type"] == "groupe")
                 {
@@ -88,23 +89,40 @@ namespace GestionLocation
                         rdrGroupe.Close();
                     }
                     // Récupère la liste des charges pour le groupe de bien
-                    this.req = "SELECT idchargeannuelle, nombien, libelle, montantcharge, refFrequence, idchargeannuelle FROM chargesannuelles " +
-                        $"NATURAL JOIN bien WHERE (annee = YEAR(NOW()) OR annee = 0 OR annee IS NULL) ";
+                    this.req = "SELECT idchargeannuelle, nombien, libelle, montantcharge, refFrequence, idchargeannuelle, annee " +
+                        "FROM chargesannuelles NATURAL JOIN bien ";
                     if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
                     {
-                        this.req += $"AND idbien IN ({string.Join(",", lesIdBiens.ConvertAll(v => v.ToString()))}) ";
+                        this.req += $"WHERE idbien IN ({string.Join(",", lesIdBiens.ConvertAll(v => v.ToString()))}) ";
                     }
                 }
                 this.req += "ORDER BY libelle, nombien";
+
+                // Exécution de la requête
                 this.command = new MySqlCommand(this.req, Global.Connexion);
                 this.command.Prepare();
                 MySqlDataReader reader = this.command.ExecuteReader();
                 string ligneCharge;
                 while (reader.Read())
                 {
-                    // Remplit la listbox
-                    ligneCharge = $"{reader["nombien"]} || {reader["libelle"]} || Montant : {reader["montantcharge"]} € || Fréquence : {reader["refFrequence"]}";
+                    // Remplit la liste des charges
+                    // Ajoute le nom du bien si la liste concerne un groupe de bien
+                    if (this.infoBien["type"] == "groupe")
+                    {
+                        ligneCharge = $"{reader["nombien"]} || ";
+                    }
+                    else
+                    {
+                        ligneCharge = "";
+                    }
+                    ligneCharge += $"{reader["libelle"]} || Montant : {reader["montantcharge"]} € || Fréquence : {reader["refFrequence"]}";
+                    // Ajoute l'année de la charge si elle est ponctuelle
+                    if (reader["refFrequence"].Equals("Ponctuelle"))
+                    {
+                        ligneCharge += $" ({reader["annee"]})";
+                    }
                     lstCharges.Items.Add(ligneCharge);
+
                     // Remplit le dictionnaire avec le contenu du listbox: idchargesannuelles
                     lesCharges.Add(ligneCharge, reader["idchargeannuelle"].ToString());
                     chargeBien.Add(ligneCharge, reader.GetString(1));
