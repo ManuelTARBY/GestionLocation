@@ -65,7 +65,7 @@ namespace GestionLocation
                 if (this.infoBien["type"] == "bien")
                 {
                     this.req = $"SELECT idchargeannuelle, nombien, libelle, montantcharge, refFrequence FROM chargesannuelles " +
-                        $"NATURAL JOIN bien WHERE (refFrequence != 'Ponctuelle' OR refFrequence = 'Ponctuelle' AND annee = YEAR(NOW())) ";
+                        $"NATURAL JOIN bien WHERE (annee = YEAR(NOW()) OR annee = 0 OR annee IS NULL) ";
                     if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
                     {
                         this.req += $"AND idbien={this.infoBien["id"]} ";
@@ -89,7 +89,7 @@ namespace GestionLocation
                     }
                     // Récupère la liste des charges pour le groupe de bien
                     this.req = "SELECT idchargeannuelle, nombien, libelle, montantcharge, refFrequence, idchargeannuelle FROM chargesannuelles " +
-                        $"NATURAL JOIN bien WHERE (refFrequence != 'Ponctuelle' OR refFrequence = 'Ponctuelle' AND annee = YEAR(NOW())) ";
+                        $"NATURAL JOIN bien WHERE (annee = YEAR(NOW()) OR annee = 0 OR annee IS NULL) ";
                     if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
                     {
                         this.req += $"AND idbien IN ({string.Join(",", lesIdBiens.ConvertAll(v => v.ToString()))}) ";

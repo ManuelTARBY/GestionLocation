@@ -188,7 +188,7 @@ namespace GestionLocation
         }
 
         /// <summary>
-        /// Calcule le montant annuel de la charge en fonction du montant et de la fréquence renseignés
+        /// Calcule le montant annuel de la charge en fonction du montant et de la fréquence renseignée
         /// </summary>
         /// <returns></returns>
         private string CalculerMontantAnnuel()
@@ -201,6 +201,7 @@ namespace GestionLocation
             reader.Read();
             float occurrence = (float)reader["occurrence"];
             reader.Close();
+            // Calcule le montant annuel de la charge
             float totalAnnuel = (occurrence * MontantVirg());
             totalAnnuel = (float)Math.Round(totalAnnuel, 2);
             string annu = totalAnnuel.ToString();
@@ -227,14 +228,14 @@ namespace GestionLocation
 
 
         /// <summary>
-        /// Met à jour la table bien au niveau du montant total des charges annuelles
+        /// Met à jour la table bien au niveau du montant total des charges annuelles et des charges imputables
         /// </summary>
         public void MajChargesDuBien()
         {
             // Calcule la charge annuelle du bien
             float charges = 0;
             this.req = "SELECT SUM(chargeannuelle) AS 'TotalCharges' FROM chargesannuelles " +
-                $"WHERE idbien = {this.infoBien["id"]} AND refFrequence != 'Ponctuelle'";
+                $"WHERE idbien = {this.infoBien["id"]} AND (annee = YEAR(NOW()) OR annee = 0 OR annee IS NULL)";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
@@ -258,7 +259,7 @@ namespace GestionLocation
                 reader.Close();
             }
 
-            // Met à jour la table bien
+            // Met à jour les champs charges annuelles et charges imputables de la table bien
             this.req = $"UPDATE bien SET chargeannuelles = \'{Math.Round(charges)}\', chargesimputables = \'{Math.Round(chImputables / 12)}\' " +
                 $"WHERE idbien = {this.infoBien["id"]}";
             // Exécute la requête

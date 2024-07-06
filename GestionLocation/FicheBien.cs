@@ -631,7 +631,7 @@ namespace GestionLocation
 
 
         /// <summary>
-        /// Remplit les champs LoyerHC, Charges et LoyerCC pour un groupe de biens
+        /// Remplit les champs LoyerHC, Charges, Charges imputables et LoyerCC pour un groupe de biens
         /// </summary>
         public void RemplirLoyerChargeGrpe()
         {
