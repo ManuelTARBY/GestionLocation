@@ -388,7 +388,7 @@ namespace GestionLocation
             // Données sur la location
             RecupLocation();
             // Récupère le dernier indice IRL
-            /*RecupIRL();*/
+            RecupIRL();
             // Récupère la date de souscription d'assurance
             if (this.datas["NomBien"].Substring(0, 7).Equals("Chambre"))
             {

@@ -11,7 +11,7 @@ namespace GestionLocation
 
         private MySqlCommand command;
         private readonly Dictionary<string, string> infoBien;
-        private readonly string idCharge;
+        private string idCharge;
         private string req;
         private readonly string typeReq;
         private readonly ListeCharges fenListeCharges;
@@ -31,13 +31,55 @@ namespace GestionLocation
             if (this.idCharge.Equals("0"))
             {
                 this.typeReq = "INSERT";
+                // Attribution d'un numéro de charge
+                this.req = "SELECT MAX(idchargeannuelle) + 1 AS 'idMaxi' FROM chargesannuelles";
+                this.command = new MySqlCommand(this.req, Global.Connexion);
+                this.command.Prepare();
+                MySqlDataReader reader = this.command.ExecuteReader();
+                reader.Read();
+                this.idCharge = reader["idMaxi"].ToString();
+                reader.Close();
             }
             else
             {
                 this.typeReq = "UPDATE";
+                cobListeBien.Enabled = false;
             }
+            RemplirComboListeBien();
             RemplirComboFreq();
             RemplirChamps();
+        }
+
+        /// <summary>
+        /// Remplit la comboi avec la liste des biens et des groupes de bien
+        /// </summary>
+        public void RemplirComboListeBien()
+        {
+            // Les biens
+            this.req = "SELECT nombien FROM bien ORDER BY nombien";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
+            MySqlDataReader reader = this.command.ExecuteReader();
+            bool finCurseur = !reader.Read();
+            while (!finCurseur)
+            {
+                cobListeBien.Items.Add($"{reader["nombien"]}");
+                finCurseur = !reader.Read();
+            }
+            reader.Close();
+
+            // Les groupes de bien
+            this.req = "SELECT nomdugroupe FROM grpedebiens ORDER BY nomdugroupe";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Prepare();
+            reader = this.command.ExecuteReader();
+            finCurseur = !reader.Read();
+            while (!finCurseur)
+            {
+                cobListeBien.Items.Add($"{reader["nomdugroupe"]}");
+                finCurseur = !reader.Read();
+            }
+            reader.Close();
         }
 
         /// <summary>
@@ -63,11 +105,13 @@ namespace GestionLocation
         /// </summary>
         public void RemplirChamps()
         {
-            txtBien.Text = this.infoBien["nom"];
-            if (this.idCharge.Equals("0"))
+            //txtBien.Text = this.infoBien["nom"];
+            // Si on est dans le cas d'une création
+            if (this.typeReq.Equals("INSERT"))
             {
                 lblID.Text = $"{AttribuerIDCharge()}";
             }
+            // Si on est dans le cas d'une modification
             else
             {
                 lblID.Text = $"{this.idCharge}";
@@ -103,7 +147,8 @@ namespace GestionLocation
         /// </summary>
         public void RecupDonnees()
         {
-            this.req = $"SELECT libelle, montantcharge, refFrequence, imputable, annee FROM chargesannuelles WHERE idchargeannuelle = {this.idCharge}";
+            this.req = "SELECT libelle, montantcharge, refFrequence, imputable, annee, nombien " +
+                $"FROM chargesannuelles NATURAL JOIN bien WHERE idchargeannuelle = {this.idCharge}";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
@@ -122,6 +167,7 @@ namespace GestionLocation
             }
             // Récupère la fréquence de paiement
             cobFrequence.SelectedItem = $"{reader["refFrequence"]}";
+            cobListeBien.SelectedItem = $"{reader["nombien"]}";
             reader.Close();
         }
 
@@ -134,35 +180,89 @@ namespace GestionLocation
         {
             if (VerifChamps())
             {
+                // Récupère l'id du bien
+                List<string> lesId = new List<string>();
+                this.req = $"SELECT idbien, nombien FROM bien WHERE nombien = \'{cobListeBien.SelectedItem}\'";
+                this.command = new MySqlCommand(this.req, Global.Connexion);
+                this.command.Prepare();
+                MySqlDataReader readerBien = this.command.ExecuteReader();
+                if (readerBien.HasRows)
+                {
+                    readerBien.Read();
+                    lesId.Add(readerBien["idbien"].ToString());
+                    this.infoBien["id"] = readerBien["idbien"].ToString();
+                    this.infoBien["nom"] = readerBien["nombien"].ToString();
+                    readerBien.Close();
+                }
+                else
+                {
+                    readerBien.Close();
+                    this.req = "SELECT idbien FROM lignegroupe WHERE idgroupe = " +
+                        $"(SELECT idgroupe FROM grpedebiens WHERE nomdugroupe = \'{cobListeBien.SelectedItem}\')";
+                    this.command = new MySqlCommand(this.req, Global.Connexion);
+                    this.command.Prepare();
+                    MySqlDataReader readerGrpe = this.command.ExecuteReader();
+                    bool finCurseur = !readerGrpe.Read();
+                    while (!finCurseur)
+                    {
+                        lesId.Add(readerGrpe["idbien"].ToString());
+                        finCurseur = !readerGrpe.Read();
+                    }
+                    readerGrpe.Close();
+                }
+
                 // Valeur annuelle de la charge
                 string annu = CalculerMontantAnnuel();
+                try
+                {
+                    annu = (Math.Round(float.Parse(annu.Replace('.', ',')) / lesId.Count,2)).ToString();
+                }
+                catch
+                {
+                    Console.WriteLine("Impossible de convertir le montant annuel en float.");
+                }
 
                 // Prépare la requête d'ajout ou de modification de l'enregistrement de ChargesAnnuelles
-                switch (this.typeReq)
+                string montantCharge = "0";
+                foreach (string id in lesId)
                 {
-                    case "INSERT":
-                        this.req = "INSERT INTO chargesannuelles (idchargeannuelle, idbien, libelle, refFrequence, annee, "+
-                            "montantcharge, chargeannuelle, imputable) "+
-                            $"VALUES ({lblID.Text}, {this.infoBien["id"]}, @libelle, \'{cobFrequence.SelectedItem}\', "+
-                            $"\'{txtAnnee.Text}\', \'{MontantPoint()}\', \'{annu}\', {cbxImputable.Checked})";
-                        break;
-                    case "UPDATE":
-                        this.req = "UPDATE chargesannuelles "+
-                            $"SET idbien = {this.infoBien["id"]}, libelle = @libelle, refFrequence = \'{cobFrequence.SelectedItem}\', "+
-                            $"annee = \'{txtAnnee.Text}\', montantcharge = \'{MontantPoint()}\', chargeannuelle = \'{annu}\', "+
-                            $"imputable = {cbxImputable.Checked} WHERE idchargeannuelle = {this.idCharge}";
-                        break;
-                }
+                    try
+                    {
+                        montantCharge = ((float) Math.Round(float.Parse(txtMontant.Text.Replace('.', ',')) / lesId.Count, 2)).ToString();
+                    }
+                    catch (FormatException)
+                    {
+                        Console.WriteLine("The string is not a valid float.");
+                    }
+                    switch (this.typeReq)
+                    {
+                        case "INSERT":
+                            this.req = "INSERT INTO chargesannuelles (idchargeannuelle, idbien, libelle, refFrequence, annee, " +
+                                "montantcharge, chargeannuelle, imputable) " +
+                                $"VALUES ({this.idCharge}, {id}, @libelle, \'{cobFrequence.SelectedItem}\', " +
+                                $"\'{txtAnnee.Text}\', \'{montantCharge.Replace(',', '.')}\', \'{annu.Replace(',', '.')}\', {cbxImputable.Checked})";
+                            break;
+                        case "UPDATE":
+                            this.req = "UPDATE chargesannuelles "+
+                                $"SET idbien = {id}, libelle = @libelle, refFrequence = \'{cobFrequence.SelectedItem}\', "+
+                                $"annee = \'{txtAnnee.Text}\', montantcharge = \'{montantCharge.Replace(',', '.')}\', chargeannuelle = \'{annu.Replace(',', '.')}\', "+
+                                $"imputable = {cbxImputable.Checked} WHERE idchargeannuelle = {this.idCharge}";
+                            break;
+                    }
                 
-                // Exécute la requête
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                this.command.Parameters.AddWithValue("@libelle", txtLibelle.Text);
-                this.command.Prepare();
-                this.command.ExecuteNonQuery();
-                this.fenListeCharges.RecupListeCharges();
+                    // Exécute la requête
+                    this.command = new MySqlCommand(this.req, Global.Connexion);
+                    this.command.Parameters.AddWithValue("@libelle", txtLibelle.Text);
+                    this.command.Prepare();
+                    this.command.ExecuteNonQuery();
+                    this.fenListeCharges.RecupListeCharges();
 
-                // Met à jour la liste des charges pour le bien
-                MajChargesDuBien();
+                    this.idCharge = (int.Parse(this.idCharge) + 1).ToString();
+
+                    // Met à jour la liste des charges pour le bien
+                    MajChargesDuBien(id);
+                }
+
                 FicheBien laFicheBien = this.fenListeCharges.GetFenFicheBien();
                 if (laFicheBien != null)
                 {
@@ -216,7 +316,7 @@ namespace GestionLocation
         {
             // Cas d'erreur
             bool annee = VerifAnnee();
-            if (txtLibelle.Text.Equals("") || txtMontant.Text.Equals("") || cobFrequence.SelectedItem == null || MontantVirg() == 0 || annee == false)
+            if (txtLibelle.Text.Equals("") || txtMontant.Text.Equals("") || cobFrequence.SelectedItem == null || MontantVirg() == 0 || annee == false || cobListeBien.SelectedItem == null)
             {
                 return false;
             }
@@ -230,12 +330,12 @@ namespace GestionLocation
         /// <summary>
         /// Met à jour la table bien au niveau du montant total des charges annuelles et des charges imputables
         /// </summary>
-        public void MajChargesDuBien()
+        public void MajChargesDuBien(string idBien)
         {
             // Calcule la charge annuelle du bien
             float charges = 0;
             this.req = "SELECT SUM(chargeannuelle) AS 'TotalCharges' FROM chargesannuelles " +
-                $"WHERE idbien = {this.infoBien["id"]} AND (annee = YEAR(NOW()) OR annee = 0)";
+                $"WHERE idbien = {idBien} AND (annee = YEAR(NOW()) OR annee = 0)";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
@@ -261,7 +361,7 @@ namespace GestionLocation
 
             // Met à jour les champs charges annuelles et charges imputables de la table bien
             this.req = $"UPDATE bien SET chargeannuelles = \'{Math.Round(charges)}\', chargesimputables = \'{Math.Round(chImputables / 12)}\' " +
-                $"WHERE idbien = {this.infoBien["id"]}";
+                $"WHERE idbien = {idBien}";
             // Exécute la requête
             this.command = new MySqlCommand(this.req, Global.Connexion);
             // Prépare la requête

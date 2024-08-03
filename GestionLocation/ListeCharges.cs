@@ -96,7 +96,7 @@ namespace GestionLocation
                         this.req += $"WHERE idbien IN ({string.Join(",", lesIdBiens.ConvertAll(v => v.ToString()))}) ";
                     }
                 }
-                this.req += "ORDER BY libelle, nombien";
+                this.req += "ORDER BY libelle, nombien, annee DESC";
 
                 // Exécution de la requête
                 this.command = new MySqlCommand(this.req, Global.Connexion);
@@ -139,12 +139,12 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnAjouter_Click(object sender, EventArgs e)
         {
-            if (lstBiens.SelectedItem == null)
+/*            if (lstBiens.SelectedItem == null)
             {
                 MessageBox.Show("Veuillez sélectionner le bien concerné par la charge.");
                 return;
-            }
-            MajBienSelectionne();
+            }*/
+            // MajBienSelectionne();
             AjoutModifChargeAnnuelle fenCharge = new AjoutModifChargeAnnuelle(this);
             fenCharge.ShowDialog();
         }

@@ -41,10 +41,10 @@ namespace GestionLocation
             this.cbxImputable = new System.Windows.Forms.CheckBox();
             this.btnValider = new System.Windows.Forms.Button();
             this.btnFermer = new System.Windows.Forms.Button();
-            this.txtBien = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.lblAnnee = new System.Windows.Forms.Label();
             this.txtAnnee = new System.Windows.Forms.TextBox();
+            this.cobListeBien = new System.Windows.Forms.ComboBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -102,7 +102,7 @@ namespace GestionLocation
             this.txtMontant.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.txtMontant.Location = new System.Drawing.Point(202, 116);
             this.txtMontant.Name = "txtMontant";
-            this.txtMontant.Size = new System.Drawing.Size(146, 26);
+            this.txtMontant.Size = new System.Drawing.Size(125, 26);
             this.txtMontant.TabIndex = 6;
             // 
             // lblFrequence
@@ -141,9 +141,9 @@ namespace GestionLocation
             // btnValider
             // 
             this.btnValider.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnValider.Location = new System.Drawing.Point(50, 273);
+            this.btnValider.Location = new System.Drawing.Point(71, 273);
             this.btnValider.Name = "btnValider";
-            this.btnValider.Size = new System.Drawing.Size(146, 41);
+            this.btnValider.Size = new System.Drawing.Size(125, 41);
             this.btnValider.TabIndex = 10;
             this.btnValider.Text = "Valider";
             this.btnValider.UseVisualStyleBackColor = true;
@@ -154,21 +154,11 @@ namespace GestionLocation
             this.btnFermer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnFermer.Location = new System.Drawing.Point(202, 273);
             this.btnFermer.Name = "btnFermer";
-            this.btnFermer.Size = new System.Drawing.Size(146, 41);
+            this.btnFermer.Size = new System.Drawing.Size(125, 41);
             this.btnFermer.TabIndex = 11;
             this.btnFermer.Text = "Fermer";
             this.btnFermer.UseVisualStyleBackColor = true;
             this.btnFermer.Click += new System.EventHandler(this.BtnFermer_Click);
-            // 
-            // txtBien
-            // 
-            this.txtBien.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.txtBien.Location = new System.Drawing.Point(202, 40);
-            this.txtBien.Multiline = true;
-            this.txtBien.Name = "txtBien";
-            this.txtBien.ReadOnly = true;
-            this.txtBien.Size = new System.Drawing.Size(193, 25);
-            this.txtBien.TabIndex = 12;
             // 
             // tableLayoutPanel1
             // 
@@ -186,12 +176,12 @@ namespace GestionLocation
             this.tableLayoutPanel1.Controls.Add(this.lblBien, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.lblLibelle, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.txtLibelle, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.txtBien, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.btnValider, 0, 7);
             this.tableLayoutPanel1.Controls.Add(this.btnFermer, 1, 7);
             this.tableLayoutPanel1.Controls.Add(this.cbxImputable, 0, 6);
             this.tableLayoutPanel1.Controls.Add(this.lblAnnee, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.txtAnnee, 1, 5);
+            this.tableLayoutPanel1.Controls.Add(this.cobListeBien, 1, 1);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 8;
@@ -203,7 +193,6 @@ namespace GestionLocation
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(398, 317);
             this.tableLayoutPanel1.TabIndex = 13;
             // 
@@ -224,9 +213,19 @@ namespace GestionLocation
             this.txtAnnee.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.txtAnnee.Location = new System.Drawing.Point(202, 186);
             this.txtAnnee.Name = "txtAnnee";
-            this.txtAnnee.Size = new System.Drawing.Size(146, 26);
+            this.txtAnnee.Size = new System.Drawing.Size(125, 26);
             this.txtAnnee.TabIndex = 14;
             this.txtAnnee.Visible = false;
+            // 
+            // cobListeBien
+            // 
+            this.cobListeBien.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.cobListeBien.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cobListeBien.FormattingEnabled = true;
+            this.cobListeBien.Location = new System.Drawing.Point(202, 39);
+            this.cobListeBien.Name = "cobListeBien";
+            this.cobListeBien.Size = new System.Drawing.Size(193, 28);
+            this.cobListeBien.TabIndex = 15;
             // 
             // AjoutModifChargeAnnuelle
             // 
@@ -256,9 +255,9 @@ namespace GestionLocation
         private System.Windows.Forms.CheckBox cbxImputable;
         private System.Windows.Forms.Button btnValider;
         private System.Windows.Forms.Button btnFermer;
-        private System.Windows.Forms.TextBox txtBien;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label lblAnnee;
         private System.Windows.Forms.TextBox txtAnnee;
+        private System.Windows.Forms.ComboBox cobListeBien;
     }
 }

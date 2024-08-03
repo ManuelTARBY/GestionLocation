@@ -246,12 +246,12 @@ namespace GestionLocation
             if (lstLocations.SelectedItem != null)
             {
                 this.req += $"WHERE loyerregle = False AND idlocation = {this.lesId[lstLocations.SelectedItem.ToString()]} " +
-                    $"ORDER BY periodefacturee";
+                    $"ORDER BY periodefacturee, nombien";
             }
             else
             {
                 this.idLocation = 0;
-                this.req += $"WHERE loyerregle = False ORDER BY periodefacturee";
+                this.req += $"WHERE loyerregle = False ORDER BY periodefacturee, nombien";
             }
             EnvoiReqSelectPaiements();
         }
