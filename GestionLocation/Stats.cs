@@ -230,7 +230,6 @@ namespace GestionLocation
         {
             // Déclarations
             float caAnnuel = 0, caMax = 0, chargesAnnuelles = 0;
-            //float chargesFixes = 0, chargesPonctuelles = 0, chargesAnnuelles = 0, ch = 0, caMax = 0;
 
             // Détermine le CA annuel pour l'année sélectionnée
             this.req = "SELECT SUM(montantpaye) FROM paiement NATURAL JOIN location NATURAL JOIN bien "+
@@ -293,64 +292,23 @@ namespace GestionLocation
         /// <returns>Montant des charges annuelles</returns>
         public float GetChargesAnnuelles(int annee)
         {
-            // Déclarations
-            float ch, chargesFixes = 0, chargesPonctuelles = 0, chargesAnnuelles;
-            MySqlDataReader reader;
+            // Déclaration
+            float ch = 0;
             
             // Charges fixes
             foreach (int bien in this.bienSelectionne)
             {
                 // Récupère les charges fixes de l'année pour le bien
                 this.req = "SELECT COALESCE(SUM(chargeannuelle), 0) FROM chargesannuelles " +
-                    $"WHERE refFrequence != 'Ponctuelle' AND idbien = {bien}";
+                    $"WHERE idbien = {bien} AND annee = {annee}";
                 this.command = new MySqlCommand(this.req, Global.Connexion);
                 this.command.Prepare();
-                reader = this.command.ExecuteReader();
+                MySqlDataReader reader = this.command.ExecuteReader();
                 reader.Read();
-                ch = reader.GetFloat(0);
-                reader.Close();
-
-                // S'il s'agit de la première année d'exploitation, faire un prorata des charges annuelles
-                // Récupère la date de la première mise en location
-                this.req = $"SELECT MIN(debutlocation) AS 'premiereloc' FROM location WHERE idbien = {bien}";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                this.command.Prepare();
-                reader = this.command.ExecuteReader();
-                reader.Read();
-                string moisDebutExploit = reader["premiereloc"].ToString();
-                reader.Close();
-
-                // Calcule le prorata de charges et l'additionne au total des charges fixes
-                if (annee == int.Parse(moisDebutExploit.Substring(6, 4)))
-                {
-                    chargesFixes += ch / 12 * (13 - int.Parse(moisDebutExploit.Substring(0, 2)));
-                }
-                else if (annee < int.Parse(moisDebutExploit.Substring(6, 4)))
-                {
-                    chargesFixes += 0;
-                }
-                else
-                {
-                    chargesFixes += ch;
-                }
-            }
-
-            // Charges ponctuelles
-            foreach (int bien in this.bienSelectionne)
-            {
-                this.req = "SELECT COALESCE(SUM(chargeannuelle), 0) FROM chargesannuelles " +
-                    $"WHERE refFrequence = 'Ponctuelle' AND annee = {annee} AND idbien = {bien}";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                this.command.Prepare();
-                reader = this.command.ExecuteReader();
-                reader.Read();
-                chargesPonctuelles += reader.GetFloat(0);
+                ch += reader.GetFloat(0);
                 reader.Close();
             }
-
-            // Calcule le total annuel
-            chargesAnnuelles = chargesFixes + chargesPonctuelles;
-            return chargesAnnuelles;
+            return ch;
         }
     }
 

@@ -170,6 +170,7 @@ namespace GestionLocation
             this.lblID.Name = "lblID";
             this.lblID.Size = new System.Drawing.Size(0, 20);
             this.lblID.TabIndex = 54;
+            this.lblID.Visible = false;
             // 
             // txtNom
             // 

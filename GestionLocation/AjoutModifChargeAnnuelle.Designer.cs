@@ -57,6 +57,7 @@ namespace GestionLocation
             this.lblID.Size = new System.Drawing.Size(38, 20);
             this.lblID.TabIndex = 0;
             this.lblID.Text = "ID : ";
+            this.lblID.Visible = false;
             // 
             // lblBien
             // 
@@ -95,7 +96,7 @@ namespace GestionLocation
             this.txtLibelle.Multiline = true;
             this.txtLibelle.Name = "txtLibelle";
             this.txtLibelle.Size = new System.Drawing.Size(193, 25);
-            this.txtLibelle.TabIndex = 5;
+            this.txtLibelle.TabIndex = 2;
             // 
             // txtMontant
             // 
@@ -103,7 +104,7 @@ namespace GestionLocation
             this.txtMontant.Location = new System.Drawing.Point(202, 116);
             this.txtMontant.Name = "txtMontant";
             this.txtMontant.Size = new System.Drawing.Size(125, 26);
-            this.txtMontant.TabIndex = 6;
+            this.txtMontant.TabIndex = 3;
             // 
             // lblFrequence
             // 
@@ -123,8 +124,7 @@ namespace GestionLocation
             this.cobFrequence.Location = new System.Drawing.Point(202, 151);
             this.cobFrequence.Name = "cobFrequence";
             this.cobFrequence.Size = new System.Drawing.Size(193, 28);
-            this.cobFrequence.TabIndex = 8;
-            this.cobFrequence.SelectedIndexChanged += new System.EventHandler(this.CobFrequence_SelectedIndexChanged);
+            this.cobFrequence.TabIndex = 4;
             // 
             // cbxImputable
             // 
@@ -134,7 +134,7 @@ namespace GestionLocation
             this.cbxImputable.Location = new System.Drawing.Point(36, 221);
             this.cbxImputable.Name = "cbxImputable";
             this.cbxImputable.Size = new System.Drawing.Size(160, 24);
-            this.cbxImputable.TabIndex = 9;
+            this.cbxImputable.TabIndex = 6;
             this.cbxImputable.Text = "Charge imputable";
             this.cbxImputable.UseVisualStyleBackColor = true;
             // 
@@ -144,7 +144,7 @@ namespace GestionLocation
             this.btnValider.Location = new System.Drawing.Point(71, 273);
             this.btnValider.Name = "btnValider";
             this.btnValider.Size = new System.Drawing.Size(125, 41);
-            this.btnValider.TabIndex = 10;
+            this.btnValider.TabIndex = 7;
             this.btnValider.Text = "Valider";
             this.btnValider.UseVisualStyleBackColor = true;
             this.btnValider.Click += new System.EventHandler(this.BtnValider_Click);
@@ -155,7 +155,7 @@ namespace GestionLocation
             this.btnFermer.Location = new System.Drawing.Point(202, 273);
             this.btnFermer.Name = "btnFermer";
             this.btnFermer.Size = new System.Drawing.Size(125, 41);
-            this.btnFermer.TabIndex = 11;
+            this.btnFermer.TabIndex = 8;
             this.btnFermer.Text = "Fermer";
             this.btnFermer.UseVisualStyleBackColor = true;
             this.btnFermer.Click += new System.EventHandler(this.BtnFermer_Click);
@@ -206,7 +206,6 @@ namespace GestionLocation
             this.lblAnnee.TabIndex = 13;
             this.lblAnnee.Text = "Année";
             this.lblAnnee.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.lblAnnee.Visible = false;
             // 
             // txtAnnee
             // 
@@ -214,8 +213,7 @@ namespace GestionLocation
             this.txtAnnee.Location = new System.Drawing.Point(202, 186);
             this.txtAnnee.Name = "txtAnnee";
             this.txtAnnee.Size = new System.Drawing.Size(125, 26);
-            this.txtAnnee.TabIndex = 14;
-            this.txtAnnee.Visible = false;
+            this.txtAnnee.TabIndex = 5;
             // 
             // cobListeBien
             // 
@@ -225,7 +223,7 @@ namespace GestionLocation
             this.cobListeBien.Location = new System.Drawing.Point(202, 39);
             this.cobListeBien.Name = "cobListeBien";
             this.cobListeBien.Size = new System.Drawing.Size(193, 28);
-            this.cobListeBien.TabIndex = 15;
+            this.cobListeBien.TabIndex = 1;
             // 
             // AjoutModifChargeAnnuelle
             // 

@@ -65,10 +65,10 @@ namespace GestionLocation
                 if (this.infoBien["type"] == "bien")
                 {
                     this.req = $"SELECT idchargeannuelle, nombien, libelle, montantcharge, refFrequence, annee " +
-                        "FROM chargesannuelles NATURAL JOIN bien ";
+                        "FROM chargesannuelles NATURAL JOIN bien WHERE annee = YEAR(CURDATE()) ";
                     if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
                     {
-                        this.req += $"WHERE idbien={this.infoBien["id"]} ";
+                        this.req += $"AND idbien={this.infoBien["id"]} ";
                     }
                 }
 
@@ -90,10 +90,10 @@ namespace GestionLocation
                     }
                     // Récupère la liste des charges pour le groupe de bien
                     this.req = "SELECT idchargeannuelle, nombien, libelle, montantcharge, refFrequence, idchargeannuelle, annee " +
-                        "FROM chargesannuelles NATURAL JOIN bien ";
+                        "FROM chargesannuelles NATURAL JOIN bien WHERE annee = YEAR(CURDATE()) ";
                     if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
                     {
-                        this.req += $"WHERE idbien IN ({string.Join(",", lesIdBiens.ConvertAll(v => v.ToString()))}) ";
+                        this.req += $"AND idbien IN ({string.Join(",", lesIdBiens.ConvertAll(v => v.ToString()))}) ";
                     }
                 }
                 this.req += "ORDER BY libelle, nombien, annee DESC";
@@ -116,11 +116,6 @@ namespace GestionLocation
                         ligneCharge = "";
                     }
                     ligneCharge += $"{reader["libelle"]} || Montant : {reader["montantcharge"]} € || Fréquence : {reader["refFrequence"]}";
-                    // Ajoute l'année de la charge si elle est ponctuelle
-                    if (reader["refFrequence"].Equals("Ponctuelle"))
-                    {
-                        ligneCharge += $" ({reader["annee"]})";
-                    }
                     lstCharges.Items.Add(ligneCharge);
 
                     // Remplit le dictionnaire avec le contenu du listbox: idchargesannuelles

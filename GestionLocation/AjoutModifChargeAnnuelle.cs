@@ -215,7 +215,7 @@ namespace GestionLocation
                 string annu = CalculerMontantAnnuel();
                 try
                 {
-                    annu = (Math.Round(float.Parse(annu.Replace('.', ',')) / lesId.Count,2)).ToString();
+                    annu = (Math.Round(float.Parse(annu.Replace('.', ',')) / lesId.Count, 2)).ToString();
                 }
                 catch
                 {
@@ -335,7 +335,7 @@ namespace GestionLocation
             // Calcule la charge annuelle du bien
             float charges = 0;
             this.req = "SELECT SUM(chargeannuelle) AS 'TotalCharges' FROM chargesannuelles " +
-                $"WHERE idbien = {idBien} AND (annee = YEAR(NOW()) OR annee = 0)";
+                $"WHERE idbien = {idBien} AND annee = YEAR(NOW())";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
@@ -360,7 +360,9 @@ namespace GestionLocation
             }
 
             // Met à jour les champs charges annuelles et charges imputables de la table bien
-            this.req = $"UPDATE bien SET chargeannuelles = \'{Math.Round(charges)}\', chargesimputables = \'{Math.Round(chImputables / 12)}\' " +
+            string chImput = ((float)Math.Round(chImputables/12, 2)).ToString();
+            chImput = chImput.Replace(',', '.');
+            this.req = $"UPDATE bien SET chargeannuelles = \'{Math.Round(charges)}\', chargesimputables = \'{chImput}\' " +
                 $"WHERE idbien = {idBien}";
             // Exécute la requête
             this.command = new MySqlCommand(this.req, Global.Connexion);
@@ -377,8 +379,8 @@ namespace GestionLocation
         /// <returns>true si l'année est correcte, sinon false</returns>
         public bool VerifAnnee()
         {
-            if (cobFrequence.SelectedItem.Equals("Ponctuelle"))
-            {
+/*            if (cobFrequence.SelectedItem.Equals("Ponctuelle"))
+            {*/
                 if (int.TryParse(txtAnnee.Text, out _))
                 {
                     return true;
@@ -387,11 +389,11 @@ namespace GestionLocation
                 {
                     return false;
                 }
-            }
+/*            }
             else
             {
                 return true;
-            }
+            }*/
         }
 
 
@@ -445,7 +447,7 @@ namespace GestionLocation
         }
 
 
-        /// <summary>
+/*        /// <summary>
         /// Gère les changements de fréquences
         /// </summary>
         /// <param name="sender"></param>
@@ -454,6 +456,6 @@ namespace GestionLocation
         {
             txtAnnee.Visible = cobFrequence.SelectedItem.Equals("Ponctuelle");
             lblAnnee.Visible = cobFrequence.SelectedItem.Equals("Ponctuelle");
-        }
+        }*/
     }
 }

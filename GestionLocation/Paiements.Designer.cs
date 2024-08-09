@@ -137,6 +137,7 @@ namespace GestionLocation
             this.btnEnvoyerQuittance.TabIndex = 7;
             this.btnEnvoyerQuittance.Text = "Envoyer quittance";
             this.btnEnvoyerQuittance.UseVisualStyleBackColor = true;
+            this.btnEnvoyerQuittance.Visible = false;
             this.btnEnvoyerQuittance.Click += new System.EventHandler(this.BtnEnvoyerQuittance_Click);
             // 
             // tableLayoutPanel1
