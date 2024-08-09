@@ -1,4 +1,9 @@
-﻿/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
@@ -26,7 +31,7 @@ CREATE TABLE bien (
   chargesimputables float(13,2) DEFAULT NULL,
   chargeannuelles int DEFAULT NULL,
   bienarchive tinyint(1) DEFAULT NULL,
-  typehabitat varchar(21) COLLATE utf8mb4_unicode_ci NOT NULL,
+  typehabitat varchar(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   regimejuridique varchar(14) COLLATE utf8mb4_unicode_ci NOT NULL,
   periodeconstruction varchar(4) COLLATE utf8mb4_unicode_ci NOT NULL,
   superficie varchar(8) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -34,8 +39,8 @@ CREATE TABLE bien (
   description text COLLATE utf8mb4_unicode_ci NOT NULL,
   elementequip text COLLATE utf8mb4_unicode_ci NOT NULL,
   autre text COLLATE utf8mb4_unicode_ci NOT NULL,
-  prodchauff varchar(12) COLLATE utf8mb4_unicode_ci NOT NULL,
-  prodeauchaude varchar(12) COLLATE utf8mb4_unicode_ci NOT NULL
+  prodchauff varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  prodeauchaude varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -57,13 +62,6 @@ CREATE TABLE caution (
   emailcaution varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   cautionarchivee tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Déchargement des données de la table caution
---
-
-INSERT INTO caution (idcaution, prenomcaution, nomcaution, nomcompletcaution, adressecaution, cpcaution, villecaution, telephonecaution, emailcaution, cautionarchivee) VALUES
-(1, '(Action Logement)', 'VISALE', 'VISALE (Action Logement)', '19/21 quai d\'Austerlitz', '75013', 'Paris', '09 70 80 08 00', '', 0);
 
 -- --------------------------------------------------------
 
@@ -102,6 +100,7 @@ CREATE TABLE frequencepaiement (
 INSERT INTO frequencepaiement (libelle, occurrence) VALUES
 ('10x par an', 10),
 ('11x par an', 11),
+('3x par an', 3),
 ('Annuelle', 1),
 ('Bimensuelle', 6),
 ('Hebdomadaire', 52),
@@ -218,6 +217,28 @@ CREATE TABLE utilisateur (
   signature varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Doublure de structure pour la vue v_ca_annuel
+-- (Voir ci-dessous la vue réelle)
+--
+DROP VIEW IF EXISTS `v_ca_annuel`;
+CREATE TABLE `v_ca_annuel` (
+`Année` int
+,`CA` double(19,2)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la vue v_ca_annuel
+--
+DROP TABLE IF EXISTS `v_ca_annuel`;
+
+DROP VIEW IF EXISTS v_ca_annuel;
+CREATE ALGORITHM=UNDEFINED DEFINER=root@localhost SQL SECURITY DEFINER VIEW v_ca_annuel  AS SELECT year(paiement.periodefacturee) AS `Année`, sum(paiement.montantpaye) AS `CA` FROM ((paiement join location on((paiement.idlocation = location.idlocation))) join bien on((location.idbien = bien.idbien))) WHERE (bien.nombien = 'Maison 4') GROUP BY year(paiement.periodefacturee) ORDER BY year(paiement.periodefacturee) ASC  ;
+
 --
 -- Index pour les tables déchargées
 --
@@ -226,7 +247,8 @@ CREATE TABLE utilisateur (
 -- Index pour la table bien
 --
 ALTER TABLE bien
-  ADD PRIMARY KEY (idbien);
+  ADD PRIMARY KEY (idbien),
+  ADD UNIQUE KEY nombien (nombien);
 
 --
 -- Index pour la table caution
