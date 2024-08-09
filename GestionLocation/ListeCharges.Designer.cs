@@ -42,17 +42,20 @@ namespace GestionLocation
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.cobAnnee = new System.Windows.Forms.ComboBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblNomBien
             // 
             this.lblNomBien.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblNomBien.AutoSize = true;
-            this.lblNomBien.Location = new System.Drawing.Point(3, 70);
+            this.lblNomBien.Location = new System.Drawing.Point(3, 19);
             this.lblNomBien.Name = "lblNomBien";
             this.lblNomBien.Size = new System.Drawing.Size(51, 20);
             this.lblNomBien.TabIndex = 0;
@@ -121,7 +124,7 @@ namespace GestionLocation
             this.lstBiens.ItemHeight = 20;
             this.lstBiens.Location = new System.Drawing.Point(3, 3);
             this.lstBiens.Name = "lstBiens";
-            this.lstBiens.Size = new System.Drawing.Size(181, 144);
+            this.lstBiens.Size = new System.Drawing.Size(181, 124);
             this.lstBiens.TabIndex = 5;
             // 
             // btnFiltrer
@@ -129,9 +132,9 @@ namespace GestionLocation
             this.btnFiltrer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnFiltrer.Location = new System.Drawing.Point(3, 153);
+            this.btnFiltrer.Location = new System.Drawing.Point(3, 142);
             this.btnFiltrer.Name = "btnFiltrer";
-            this.btnFiltrer.Size = new System.Drawing.Size(181, 45);
+            this.btnFiltrer.Size = new System.Drawing.Size(181, 41);
             this.btnFiltrer.TabIndex = 6;
             this.btnFiltrer.Text = "Filtrer";
             this.btnFiltrer.UseVisualStyleBackColor = true;
@@ -158,14 +161,14 @@ namespace GestionLocation
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.lblNomBien, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel4, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel5, 0, 1);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 70F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 65F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(776, 303);
             this.tableLayoutPanel1.TabIndex = 8;
             // 
@@ -179,11 +182,11 @@ namespace GestionLocation
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.lstCharges, 0, 0);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 93);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 108);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(770, 207);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(770, 192);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // tableLayoutPanel3
@@ -200,7 +203,7 @@ namespace GestionLocation
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 75F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(187, 201);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(187, 186);
             this.tableLayoutPanel3.TabIndex = 2;
             // 
             // tableLayoutPanel4
@@ -224,6 +227,33 @@ namespace GestionLocation
             this.tableLayoutPanel4.Size = new System.Drawing.Size(770, 54);
             this.tableLayoutPanel4.TabIndex = 1;
             // 
+            // tableLayoutPanel5
+            // 
+            this.tableLayoutPanel5.ColumnCount = 2;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 75F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel5.Controls.Add(this.lblNomBien, 0, 0);
+            this.tableLayoutPanel5.Controls.Add(this.cobAnnee, 1, 0);
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 63);
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.RowCount = 1;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(770, 39);
+            this.tableLayoutPanel5.TabIndex = 2;
+            // 
+            // cobAnnee
+            // 
+            this.cobAnnee.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cobAnnee.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cobAnnee.FormattingEnabled = true;
+            this.cobAnnee.Location = new System.Drawing.Point(580, 3);
+            this.cobAnnee.Name = "cobAnnee";
+            this.cobAnnee.Size = new System.Drawing.Size(187, 28);
+            this.cobAnnee.TabIndex = 1;
+            this.cobAnnee.SelectedIndexChanged += new System.EventHandler(this.ChangerAnneeCharge);
+            // 
             // ListeCharges
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -234,10 +264,11 @@ namespace GestionLocation
             this.Name = "ListeCharges";
             this.Text = "ListeCharges";
             this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel5.ResumeLayout(false);
+            this.tableLayoutPanel5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -256,5 +287,7 @@ namespace GestionLocation
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
+        private System.Windows.Forms.ComboBox cobAnnee;
     }
 }

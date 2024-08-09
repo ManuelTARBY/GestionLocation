@@ -41,7 +41,7 @@ namespace GestionLocation
         /// </summary>
         public void AfficheTitre()
         {
-            string titre = "Liste des charges";
+            string titre = $"Liste des charges {cobAnnee.SelectedItem}";
             if (this.infoBien.ContainsKey("nom") && this.infoBien["nom"] != null)
             {
                 titre += $" - {this.infoBien["nom"].ToUpper()}";
@@ -65,7 +65,8 @@ namespace GestionLocation
                 if (this.infoBien["type"] == "bien")
                 {
                     this.req = $"SELECT idchargeannuelle, nombien, libelle, montantcharge, refFrequence, annee " +
-                        "FROM chargesannuelles NATURAL JOIN bien WHERE annee = YEAR(CURDATE()) ";
+                        $"FROM chargesannuelles NATURAL JOIN bien WHERE annee = {cobAnnee.SelectedItem} ";
+                     //$"FROM chargesannuelles NATURAL JOIN bien WHERE annee = YEAR(CURDATE()) ";
                     if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
                     {
                         this.req += $"AND idbien={this.infoBien["id"]} ";
@@ -328,10 +329,52 @@ namespace GestionLocation
             }
             else
             {
+                MajComboAnnee();
                 MajBienSelectionne();
                 RecupListeCharges();
                 AfficheTitre();
             }
+        }
+
+
+        /// <summary>
+        /// Met à jour la liste des charges lorsqu'on change l'année
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ChangerAnneeCharge(object sender, EventArgs e)
+        {
+            MajBienSelectionne();
+            RecupListeCharges();
+            AfficheTitre();
+        }
+
+
+        /// <summary>
+        /// Met à jour la liste des années pour le bien sélectionné
+        /// </summary>
+        private void MajComboAnnee()
+        {
+            // Récupère les années de début et de fin d'exploitation
+            int anneeMini, anneeMaxi;
+            cobAnnee.Items.Clear();
+            this.req = "SELECT MIN(YEAR(paiement.periodefacturee)) AS 'AnneeMini', " +
+                "MAX(YEAR(paiement.periodefacturee)) AS 'AnneeMaxi' " +
+                "FROM paiement NATURAL JOIN location NATURAL JOIN bien " +
+                $"WHERE bien.nombien = \"{lstBiens.SelectedItem}\" and montantpaye != 0";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            MySqlDataReader reader = this.command.ExecuteReader();
+            reader.Read();
+            anneeMini = reader.GetInt32(0);
+            anneeMaxi = reader.GetInt32(1);
+            reader.Close();
+
+            // Remplit la combobox des années
+            for (int i = anneeMini; i <= anneeMaxi; i++)
+            {
+                cobAnnee.Items.Add(i);
+            }
+            cobAnnee.SelectedIndex = cobAnnee.Items.Count - 1;
         }
 
 
