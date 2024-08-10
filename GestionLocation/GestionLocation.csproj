@@ -368,7 +368,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icone GL.ico" />
-    <Content Include="ReqCreationTables.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\DataSources\" />

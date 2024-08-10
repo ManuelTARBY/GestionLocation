@@ -229,6 +229,9 @@ namespace GestionLocation
             // 
             // tableLayoutPanel5
             // 
+            this.tableLayoutPanel5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel5.ColumnCount = 2;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 75F));
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
@@ -243,12 +246,11 @@ namespace GestionLocation
             // 
             // cobAnnee
             // 
-            this.cobAnnee.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.cobAnnee.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cobAnnee.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cobAnnee.FormattingEnabled = true;
-            this.cobAnnee.Location = new System.Drawing.Point(580, 3);
+            this.cobAnnee.Location = new System.Drawing.Point(580, 8);
             this.cobAnnee.Name = "cobAnnee";
             this.cobAnnee.Size = new System.Drawing.Size(187, 28);
             this.cobAnnee.TabIndex = 1;
