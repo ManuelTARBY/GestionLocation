@@ -41,10 +41,25 @@ namespace GestionLocation
         /// </summary>
         public void AfficheTitre()
         {
-            string titre = $"Liste des charges {cobAnnee.SelectedItem}";
+            string titre = "";
             if (this.infoBien.ContainsKey("nom") && this.infoBien["nom"] != null)
             {
-                titre += $" - {this.infoBien["nom"].ToUpper()}";
+                titre = $"{this.infoBien["nom"].ToUpper()} - ";
+            }
+
+            titre += $"Liste des charges {cobAnnee.SelectedItem}";
+
+            // Récupère les charges totales pour l'année
+            if (this.infoBien.ContainsKey("id"))
+            {
+                this.req = "SELECT SUM(chargeannuelle) FROM chargesannuelles " +
+                    $"WHERE idbien = {this.infoBien["id"]} and annee = {cobAnnee.SelectedItem}";
+                this.command = new MySqlCommand(this.req, Global.Connexion);
+                MySqlDataReader reader = this.command.ExecuteReader();
+                reader.Read();
+                titre += " - Total = " + Math.Round(reader.GetFloat(0), 2) + "€";
+                reader.Close();
+
             }
             lblNomBien.Text = titre;
         }
@@ -129,18 +144,12 @@ namespace GestionLocation
 
 
         /// <summary>
-        /// Gère le clic sur le bouton Ajouter
+        /// Ouvre la fenêtre d'AjoutModifChargeAnnuelle pour ajout
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void BtnAjouter_Click(object sender, EventArgs e)
         {
-/*            if (lstBiens.SelectedItem == null)
-            {
-                MessageBox.Show("Veuillez sélectionner le bien concerné par la charge.");
-                return;
-            }*/
-            // MajBienSelectionne();
             AjoutModifChargeAnnuelle fenCharge = new AjoutModifChargeAnnuelle(this);
             fenCharge.ShowDialog();
         }
