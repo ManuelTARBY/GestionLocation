@@ -7,6 +7,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 using Word = Microsoft.Office.Interop.Word;
@@ -257,7 +258,7 @@ namespace GestionLocation
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void BtnValider_Click(object sender, EventArgs e)
+        private async void BtnValider_ClickAsync(object sender, EventArgs e)
         {
             if (ChampsRenseignes())
             {
@@ -285,7 +286,7 @@ namespace GestionLocation
                 if (this.typeReq.Equals("INSERT INTO"))
                 {
                     // Génère le bail de location
-                    GenererBail(lesId);
+                    await GenererBailAsync(lesId);
                 }
                 // Ferme la fenêtre
                 this.Dispose();
@@ -296,10 +297,10 @@ namespace GestionLocation
         /// <summary>
         /// Génère le bail de location
         /// </summary>
-        public void GenererBail(string[] lesId)
+        public async Task GenererBailAsync(string[] lesId)
         {
             // Récupère les données à insérer dans le bail
-            RecupDatas(lesId);
+            await RecupDatasAsync(lesId);
 
             string type = "";
             if (this.datas["TypeHabitat"].Equals("Chambre en colocation"))
@@ -377,7 +378,7 @@ namespace GestionLocation
         /// <summary>
         /// Récupère toutes les infos pour construire le bail
         /// </summary>
-        public void RecupDatas(string[] lesId)
+        public async Task RecupDatasAsync(string[] lesId)
         {
             // Données du locataire
             RecupLocataire(lesId[1]);
@@ -388,7 +389,7 @@ namespace GestionLocation
             // Données sur la location
             RecupLocation();
             // Récupère le dernier indice IRL
-            //RecupIRL();
+            await RecupIRLAsync();
             // Récupère la date de souscription d'assurance
             if (this.datas["NomBien"].Substring(0, 7).Equals("Chambre"))
             {
@@ -400,13 +401,13 @@ namespace GestionLocation
         /// <summary>
         /// Récupère le dernier indice IRL
         /// </summary>
-        public void RecupIRL()
+        public async Task RecupIRLAsync()
         {
 
             bool resultat = true;
 
             // Récupère un jeton si l'ancien date de moins de 7 jours
-            if (DateTime.Now > Global.dateBearerToken.AddSeconds(604300) )
+            if (DateTime.Now > Global.dateBearerToken.AddSeconds(604300))
             {
                 resultat = RecupJetonAPIInsee();
             }
@@ -425,33 +426,62 @@ namespace GestionLocation
                 client.DefaultRequestHeaders.AcceptEncoding.Clear();
                 client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
 
-                // Envoie une requête GET à l'URL
                 try
                 {
-                    HttpResponseMessage httpResponse = client.GetAsync(uri).GetAwaiter().GetResult();
+                    // Envoie la requête GET de manière asynchrone
+                    HttpResponseMessage httpResponse = await client.GetAsync(uri);
 
                     if (httpResponse.IsSuccessStatusCode)
                     {
-                        Stream responseStream = httpResponse.Content.ReadAsStreamAsync().GetAwaiter().GetResult();
-                        // Décompresse le contenu gzip
-                        using (GZipStream gzipStream = new GZipStream(responseStream, CompressionMode.Decompress))
-                        using (StreamReader reader = new StreamReader(gzipStream))
-                        {
-                            string response = reader.ReadToEndAsync().GetAwaiter().GetResult();
+                        Stream responseStream = await httpResponse.Content.ReadAsStreamAsync();
 
-                            // Charger le XML dans un XmlDocument
-                            XmlDocument xmlDoc = new XmlDocument();
-                            xmlDoc.LoadXml(response);
-                            XmlNodeList elements = xmlDoc.GetElementsByTagName("Obs");
-                            foreach (XmlNode elt in elements)
+                        // Vérifie si le contenu est compressé
+                        if (httpResponse.Content.Headers.ContentEncoding.Contains("gzip"))
+                        {
+                            // Décompresse le contenu gzip
+                            using (GZipStream gzipStream = new GZipStream(responseStream, CompressionMode.Decompress))
+                            using (StreamReader reader = new StreamReader(gzipStream))
                             {
-                                // Accéder aux éléments des IRL
-                                if (!elt.Attributes["DATE_JO"].Value.Equals(""))
+                                string response = await reader.ReadToEndAsync();
+
+                                // Charger le XML dans un XmlDocument
+                                XmlDocument xmlDoc = new XmlDocument();
+                                xmlDoc.LoadXml(response);
+                                XmlNodeList elements = xmlDoc.GetElementsByTagName("Obs");
+                                foreach (XmlNode elt in elements)
                                 {
-                                    string period = elt.Attributes["TIME_PERIOD"].Value;
-                                    string valeur = elt.Attributes["OBS_VALUE"].Value;
-                                    this.datas.Add("IRL", valeur + " (" + period.Replace("Q", "T") + ")");
-                                    break;
+                                    // Accéder aux éléments des IRL
+                                    if (!string.IsNullOrEmpty(elt.Attributes["DATE_JO"]?.Value))
+                                    {
+                                        string period = elt.Attributes["TIME_PERIOD"].Value;
+                                        string valeur = elt.Attributes["OBS_VALUE"].Value;
+                                        this.datas.Add("IRL", $"{valeur} ({period.Replace("Q", "T")})");
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // Lire directement si le contenu n'est pas compressé
+                            using (StreamReader reader = new StreamReader(responseStream))
+                            {
+                                string response = await reader.ReadToEndAsync();
+
+                                // Charger le XML dans un XmlDocument
+                                XmlDocument xmlDoc = new XmlDocument();
+                                xmlDoc.LoadXml(response);
+                                XmlNodeList elements = xmlDoc.GetElementsByTagName("Obs");
+                                foreach (XmlNode elt in elements)
+                                {
+                                    // Accéder aux éléments des IRL
+                                    if (!string.IsNullOrEmpty(elt.Attributes["DATE_JO"]?.Value))
+                                    {
+                                        string period = elt.Attributes["TIME_PERIOD"].Value;
+                                        string valeur = elt.Attributes["OBS_VALUE"].Value;
+                                        this.datas.Add("IRL", $"{valeur} ({period.Replace("Q", "T")})");
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -464,7 +494,7 @@ namespace GestionLocation
                 }
                 catch (HttpRequestException err)
                 {
-                    MessageBox.Show("Une erreur s'est produite lors de la récupération de l'IRL via l'API de l'INSEE. " + err.Message);
+                    MessageBox.Show($"Une erreur s'est produite lors de la récupération de l'IRL via l'API de l'INSEE : {err.Message}");
                 }
             }
         }

@@ -181,7 +181,7 @@ namespace GestionLocation
             this.btnValider.TabIndex = 34;
             this.btnValider.Text = "Valider";
             this.btnValider.UseVisualStyleBackColor = true;
-            this.btnValider.Click += new System.EventHandler(this.BtnValider_Click);
+            this.btnValider.Click += new System.EventHandler(this.BtnValider_ClickAsync);
             // 
             // lblBiens
             // 
