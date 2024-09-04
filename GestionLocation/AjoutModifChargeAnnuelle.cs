@@ -105,16 +105,9 @@ namespace GestionLocation
         /// </summary>
         public void RemplirChamps()
         {
-            //txtBien.Text = this.infoBien["nom"];
-            // Si on est dans le cas d'une création
-            if (this.typeReq.Equals("INSERT"))
-            {
-                lblID.Text = $"{AttribuerIDCharge()}";
-            }
             // Si on est dans le cas d'une modification
-            else
+            if (this.typeReq.Equals("UPDATE"))
             {
-                lblID.Text = $"{this.idCharge}";
                 RecupDonnees();
             }
         }
@@ -445,17 +438,5 @@ namespace GestionLocation
         {
             this.Dispose();
         }
-
-
-/*        /// <summary>
-        /// Gère les changements de fréquences
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CobFrequence_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            txtAnnee.Visible = cobFrequence.SelectedItem.Equals("Ponctuelle");
-            lblAnnee.Visible = cobFrequence.SelectedItem.Equals("Ponctuelle");
-        }*/
     }
 }

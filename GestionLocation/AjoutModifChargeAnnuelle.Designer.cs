@@ -30,7 +30,6 @@ namespace GestionLocation
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AjoutModifChargeAnnuelle));
-            this.lblID = new System.Windows.Forms.Label();
             this.lblBien = new System.Windows.Forms.Label();
             this.lblMontant = new System.Windows.Forms.Label();
             this.lblLibelle = new System.Windows.Forms.Label();
@@ -42,28 +41,17 @@ namespace GestionLocation
             this.btnValider = new System.Windows.Forms.Button();
             this.btnFermer = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.cobListeBien = new System.Windows.Forms.ComboBox();
             this.lblAnnee = new System.Windows.Forms.Label();
             this.txtAnnee = new System.Windows.Forms.TextBox();
-            this.cobListeBien = new System.Windows.Forms.ComboBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // lblID
-            // 
-            this.lblID.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.lblID.AutoSize = true;
-            this.lblID.Location = new System.Drawing.Point(158, 7);
-            this.lblID.Name = "lblID";
-            this.lblID.Size = new System.Drawing.Size(38, 20);
-            this.lblID.TabIndex = 0;
-            this.lblID.Text = "ID : ";
-            this.lblID.Visible = false;
             // 
             // lblBien
             // 
             this.lblBien.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblBien.AutoSize = true;
-            this.lblBien.Location = new System.Drawing.Point(155, 43);
+            this.lblBien.Location = new System.Drawing.Point(171, 11);
             this.lblBien.Name = "lblBien";
             this.lblBien.Size = new System.Drawing.Size(41, 20);
             this.lblBien.TabIndex = 2;
@@ -73,17 +61,17 @@ namespace GestionLocation
             // 
             this.lblMontant.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblMontant.AutoSize = true;
-            this.lblMontant.Location = new System.Drawing.Point(128, 119);
+            this.lblMontant.Location = new System.Drawing.Point(121, 123);
             this.lblMontant.Name = "lblMontant";
-            this.lblMontant.Size = new System.Drawing.Size(68, 20);
+            this.lblMontant.Size = new System.Drawing.Size(91, 20);
             this.lblMontant.TabIndex = 3;
-            this.lblMontant.Text = "Montant";
+            this.lblMontant.Text = "Montant (€)";
             // 
             // lblLibelle
             // 
-            this.lblLibelle.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.lblLibelle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblLibelle.AutoSize = true;
-            this.lblLibelle.Location = new System.Drawing.Point(142, 81);
+            this.lblLibelle.Location = new System.Drawing.Point(158, 42);
             this.lblLibelle.Name = "lblLibelle";
             this.lblLibelle.Size = new System.Drawing.Size(54, 20);
             this.lblLibelle.TabIndex = 4;
@@ -91,17 +79,16 @@ namespace GestionLocation
             // 
             // txtLibelle
             // 
-            this.txtLibelle.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.txtLibelle.Location = new System.Drawing.Point(202, 78);
+            this.txtLibelle.Location = new System.Drawing.Point(218, 45);
             this.txtLibelle.Multiline = true;
             this.txtLibelle.Name = "txtLibelle";
-            this.txtLibelle.Size = new System.Drawing.Size(193, 25);
+            this.txtLibelle.Size = new System.Drawing.Size(209, 64);
             this.txtLibelle.TabIndex = 2;
             // 
             // txtMontant
             // 
             this.txtMontant.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.txtMontant.Location = new System.Drawing.Point(202, 116);
+            this.txtMontant.Location = new System.Drawing.Point(218, 120);
             this.txtMontant.Name = "txtMontant";
             this.txtMontant.Size = new System.Drawing.Size(125, 26);
             this.txtMontant.TabIndex = 3;
@@ -110,7 +97,7 @@ namespace GestionLocation
             // 
             this.lblFrequence.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblFrequence.AutoSize = true;
-            this.lblFrequence.Location = new System.Drawing.Point(110, 155);
+            this.lblFrequence.Location = new System.Drawing.Point(126, 165);
             this.lblFrequence.Name = "lblFrequence";
             this.lblFrequence.Size = new System.Drawing.Size(86, 20);
             this.lblFrequence.TabIndex = 7;
@@ -121,9 +108,9 @@ namespace GestionLocation
             this.cobFrequence.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.cobFrequence.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cobFrequence.FormattingEnabled = true;
-            this.cobFrequence.Location = new System.Drawing.Point(202, 151);
+            this.cobFrequence.Location = new System.Drawing.Point(218, 161);
             this.cobFrequence.Name = "cobFrequence";
-            this.cobFrequence.Size = new System.Drawing.Size(193, 28);
+            this.cobFrequence.Size = new System.Drawing.Size(209, 28);
             this.cobFrequence.TabIndex = 4;
             // 
             // cbxImputable
@@ -131,7 +118,7 @@ namespace GestionLocation
             this.cbxImputable.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.cbxImputable.AutoSize = true;
             this.cbxImputable.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.cbxImputable.Location = new System.Drawing.Point(36, 221);
+            this.cbxImputable.Location = new System.Drawing.Point(52, 247);
             this.cbxImputable.Name = "cbxImputable";
             this.cbxImputable.Size = new System.Drawing.Size(160, 24);
             this.cbxImputable.TabIndex = 6;
@@ -141,7 +128,7 @@ namespace GestionLocation
             // btnValider
             // 
             this.btnValider.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnValider.Location = new System.Drawing.Point(71, 273);
+            this.btnValider.Location = new System.Drawing.Point(87, 310);
             this.btnValider.Name = "btnValider";
             this.btnValider.Size = new System.Drawing.Size(125, 41);
             this.btnValider.TabIndex = 7;
@@ -152,7 +139,7 @@ namespace GestionLocation
             // btnFermer
             // 
             this.btnFermer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnFermer.Location = new System.Drawing.Point(202, 273);
+            this.btnFermer.Location = new System.Drawing.Point(218, 310);
             this.btnFermer.Name = "btnFermer";
             this.btnFermer.Size = new System.Drawing.Size(125, 41);
             this.btnFermer.TabIndex = 8;
@@ -168,39 +155,47 @@ namespace GestionLocation
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.cobFrequence, 1, 4);
-            this.tableLayoutPanel1.Controls.Add(this.lblFrequence, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.txtMontant, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.lblMontant, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.lblID, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.lblBien, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.lblLibelle, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.txtLibelle, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.btnValider, 0, 7);
-            this.tableLayoutPanel1.Controls.Add(this.btnFermer, 1, 7);
-            this.tableLayoutPanel1.Controls.Add(this.cbxImputable, 0, 6);
-            this.tableLayoutPanel1.Controls.Add(this.lblAnnee, 0, 5);
-            this.tableLayoutPanel1.Controls.Add(this.txtAnnee, 1, 5);
-            this.tableLayoutPanel1.Controls.Add(this.cobListeBien, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.lblBien, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.cobListeBien, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.lblLibelle, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.lblMontant, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.txtMontant, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.lblFrequence, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.cobFrequence, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.lblAnnee, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.txtAnnee, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.cbxImputable, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.btnValider, 0, 6);
+            this.tableLayoutPanel1.Controls.Add(this.btnFermer, 1, 6);
+            this.tableLayoutPanel1.Controls.Add(this.txtLibelle, 1, 1);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 8;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11F));
+            this.tableLayoutPanel1.RowCount = 7;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(398, 317);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(430, 354);
             this.tableLayoutPanel1.TabIndex = 13;
+            // 
+            // cobListeBien
+            // 
+            this.cobListeBien.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.cobListeBien.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cobListeBien.FormattingEnabled = true;
+            this.cobListeBien.Location = new System.Drawing.Point(218, 7);
+            this.cobListeBien.Name = "cobListeBien";
+            this.cobListeBien.Size = new System.Drawing.Size(209, 28);
+            this.cobListeBien.TabIndex = 1;
             // 
             // lblAnnee
             // 
             this.lblAnnee.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblAnnee.AutoSize = true;
-            this.lblAnnee.Location = new System.Drawing.Point(140, 189);
+            this.lblAnnee.Location = new System.Drawing.Point(156, 207);
             this.lblAnnee.Name = "lblAnnee";
             this.lblAnnee.Size = new System.Drawing.Size(56, 20);
             this.lblAnnee.TabIndex = 13;
@@ -210,26 +205,16 @@ namespace GestionLocation
             // txtAnnee
             // 
             this.txtAnnee.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.txtAnnee.Location = new System.Drawing.Point(202, 186);
+            this.txtAnnee.Location = new System.Drawing.Point(218, 204);
             this.txtAnnee.Name = "txtAnnee";
             this.txtAnnee.Size = new System.Drawing.Size(125, 26);
             this.txtAnnee.TabIndex = 5;
-            // 
-            // cobListeBien
-            // 
-            this.cobListeBien.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.cobListeBien.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cobListeBien.FormattingEnabled = true;
-            this.cobListeBien.Location = new System.Drawing.Point(202, 39);
-            this.cobListeBien.Name = "cobListeBien";
-            this.cobListeBien.Size = new System.Drawing.Size(193, 28);
-            this.cobListeBien.TabIndex = 1;
             // 
             // AjoutModifChargeAnnuelle
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(422, 341);
+            this.ClientSize = new System.Drawing.Size(454, 378);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "AjoutModifChargeAnnuelle";
@@ -241,8 +226,6 @@ namespace GestionLocation
         }
 
         #endregion
-
-        private System.Windows.Forms.Label lblID;
         private System.Windows.Forms.Label lblBien;
         private System.Windows.Forms.Label lblMontant;
         private System.Windows.Forms.Label lblLibelle;

@@ -345,7 +345,7 @@ namespace GestionLocation
         public void GestionQuittance(string idPaiement)
         {
             GénérerQuittance(idPaiement);
-            EnvoyerQuittance();
+            //EnvoyerQuittance();
         }
 
 

@@ -376,6 +376,7 @@ namespace GestionLocation
             this.ClientSize = new System.Drawing.Size(929, 438);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MinimumSize = new System.Drawing.Size(951, 494);
             this.Name = "Locations";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Locations";
