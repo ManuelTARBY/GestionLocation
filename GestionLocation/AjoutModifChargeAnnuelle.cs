@@ -173,7 +173,7 @@ namespace GestionLocation
         {
             if (VerifChamps())
             {
-                // Récupère l'id du bien
+                // Récupère l'id du bien ou du groupe de biens
                 List<string> lesId = new List<string>();
                 this.req = $"SELECT idbien, nombien FROM bien WHERE nombien = \'{cobListeBien.SelectedItem}\'";
                 this.command = new MySqlCommand(this.req, Global.Connexion);

@@ -218,6 +218,7 @@ namespace GestionLocation
                     {
                         this.fenFicheBien.RemplirChamps();
                     }
+                    AfficheTitre();
                 }
             }
         }
@@ -245,7 +246,7 @@ namespace GestionLocation
             float charges = 0;
             this.req = "SELECT SUM(chargeannuelle) AS 'TotalCharges' FROM chargesannuelles WHERE idbien = " +
                 $"(SELECT idbien FROM bien WHERE nombien = '{chargeBien[lstCharges.SelectedItem.ToString()]}') " +
-                "AND refFrequence != 'Ponctuelle'";
+                $"AND annee = '{DateTime.Now.Year}'";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             if (reader.HasRows)
@@ -263,13 +264,13 @@ namespace GestionLocation
             if (reader.HasRows)
             {
                 reader.Read();
-                chImputables = float.Parse(reader["TotalCharges"].ToString());
+                chImputables = reader.GetFloat(0);
                 reader.Close();
             }
 
             // Met à jour la table bien
             this.req = $"UPDATE bien SET chargeannuelles = \'{Math.Round(charges, 2)}\', " +
-                $"chargesimputables = \'{Math.Round(chImputables / 12, 2)}\' WHERE idbien = {this.infoBien["id"]}";
+                $"chargesimputables = \'{Math.Round(chImputables / 12, 2).ToString().Replace(',', '.')}\' WHERE idbien = {this.infoBien["id"]}";
             // Exécute la requête
             ExecuteReqIUD();
         }
