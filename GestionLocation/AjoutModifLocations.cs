@@ -287,10 +287,70 @@ namespace GestionLocation
                 {
                     // Génère le bail de location
                     await GenererBailAsync(lesId);
+                    // Génère les états des lieux
+                    GenererEtatDesLieux();
                 }
                 // Ferme la fenêtre
                 this.Dispose();
             }
+        }
+
+
+        /// <summary>
+        /// Génère les états des lieux d'entrée et l'inventaire du mobilier
+        /// </summary>
+        public void GenererEtatDesLieux()
+        {
+            // Crée l'état des lieux d'entrée
+            string etatDesLieuxModele = Environment.CurrentDirectory + $"/Baux/État des lieux " + this.datas["NomBien"].ToLower() + ".docx";
+            string etatDesLieuxDestination = $"C:\\Users\\Don_F\\OneDrive\\Bureau\\État des lieux {this.datas["NomBien"]} - {lstLocataires.SelectedItem}.docx";
+            File.Copy(etatDesLieuxModele, etatDesLieuxDestination, true);
+
+            // Remplit l'état des lieux d'entrée
+            // Création d'une application Word
+            Word.Application wordApp = new Word.Application
+            {
+                Visible = false
+            };
+            Word.Document etatDesLieux = wordApp.Documents.Open(etatDesLieuxDestination);
+
+            // Insertion des données dans le document
+            Word.Find find = wordApp.Selection.Find;
+            foreach (KeyValuePair<string, string> data in datas)
+            {
+                find.Text = $"%{data.Key}%";
+                find.Replacement.Text = data.Value;
+                find.Execute(Replace: Word.WdReplace.wdReplaceAll);
+            }
+
+            // Sauvegarde/fermeture du document
+            etatDesLieux.Save();
+            etatDesLieux.Close();
+            wordApp.Quit();
+
+            // Crée l'inventaire du mobilier
+            string inventaireMobilierModele = Environment.CurrentDirectory + $"/Baux/Inventaire mobilier " + this.datas["NomBien"].ToLower() + ".docx";
+            string inventaireMobilierDestination = $"C:\\Users\\Don_F\\OneDrive\\Bureau\\Inventaire du mobilier {this.datas["NomBien"]} - {lstLocataires.SelectedItem}.docx";
+            File.Copy(inventaireMobilierModele, inventaireMobilierDestination, true);
+
+            // Remplit l'état des lieux d'entrée
+            // Création d'une application Word
+            Word.Application wordAppDeux = new Word.Application
+            {
+                Visible = false
+            };
+            Word.Document inventaireMobilier = wordAppDeux.Documents.Open(inventaireMobilierDestination);
+
+            // Insertion des données dans le document
+            find = wordAppDeux.Selection.Find;
+            find.Text = "%DebLoc%";
+            find.Replacement.Text = this.datas["DebLoc"];
+            find.Execute(Replace: Word.WdReplace.wdReplaceAll);
+
+            // Sauvegarde/fermeture du document
+            inventaireMobilier.Save();
+            inventaireMobilier.Close();
+            wordAppDeux.Quit();
         }
 
 
@@ -395,7 +455,29 @@ namespace GestionLocation
             {
                 RecupAssurance();
             }
+            // Répertoire où enregistrer les documents
+            //CreerRepertoireEnr();
         }
+
+
+        /// <summary>
+        /// Vérifie/crée le répertoire dans lequel seront enregistrer les documents de la location
+        /// </summary>
+       /* public void CreerRepertoireEnr()
+        {
+            // Détermine le répertoire dans lequel se trouve le répertoire du locataire
+            string cheminRepertoireSource;
+            // Répertoire colocation
+            if (this.datas["NomBien"].Contains("Chambre"))
+            {
+                cheminRepertoireSource = "";
+            }
+            // Répertoire location
+            else
+            {
+                cheminRepertoireSource = "";
+            }
+        }*/
 
 
         /// <summary>

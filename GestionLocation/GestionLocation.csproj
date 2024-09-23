@@ -367,7 +367,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DonneesPerso.txt" />
     <Content Include="Icone GL.ico" />
+    <None Include=".gitignore" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\DataSources\" />
