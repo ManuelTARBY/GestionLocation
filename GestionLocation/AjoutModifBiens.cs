@@ -226,8 +226,8 @@ namespace GestionLocation
         private void ConstruitReqModif()
         {
             this.req = $"{this.typeReq} bien SET ";
-            this.req += $"idbien = {this.id}, nombien = @nombien, loyerHC = \"{txtLoyerHC.Text}\", " +
-                $"charges = \"{txtCharges.Text}\", loyerCC = \"{txtLoyerCC.Text}\", adressebien = @adresse, " +
+            this.req += $"idbien = {this.id}, nombien = @nombien, loyerHC = \"{txtLoyerHC.Text.Replace(',', '.')}\", " +
+                $"charges = \"{txtCharges.Text.Replace(',', '.')}\", loyerCC = \"{txtLoyerCC.Text.Replace(',', '.')}\", adressebien = @adresse, " +
                 $"cpbien = \"{txtCp.Text}\", villebien = @laville, bienarchive = {cbxArchive.Checked}, " +
                 $"typehabitat = \"{cbxTypeHabitat.SelectedItem}\", regimejuridique = \"{cbxRegimeJuri.SelectedItem}\", " +
                 $"periodeconstruction = \"{txtPerConstruc.Text}\", superficie = \"{txtSuperficie.Text}\", " +
@@ -247,8 +247,8 @@ namespace GestionLocation
             {
                 this.req += $"{rubBiens[i]}, ";
             }
-            this.req += $"{rubBiens[rubBiens.Length-1]}) VALUES ({this.id}, @nombien, \"{txtLoyerHC.Text}\", \"{txtCharges.Text}\", " +
-                $"\"{txtLoyerCC.Text}\", @adresse, \"{txtCp.Text}\", @laville, {cbxArchive.Checked}, " +
+            this.req += $"{rubBiens[rubBiens.Length-1]}) VALUES ({this.id}, @nombien, \"{txtLoyerHC.Text.Replace(',', '.')}\", \"{txtCharges.Text.Replace(',', '.')}\", " +
+                $"\"{txtLoyerCC.Text.Replace(',', '.')}\", @adresse, \"{txtCp.Text}\", @laville, {cbxArchive.Checked}, " +
                 $"\"{cbxTypeHabitat.SelectedItem}\", \"{cbxRegimeJuri.SelectedItem}\", \"{txtPerConstruc.Text}\", \"{txtSuperficie.Text}\", " +
                 $"\"{txtNbPiece.Text}\", @description, @eltequipement, @autre, \"{cbxProdChauff.SelectedItem}\", \"{cbxProdEauChaude.SelectedItem}\")";
         }
