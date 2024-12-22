@@ -124,7 +124,7 @@ namespace GestionLocation
 
                 }
                 // Construit la requête de mise à jour
-                this.req = $"UPDATE paiement SET datepaiement = \'{datPaiement.Value:yyyy-MM-dd}\', montantpaye = \'{txtMontantPaye.Text}\', " +
+                this.req = $"UPDATE paiement SET datepaiement = \'{datPaiement.Value:yyyy-MM-dd}\', montantpaye = \'{txtMontantPaye.Text.Replace(',', '.')}\', " +
                     $"resteapayer = \'{resteAPayer.Replace(',', '.')}\', loyerregle = {loyerregle} WHERE idpaiement = {this.idPaiement}";
                 // Exécute la requête d'enregistrement du paiement
                 this.command = new MySqlCommand(this.req, Global.Connexion);
