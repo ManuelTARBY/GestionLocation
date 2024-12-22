@@ -692,14 +692,6 @@ namespace GestionLocation
         /// </summary>
         public void RecupLocation()
         {
-            if (this.datas["NomCaution"].Equals("VISALE"))
-            {
-                this.datas.Add("DepotGarantie", "0");
-            }
-            else
-            {
-                this.datas.Add("DepotGarantie", this.datas["LoyerHC"]);
-            }
             this.datas.Add("DebLoc", $"{datDebut.Value:dd/MM/yyyy}");
             this.datas.Add("FinLoc", $"{datFin.Value:dd/MM/yyyy}");
             double diffDate = (datFin.Value - datDebut.Value).TotalDays + 1;
@@ -719,6 +711,24 @@ namespace GestionLocation
                 {
                     this.datas.Add("NbMoisDepGarantie", "1");
                 }
+            }
+            // Montant du dépôt de garantie
+            if (float.TryParse(this.datas["LoyerHC"], out float resultLoyerHC))
+            {
+                if (float.TryParse(this.datas["NbMoisDepGarantie"], out float resultNbMoisDepGarantie))
+                {
+                    this.datas.Add("DepotGarantie", (resultLoyerHC * resultNbMoisDepGarantie).ToString());
+                }
+                else
+                {
+                    Console.WriteLine("Le montant du dépôt de garantie n'a pas pu être généré.");
+                    this.datas.Add("DepotGarantie", "");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Le montant du dépôt de garantie n'a pas pu être généré.");
+                this.datas.Add("DepotGarantie", "");
             }
         }
 
