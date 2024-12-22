@@ -721,13 +721,13 @@ namespace GestionLocation
                 }
                 else
                 {
-                    Console.WriteLine("Le montant du dépôt de garantie n'a pas pu être généré.");
+                    MessageBox.Show("Une erreur s'est produite.", "Le montant du dépôt de garantie n'a pas pu être généré.", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     this.datas.Add("DepotGarantie", "");
                 }
             }
             else
             {
-                Console.WriteLine("Le montant du dépôt de garantie n'a pas pu être généré.");
+                MessageBox.Show("Une erreur s'est produite.", "Le montant du dépôt de garantie n'a pas pu être généré.", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.datas.Add("DepotGarantie", "");
             }
         }
