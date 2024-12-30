@@ -80,7 +80,9 @@ namespace GestionLocation
         private void BtnLocations_Click(object sender, EventArgs e)
         {
             Locations location = new Locations(this);
+            this.Visible = false;
             location.ShowDialog();
+            this.Visible = true;
         }
 
         
@@ -103,7 +105,9 @@ namespace GestionLocation
         private void BtnBiens_Click(object sender, EventArgs e)
         {
             Biens bien = new Biens();
+            this.Visible = false;
             bien.ShowDialog();
+            this.Visible = true;
         }
 
         /// <summary>
@@ -196,7 +200,9 @@ namespace GestionLocation
         private void BtnLocataires_Click(object sender, EventArgs e)
         {
             Locataires locataire = new Locataires();
+            this.Visible = false;
             locataire.ShowDialog();
+            this.Visible = true;
         }
 
         /// <summary>
@@ -227,7 +233,9 @@ namespace GestionLocation
         private void BtnCautions_Click(object sender, EventArgs e)
         {
             Cautions fenCaution = new Cautions();
+            this.Visible = false;
             fenCaution.ShowDialog();
+            this.Visible = true;
         }
 
         /// <summary>
@@ -258,7 +266,9 @@ namespace GestionLocation
         private void BtnCharges_Click(object sender, EventArgs e)
         {
             ListeCharges fenCharges = new ListeCharges(this);
+            this.Visible = false;
             fenCharges.ShowDialog();
+            this.Visible = true;
         }
 
 
@@ -302,7 +312,9 @@ namespace GestionLocation
         private void BtnPaiements_Click(object sender, EventArgs e)
         {
             Paiements fenPaiements = new Paiements(this);
+            this.Visible = false;
             fenPaiements.ShowDialog();
+            this.Visible = true;
         }
 
 
@@ -365,7 +377,9 @@ namespace GestionLocation
         private void BtnDatas_Click(object sender, EventArgs e)
         {
             Stats fenStats = new Stats();
+            this.Visible = false;
             fenStats.ShowDialog();
+            this.Visible = true;
         }
 
 
@@ -403,7 +417,9 @@ namespace GestionLocation
         private void BtnGroupes_Click(object sender, EventArgs e)
         {
             GroupesDeBiens fenGroupes = new GroupesDeBiens();
+            this.Visible = false;
             fenGroupes.ShowDialog();
+            this.Visible = true;
         }
 
 
