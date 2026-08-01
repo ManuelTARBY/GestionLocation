@@ -89,7 +89,8 @@ GestionLocation/
 ├── Connexion.cs                  # Authentification (connexion technique + applicative)
 ├── Accueil.cs                    # Fenêtre principale après connexion
 ├── AjoutModifUtilisateurs.cs     # Création / modification d'un utilisateur
-├── UtilisateurDTO.cs             # DTO représentant un utilisateur
+├── DTO/
+│   └── UtilisateurDTO.cs         # DTO représentant un utilisateur (namespace GestionLocation.DTO)
 ├── Locations.cs                  # Gestion des locations
 ├── Locataires.cs                 # Gestion des locataires
 ├── Biens.cs                      # Gestion des biens
