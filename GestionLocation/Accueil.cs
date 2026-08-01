@@ -1,7 +1,7 @@
-﻿using MySql.Data.MySqlClient;
+﻿using GestionLocation.DTO;
+using MySql.Data.MySqlClient;
 using System;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace GestionLocation
@@ -24,29 +24,34 @@ namespace GestionLocation
             this.fenConnexion = fenConnexion;
             this.idUser = this.fenConnexion.GetIdUser();
             Global.Connexion = this.fenConnexion.GetConnexion();
+
+            AbonnerEffetsSurvol();
+
             RecupInfoUser();
             AfficherLocations();
         }
 
-
         /// <summary>
-        /// Met à jour les données sur la session email de l'utilisateur
+        /// Met à jour les données sur la session (email, SMTP...) de l'utilisateur connecté
         /// </summary>
         private void RecupInfoUser()
         {
-            string req = $"SELECT * FROM utilisateur WHERE iduser={this.idUser}";
-            this.command = new MySqlCommand(req, Global.Connexion);
-            this.command.Prepare();
-            MySqlDataReader reader = this.command.ExecuteReader();
-            reader.Read();
-            Global.User = $"{reader.GetString(3)} {reader.GetString(4)}";
-            Global.EmailUser = $"{reader.GetString(8)}";
-            Global.PwdUser = $"{reader.GetString(9)}";
-            Global.ServeurSmtp = $"{reader.GetString(10)}";
-            Global.PortEmail = (int)reader["port"];
-            reader.Close();
-        }
+            const string req = "SELECT prenomuser, nomuser, emailuser, pwdemail, adresseserveursmtp, port " +
+                                "FROM utilisateur WHERE iduser = @idUser";
 
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@idUser", this.idUser);
+
+            using var reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                Global.User = $"{reader.GetString("prenomuser")} {reader.GetString("nomuser")}";
+                Global.EmailUser = reader.GetString("emailuser");
+                Global.PwdUser = reader.GetString("pwdemail");
+                Global.ServeurSmtp = reader.GetString("adresseserveursmtp");
+                Global.PortEmail = reader.GetInt32("port");
+            }
+        }
 
         /// <summary>
         /// Met à jour la liste des locations en fonction des critères sélectionnés par l'utilisateur
@@ -54,22 +59,29 @@ namespace GestionLocation
         public void AfficherLocations()
         {
             lstLocations.Items.Clear();
-            this.req = "SELECT nombien, CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', nomlocataire) AS 'locataire', "+
-                "debutlocation, finlocation, CONCAT(SUBSTRING_INDEX(prenomcaution, ',', 1), ' ', nomcaution) AS 'caution' " +
-                "FROM location JOIN locataire USING(idlocataire) JOIN bien USING(idbien) JOIN caution USING(idcaution)"+
-                "WHERE locationarchivee = 0 ORDER BY nombien";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            this.command.Prepare();
-            MySqlDataReader reader = this.command.ExecuteReader();
-            bool finCurseur = !reader.Read();
-            while (!finCurseur)
+
+            const string req =
+                "SELECT nombien, " +
+                "CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', nomlocataire) AS locataire, " +
+                "debutlocation, finlocation, " +
+                "CONCAT(SUBSTRING_INDEX(prenomcaution, ',', 1), ' ', nomcaution) AS caution " +
+                "FROM location " +
+                "JOIN locataire USING(idlocataire) " +
+                "JOIN bien USING(idbien) " +
+                "JOIN caution USING(idcaution) " +
+                "WHERE locationarchivee = 0 " +
+                "ORDER BY nombien";
+
+            using var command = new MySqlCommand(req, Global.Connexion);
+            using var reader = command.ExecuteReader();
+
+            while (reader.Read())
             {
-                // affichage des champs récupérés dans la ligne
-                lstLocations.Items.Add($"{reader["nombien"]} || {reader["locataire"]} "+
-                    $" || Du {reader.GetDateTime(2):d} au {reader.GetDateTime(3):d} || Caution : {reader["caution"]}");
-                finCurseur = !reader.Read();
+                lstLocations.Items.Add(
+                    $"{reader["nombien"]} || {reader["locataire"]} " +
+                    $" || Du {reader.GetDateTime("debutlocation"):d} au {reader.GetDateTime("finlocation"):d} " +
+                    $"|| Caution : {reader["caution"]}");
             }
-            reader.Close();
         }
 
         /// <summary>
@@ -93,8 +105,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnFermerAppli_Click(object sender, EventArgs e)
         {
-            Global.Connexion.Close();
-            Application.Exit();
+            FermerApplication();
         }
 
         /// <summary>
@@ -108,26 +119,6 @@ namespace GestionLocation
             this.Visible = false;
             bien.ShowDialog();
             this.Visible = true;
-        }
-
-        /// <summary>
-        /// Gère le survol du bouton Biens
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnBiens_MouseEnter(object sender, EventArgs e)
-        {
-            SurvolEntree((Button) sender);
-        }
-
-        /// <summary>
-        /// Gère la sortie de survol du bouton Biens
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnBiens_MouseLeave(object sender, EventArgs e)
-        {
-            SurvolSortie((Button) sender);
         }
 
         /// <summary>
@@ -153,46 +144,6 @@ namespace GestionLocation
         }
 
         /// <summary>
-        /// Gère le survol du bouton Locations
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnLocations_MouseEnter(object sender, EventArgs e)
-        {
-            SurvolEntree((Button)sender);
-        }
-
-        /// <summary>
-        /// Gère la sortie de survol du bouton Locations
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnLocations_MouseLeave(object sender, EventArgs e)
-        {
-            SurvolSortie((Button)sender);
-        }
-
-        /// <summary>
-        /// Gère le survol du bouton Locataires
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnLocataires_MouseEnter(object sender, EventArgs e)
-        {
-            SurvolEntree((Button)sender);
-        }
-
-        /// <summary>
-        /// Gère la sortie de survol du bouton Locataires
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnLocataires_MouseLeave(object sender, EventArgs e)
-        {
-            SurvolSortie((Button)sender);
-        }
-
-        /// <summary>
         /// Gère le clic sur le bouton Locataires
         /// </summary>
         /// <param name="sender"></param>
@@ -203,26 +154,6 @@ namespace GestionLocation
             this.Visible = false;
             locataire.ShowDialog();
             this.Visible = true;
-        }
-
-        /// <summary>
-        /// Gère le survol du bouton Cautions
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnCautions_MouseEnter(object sender, EventArgs e)
-        {
-            SurvolEntree((Button)sender);
-        }
-
-        /// <summary>
-        /// Gère la sortie de survol du bouton Cautions
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnCautions_MouseLeave(object sender, EventArgs e)
-        {
-            SurvolSortie((Button)sender);
         }
 
         /// <summary>
@@ -239,26 +170,6 @@ namespace GestionLocation
         }
 
         /// <summary>
-        /// Gère le survol du bouton Charges
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnCharges_MouseEnter(object sender, EventArgs e)
-        {
-            SurvolEntree((Button)sender);
-        }
-
-        /// <summary>
-        /// Gère la sortie de survol du bouton Charges
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnCharges_MouseLeave(object sender, EventArgs e)
-        {
-            SurvolSortie((Button)sender);
-        }
-
-        /// <summary>
         /// Gère l'ouverture de la fenêtre de la liste des charges
         /// </summary>
         /// <param name="sender"></param>
@@ -271,7 +182,6 @@ namespace GestionLocation
             this.Visible = true;
         }
 
-
         /// <summary>
         /// Renvoie l'instance de la connexion Sql
         /// </summary>
@@ -281,28 +191,40 @@ namespace GestionLocation
             return Global.Connexion;
         }
 
+        /// <summary>
+        /// Abonne tous les boutons du menu principal aux mêmes handlers génériques
+        /// de survol (au lieu d'un handler dédié par bouton).
+        /// </summary>
+        private void AbonnerEffetsSurvol()
+        {
+            Button[] boutonsAvecSurvol =
+            {
+                btnBiens, btnLocations, btnLocataires, btnCautions,
+                btnCharges, btnPaiements, btnUser, btnGroupes,btnStats
+            };
+
+            foreach (Button bouton in boutonsAvecSurvol)
+            {
+                bouton.MouseEnter += Bouton_MouseEnter;
+                bouton.MouseLeave += Bouton_MouseLeave;
+            }
+        }
 
         /// <summary>
-        /// Gère le survol du bouton Paiements
+        /// Gère le survol de n'importe quel bouton du menu principal
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnPaiements_MouseEnter(object sender, EventArgs e)
+        private void Bouton_MouseEnter(object sender, EventArgs e)
         {
             SurvolEntree((Button)sender);
         }
 
-
         /// <summary>
-        /// Gère la sortie de survol du bouton Paiements
+        /// Gère la sortie de survol de n'importe quel bouton du menu principal
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnPaiements_MouseLeave(object sender, EventArgs e)
+        private void Bouton_MouseLeave(object sender, EventArgs e)
         {
             SurvolSortie((Button)sender);
         }
-
 
         /// <summary>
         /// Ouvre la fenêtre des Paiements
@@ -329,47 +251,6 @@ namespace GestionLocation
 
 
         /// <summary>
-        /// Gère le survol du bouton Utilisateur
-        /// </summary>
-        /// <param name="sender">Bouton survolé</param>
-        /// <param name="e"></param>
-        private void BtnUser_MouseEnter(object sender, EventArgs e)
-        {
-            SurvolEntree((Button)sender);
-        }
-
-
-        /// <summary>
-        /// Gère la sortie de survol du bouton Utilisateur
-        /// </summary>
-        /// <param name="sender">Bouton concerné</param>
-        /// <param name="e"></param>
-        private void BtnUser_MouseLeave(object sender, EventArgs e)
-        {
-            SurvolSortie((Button)sender);
-        }
-
-        /// <summary>
-        /// Gère le survol du bouton Groupes
-        /// </summary>
-        /// <param name="sender">Bouton survolé</param>
-        /// <param name="e"></param>
-        private void BtnGroupes_MouseEnter(object sender, EventArgs e)
-        {
-            SurvolEntree((Button)sender);
-        }
-
-        /// <summary>
-        /// Gère la sortie de survol du bouton Groupes
-        /// </summary>
-        /// <param name="sender">Bouton concerné</param>
-        /// <param name="e"></param>
-        private void BtnGroupes_MouseLeave(object sender, EventArgs e)
-        {
-            SurvolSortie((Button)sender);
-        }
-
-        /// <summary>
         /// Ouvre la fenêtre AjoutModifUtilisateurs
         /// </summary>
         /// <param name="sender"></param>
@@ -382,31 +263,53 @@ namespace GestionLocation
             this.Visible = true;
         }
 
-
         /// <summary>
-        /// Récupère dans un tableau les infos concernant l'utilisateur à partir de son ID
+        /// Récupère les infos d'un utilisateur sous forme de DTO
         /// </summary>
         /// <param name="idUser">ID de l'utilisateur</param>
-        /// <returns>Tableau contenant les infos sur l'utilisateur</returns>
-        public string[] RecupInfosUser(string idUser)
+        /// <returns>UtilisateurDTO, ou null si l'utilisateur n'existe pas</returns>
+        public UtilisateurDTO RecupInfosUser(string idUser)
         {
-            string[] infos = new string[14];
-            infos[1] = idUser;
-            string req = $"SELECT * FROM utilisateur WHERE iduser = {this.idUser}";
-            this.command = new MySqlCommand(req, Global.Connexion);
-            this.command.Prepare();
-            MySqlDataReader reader = this.command.ExecuteReader();
-            reader.Read();
-            for (int i = 1; i < infos.Length - 1; i++)
+            const string req =
+                "SELECT login, pwd, prenomuser, nomuser, adresseuser, cpuser, villeuser, " +
+                "emailuser, pwdemail, adresseserveursmtp, port, clientid, clientsecret, signature " +
+                "FROM utilisateur WHERE iduser = @idUser";
+
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@idUser", idUser);
+
+            using var reader = command.ExecuteReader();
+            if (!reader.Read())
             {
-                infos[i + 1] = reader.GetString(i);
+                return null;
             }
-            if (!reader["signature"].ToString().Equals(""))
+
+            var utilisateur = new UtilisateurDTO
             {
-                infos[13] = $"{Environment.CurrentDirectory}/ Signature /{ infos[3]} {infos[4]}.png";
+                IdUser = int.Parse(idUser),
+                Login = reader.GetString("login"),
+                Pwd = reader.GetString("pwd"),
+                Prenom = reader.GetString("prenomuser"),
+                Nom = reader.GetString("nomuser"),
+                Adresse = reader.GetString("adresseuser"),
+                CodePostal = reader.GetString("cpuser"),
+                Ville = reader.GetString("villeuser"),
+                Email = reader.GetString("emailuser"),
+                PwdEmail = reader.GetString("pwdemail"),
+                ServeurSmtp = reader.GetString("adresseserveursmtp"),
+                Port = reader.GetInt32("port"),
+                ClientId = reader.GetString("clientid"),
+                ClientSecret = reader.GetString("clientsecret")
+            };
+
+            int ordSignature = reader.GetOrdinal("signature");
+            if (!reader.IsDBNull(ordSignature) && reader.GetString("signature") != "")
+            {
+                utilisateur.CheminSignature =
+                    $"{Environment.CurrentDirectory}/Signature/{utilisateur.Prenom} {utilisateur.Nom}.png";
             }
-            reader.Close();
-            return infos;
+
+            return utilisateur;
         }
 
         /// <summary>
@@ -430,15 +333,19 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnUser_Click_1(object sender, EventArgs e)
         {
-            // Ouvre la fenêtre de l'utilisateur
-            string[] infos = RecupInfosUser(this.idUser);
-            infos[0] = "UPDATE utilisateur SET";
-            AjoutModifUtilisateurs fenUser = new AjoutModifUtilisateurs(infos, this.fenConnexion);
+            UtilisateurDTO utilisateur = RecupInfosUser(this.idUser);
+            AjoutModifUtilisateurs fenUser = new AjoutModifUtilisateurs(utilisateur, estNouveau: false, this.fenConnexion);
             this.Visible = false;
             fenUser.ShowDialog();
             this.Visible = true;
         }
 
+
+        private void FermerApplication()
+        {
+            Global.Connexion.Close();
+            Application.Exit();
+        }
 
         /// <summary>
         /// Gère la fermeture de la fenêtre (ferme l'application et coupe la connexion)
@@ -447,8 +354,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void Accueil_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Global.Connexion.Close();
-            Application.Exit();
+            FermerApplication();
         }
     }
 }

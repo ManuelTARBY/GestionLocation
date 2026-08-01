@@ -62,7 +62,6 @@ namespace GestionLocation
             this.txtId.Size = new System.Drawing.Size(198, 26);
             this.txtId.TabIndex = 1;
             this.txtId.Text = "manu";
-            this.txtId.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtId_KeyPress);
             // 
             // txtPwd
             // 
@@ -71,7 +70,6 @@ namespace GestionLocation
             this.txtPwd.PasswordChar = '*';
             this.txtPwd.Size = new System.Drawing.Size(198, 26);
             this.txtPwd.TabIndex = 2;
-            this.txtPwd.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtPwd_KeyPress);
             // 
             // lblPresentation
             // 

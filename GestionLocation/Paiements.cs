@@ -5,7 +5,6 @@ using System.Windows.Forms;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using System.IO;
-using System.Diagnostics;
 using System.Globalization;
 using MimeKit;
 using MailKit.Security;
@@ -15,7 +14,7 @@ namespace GestionLocation
 {
     public partial class Paiements : Form
     {
-        
+
         private MySqlCommand command;
         private string req, laPeriode, leLocataire, leBailleur;
         private readonly string idUser;
@@ -95,6 +94,7 @@ namespace GestionLocation
             this.lesPaiements.Clear();
             lstPaiements.Items.Clear();
             this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Parameters.AddWithValue("@id", this.idLocation);
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
             while (!finCurseur)
@@ -113,7 +113,6 @@ namespace GestionLocation
             }
             reader.Close();
         }
-
 
         /// <summary>
         /// Retrouve le nom du bien à partir d'un id de location
@@ -143,7 +142,7 @@ namespace GestionLocation
             lstPaiements.Items.Clear();
             lesId.Clear();
             // Construit la requête
-            this.req = "SELECT nombien AS `Bien`, CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', SUBSTRING_INDEX(nomlocataire, ',', 1)) "+
+            this.req = "SELECT nombien AS `Bien`, CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', SUBSTRING_INDEX(nomlocataire, ',', 1)) " +
                 "AS `Locataire`, debutlocation AS `Début de location`, " +
                 "finlocation AS `Fin de location`, nomcompletcaution AS `Caution`, idlocation AS `id` " +
                 "FROM location JOIN locataire USING(idlocataire) JOIN bien USING(idbien) JOIN caution USING(idcaution) " +
@@ -239,7 +238,7 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnNonRegle_Click(object sender, EventArgs e)
         {
-            
+
             this.req = "SELECT nombien, periodefacturee, montantdu, montantpaye, datepaiement, resteapayer, idpaiement, idlocation, " +
                 "CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', SUBSTRING_INDEX(nomlocataire, ',', 1)) AS 'Locataire'" +
                 "FROM paiement NATURAL JOIN location NATURAL JOIN bien NATURAL JOIN locataire ";
@@ -294,20 +293,23 @@ namespace GestionLocation
         /// <param name="e"></param>
         private void BtnEnvoyerQuittance_Click(object sender, EventArgs e)
         {
+
+            //GenererQuittanceAnnee("2025");
+
             if (lstPaiements.SelectedItem == null)
             {
                 MessageBox.Show("Veuillez sélectionner un paiement dans la liste pour pouvoir envoyer sa quittance.");
             }
             else
             {
-                if (VerifMail() != "")
-                {
-                    GestionQuittance(GetIdPaiement());
-                }
-                else
-                {
-                    MessageBox.Show("Impossible d'envoyer la quittance au locataire, vous n'avez pas renseigné son adresse mail.");
-                }
+                //if (VerifMail() != "")
+                //{
+                GestionQuittance(GetIdPaiement());
+                //}
+                /* else
+            //     {
+            //         MessageBox.Show("Impossible d'envoyer la quittance au locataire, vous n'avez pas renseigné son adresse mail.");
+            //     }*/
             }
         }
 
@@ -334,7 +336,7 @@ namespace GestionLocation
             reader.Read();
             adresse = reader["emailocataire"].ToString();
             reader.Close();
-            
+
             return adresse;
         }
 
@@ -344,70 +346,161 @@ namespace GestionLocation
         /// </summary>
         public void GestionQuittance(string idPaiement)
         {
-            GénérerQuittance(idPaiement);
+            GenererQuittance(idPaiement);
             //EnvoyerQuittance();
+        }
+
+        /// <summary>
+        /// Génère tous les quittances d'une année civile
+        /// </summary>
+        public void GenererQuittanceAnnee(string annee)
+        {
+            this.req = @"
+            SELECT idpaiement, idlocation 
+            FROM paiement 
+            WHERE periodefacturee >= @debutperiode 
+            AND periodefacturee <= @finperiode";
+
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Parameters.AddWithValue("@debutperiode", $"{annee}0101");
+            this.command.Parameters.AddWithValue("@finperiode", $"{annee}1231");
+
+            List<int> idsPaiement = new List<int>();
+            List<int> idsLocation = new List<int>();
+
+            using (MySqlDataReader reader = this.command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    idsPaiement.Add(reader.GetInt32("idpaiement"));
+                    idsLocation.Add(reader.GetInt32("idlocation"));
+                }
+            }
+
+            if (idsPaiement.Count == 0)
+            {
+                throw new Exception("Aucun paiement trouvé pour cette période.");
+            }
+
+            // Génération des quittances
+            //foreach (int idPaiement in idsPaiement)
+            for (int i = 0 ; i < idsPaiement.Count; i++)
+            {
+                this.idLocation = idsLocation[i];
+                GenererQuittance(idsPaiement[i].ToString());
+            }
         }
 
 
         /// <summary>
         /// Génère la quittance
         /// </summary>
-        public void GénérerQuittance(string idPaiement)
+        public void GenererQuittance(string idPaiement)
         {
             // Récupère les coordonnées sur l'utilisateur
-            this.req = $"SELECT * FROM utilisateur WHERE iduser = {this.idUser}";
+            this.req = $"SELECT * FROM utilisateur WHERE iduser = @id";
             this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
-            reader.Read();
-            this.leBailleur = $"{reader.GetString(3)} {reader.GetString(4)}";
-            string adresseRue = reader.GetString(5);
-            string adresseCp = $"{reader.GetString(6)}";
-            string adresseVille = $"{reader.GetString(7)}";
-            reader.Close();
+            this.command.Parameters.AddWithValue("@id", this.idUser);
+            string adresseRue, adresseCp, adresseVille;
+
+            using (MySqlDataReader reader = this.command.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    this.leBailleur = $"{reader.GetString(3)} {reader.GetString(4)}";
+                    adresseRue = reader.GetString(5);
+                    adresseCp = reader.GetString(6);
+                    adresseVille = reader.GetString(7);
+                }
+                else
+                {
+                    throw new Exception("Aucune donnée trouvée pour Utilisateur.");
+                }
+            }
 
             // Récupère les données sur la location
-            this.req = $"SELECT * FROM location WHERE idlocation = {GetIdLocation()}";
+            //int idLocation = GetIdLocation();
+            int idLocation = this.idLocation;
+            this.req = $"SELECT * FROM location WHERE idlocation = @idLocation";
             this.command = new MySqlCommand(this.req, Global.Connexion);
-            reader = this.command.ExecuteReader();
-            reader.Read();
-            DateTime datDebutLoc = reader.GetDateTime(4);
-            DateTime datFinLoc = reader.GetDateTime(5);
-            reader.Close();
+            this.command.Parameters.AddWithValue("@idLocation", idLocation);
+            DateTime datDebutLoc = new DateTime();
+            DateTime datFinLoc = new DateTime();
+            using (MySqlDataReader reader = this.command.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    datDebutLoc = reader.GetDateTime(4);
+                    datFinLoc = reader.GetDateTime(5);
+                }
+                else
+                {
+                    throw new Exception("Aucune donnée trouvée pour la location recherchée.");
+                }
+            }
             string debutLoc = datDebutLoc.ToString("d", CultureInfo.CreateSpecificCulture("fr-FR"));
             string finLoc = datFinLoc.ToString("d", CultureInfo.CreateSpecificCulture("fr-FR"));
 
             // Récupère les coordonnées sur le locataire
-            this.req = $"SELECT * FROM locataire WHERE idlocataire = (SELECT idlocataire FROM location WHERE idlocation = {GetIdLocation()})";
+            this.req = $"SELECT * FROM locataire WHERE idlocataire = (SELECT idlocataire FROM location WHERE idlocation = @idLocation)";
             this.command = new MySqlCommand(this.req, Global.Connexion);
-            reader = this.command.ExecuteReader();
-            reader.Read();
-            this.leLocataire = $"{reader.GetString(3)}";
-            this.emailLocataire = $"{reader.GetString(10)}";
-            reader.Close();
+            this.command.Parameters.AddWithValue("@idLocation", idLocation);
+            using (MySqlDataReader reader = this.command.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    this.leLocataire = $"{reader.GetString(3)}";
+                    this.emailLocataire = $"{reader.GetString(10)}";
+                }
+                else
+                {
+                    throw new Exception("Aucune donnée trouvée pour le locataire recherché.");
+                }
+            }
             string[] prenomNomSep = this.leLocataire.Split(' ');
             this.leLocataire = prenomNomSep[1] + " " + prenomNomSep[0];
 
             // Récupère les données sur le bien
-            this.req = $"SELECT * FROM bien WHERE idbien = (SELECT idbien FROM location WHERE idlocation = {GetIdLocation()})";
+            this.req = $"SELECT * FROM bien WHERE idbien = (SELECT idbien FROM location WHERE idlocation = @idLocation)";
             this.command = new MySqlCommand(this.req, Global.Connexion);
-            reader = this.command.ExecuteReader();
-            reader.Read();
-            string charges = $"{reader.GetString(3)}";
-            string loyercc = $"{reader.GetString(4)}";
-            string adresseRueBien = $"{reader.GetString(5)}";
-            string adresseCpVilleBien = $"{reader.GetString(6)} {reader.GetString(7)}";
-            reader.Close();
+            this.command.Parameters.AddWithValue("@idLocation", idLocation);
+            string charges, loyercc, adresseRueBien, adresseCpVilleBien;
+            using (MySqlDataReader reader = this.command.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    charges = $"{reader.GetString(3)}";
+                    loyercc = $"{reader.GetString(4)}";
+                    adresseRueBien = $"{reader.GetString(5)}";
+                    adresseCpVilleBien = $"{reader.GetString(6)} {reader.GetString(7)}";
+                }
+                else
+                {
+                    throw new Exception("Aucune donnée trouvée pour le bien recherché.");
+                }
+            }
 
             // Récupère les données sur le paiement (montantdu, réglé, période facturée, date du paiement)
-            this.req = $"SELECT * FROM paiement WHERE idpaiement = {idPaiement}";
+            this.req = $"SELECT * FROM paiement WHERE idpaiement = @idPaiement";
             this.command = new MySqlCommand(this.req, Global.Connexion);
-            reader = this.command.ExecuteReader();
-            reader.Read();
-            DateTime periodeFactureeComp = reader.GetDateTime(4);
-            this.laPeriode = $"{reader.GetDateTime(4):MMMM yyyy}";
-            DateTime datePaiement = reader.GetDateTime(2);
-            string totalRecu = $"{reader.GetString(3)}";
-            reader.Close();
+            this.command.Parameters.AddWithValue("@idPaiement", idPaiement);
+            DateTime periodeFactureeComp = new DateTime();
+            DateTime datePaiement = new DateTime();
+            string totalRecu;
+            using (MySqlDataReader reader = this.command.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    totalRecu = $"{reader.GetString(3)}";
+                    datePaiement = reader.GetDateTime(2);
+                    periodeFactureeComp = reader.GetDateTime(4);
+                    this.laPeriode = $"{reader.GetDateTime(4):MMMM yyyy}";
+                }
+                else
+                {
+                    throw new Exception("Aucune donnée trouvée pour le paiement recherché.");
+                }
+            }
             string strPeriodeFacturee = periodeFactureeComp.ToString("d", CultureInfo.CreateSpecificCulture("fr-FR"));
             string strDatePaiement = datePaiement.ToShortDateString();
             if (strDatePaiement.Equals("01/01/0001"))
@@ -417,9 +510,9 @@ namespace GestionLocation
 
             // Construit la quittance au format pdf
             // Génère le chemin vers le fichier
-            string cheminFichier = Environment.CurrentDirectory + $"/Quittances/{this.leLocataire} - {this.laPeriode}.pdf";
+            string cheminFichier = Environment.CurrentDirectory + $"/Quittances/Quittance {this.leLocataire} - {this.laPeriode}.pdf";
             // Crée le document
-            Document quittance = new Document(PageSize.A4) ;
+            Document quittance = new Document(PageSize.A4);
             // Permet de travailler sur le document
             PdfWriter.GetInstance(quittance, new FileStream(cheminFichier, FileMode.Create));
             quittance.Open();
@@ -505,7 +598,7 @@ namespace GestionLocation
             string centimes = "";
             if (recu.Length > 1)
             {
-            centimes = $" et {NumberConverter.Spell(int.Parse(recu[1]))} centimes";
+                centimes = $" et {NumberConverter.Spell(int.Parse(recu[1]))} centimes";
 
             }
             string blocContenu = $"\nJe soussigné {this.leBailleur} propriétaire du logement désigné ci-dessus, déclare avoir reçu de " +
@@ -526,7 +619,7 @@ namespace GestionLocation
             quittance.Add(detailsTitre);
             quittance.Add(new Phrase("\n", fPetitEspace));
             // Calculs pour les détails
-            float ratioChargeLoyer = (float)Math.Round(float.Parse(charges) / float.Parse(loyercc), 2);
+            float ratioChargeLoyer = float.Parse(charges) / float.Parse(loyercc);
             float chargesRecues = (float)Math.Round(float.Parse(totalRecu) * ratioChargeLoyer, 2);
             float loyerRecu = (float)Math.Round(float.Parse(totalRecu) - chargesRecues, 2);
             // Création du tableau contenant les détails du paiment
@@ -598,9 +691,9 @@ namespace GestionLocation
 
             // Ferme le document
             quittance.Close();
-            
+
             // Ouvre le pdf dans le navigateur
-            Process.Start(Environment.CurrentDirectory + $"/Quittances/{this.leLocataire} - {this.laPeriode}.pdf");
+            //Process.Start(Environment.CurrentDirectory + $"/Quittances/{this.leLocataire} - {this.laPeriode}.pdf");
         }
 
 
@@ -622,12 +715,12 @@ namespace GestionLocation
             {
                 de = "d'";
             }
-                var builder = new BodyBuilder
+            var builder = new BodyBuilder
             {
                 // Corps du message
                 HtmlBody = "<p>Bonjour,<br /></p>" +
-                $"<p>Veuillez trouver, ci-jointe, votre quittance de loyer {de}{laPeriode}.<br /><br /></p>" +
-                $"<p>Cordialement,<br /><strong>{this.leBailleur}</strong></p>"
+            $"<p>Veuillez trouver, ci-jointe, votre quittance de loyer {de}{laPeriode}.<br /><br /></p>" +
+            $"<p>Cordialement,<br /><strong>{this.leBailleur}</strong></p>"
             };
             // Chemin de la pièce jointe
             string chemin = Environment.CurrentDirectory + $"/Quittances/{this.leLocataire} - {this.laPeriode}.pdf";
@@ -693,7 +786,25 @@ namespace GestionLocation
         /// </summary>
         public void RecupIdLocation()
         {
-            this.idLocation = int.Parse(this.lesPaiements[lstPaiements.SelectedItem.ToString()]);
+            int idPaiement = int.Parse(this.lesPaiements[lstPaiements.SelectedItem.ToString()]);
+
+            this.req = $"SELECT * FROM paiement WHERE idpaiement = @id";
+            this.command = new MySqlCommand(this.req, Global.Connexion);
+            this.command.Parameters.AddWithValue("@id", idPaiement);
+
+            using (MySqlDataReader reader = this.command.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    this.idLocation = reader.GetInt32(1);
+                }
+                else
+                {
+                    throw new Exception("Aucune donnée trouvée pour la location.");
+                }
+            }
+
+            Console.WriteLine("Id de location = " + this.idLocation);
         }
 
 
@@ -711,13 +822,13 @@ namespace GestionLocation
         }
 
 
-    /// <summary>
-    /// Ajoute une colonne à un tableau
-    /// </summary>
-    /// <param name="str">Titre de la colonne à ajouter</param>
-    /// <param name="f">Police s'appliquant à la colonne</param>
-    /// <param name="p">Indice de la position du texte</param>
-    /// <param name="t">Tableau auquel il faut ajouter la colonne</param>
+        /// <summary>
+        /// Ajoute une colonne à un tableau
+        /// </summary>
+        /// <param name="str">Titre de la colonne à ajouter</param>
+        /// <param name="f">Police s'appliquant à la colonne</param>
+        /// <param name="p">Indice de la position du texte</param>
+        /// <param name="t">Tableau auquel il faut ajouter la colonne</param>
         public void AddColumnToTab(string str, Font f, int p, PdfPTable t)
         {
             PdfPCell cell = new PdfPCell(new Phrase(str, f))

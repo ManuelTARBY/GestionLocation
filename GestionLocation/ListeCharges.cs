@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace GestionLocation
@@ -52,7 +53,7 @@ namespace GestionLocation
             // Récupère les charges totales pour l'année
             if (this.infoBien.ContainsKey("id"))
             {
-                this.req = "SELECT SUM(chargeannuelle) FROM chargesannuelles " +
+                this.req = "SELECT COALESCE(SUM(chargeannuelle), 0) FROM chargesannuelles " +
                     $"WHERE idbien = {this.infoBien["id"]} and annee = {cobAnnee.SelectedItem}";
                 this.command = new MySqlCommand(this.req, Global.Connexion);
                 MySqlDataReader reader = this.command.ExecuteReader();
@@ -81,7 +82,6 @@ namespace GestionLocation
                 {
                     this.req = $"SELECT idchargeannuelle, nombien, libelle, montantcharge, refFrequence, annee " +
                         $"FROM chargesannuelles NATURAL JOIN bien WHERE annee = {cobAnnee.SelectedItem} ";
-                     //$"FROM chargesannuelles NATURAL JOIN bien WHERE annee = YEAR(CURDATE()) ";
                     if (this.fenFicheBien != null || lstBiens.SelectedItem != null)
                     {
                         this.req += $"AND idbien={this.infoBien["id"]} ";
@@ -244,7 +244,7 @@ namespace GestionLocation
         {
             // Calcule la charge annuelle du bien
             float charges = 0;
-            this.req = "SELECT SUM(chargeannuelle) AS 'TotalCharges' FROM chargesannuelles WHERE idbien = " +
+            this.req = "SELECT COALESCE(SUM(chargeannuelle), 0) AS 'TotalCharges' FROM chargesannuelles WHERE idbien = " +
                 $"(SELECT idbien FROM bien WHERE nombien = '{chargeBien[lstCharges.SelectedItem.ToString()]}') " +
                 $"AND annee = '{DateTime.Now.Year}'";
             this.command = new MySqlCommand(this.req, Global.Connexion);
@@ -252,7 +252,9 @@ namespace GestionLocation
             if (reader.HasRows)
             {
                 reader.Read();
-                charges = float.Parse(reader["TotalCharges"].ToString());
+                Console.WriteLine(reader["TotalCharges"].ToString().Replace(",", "."));
+                charges = float.Parse(reader["TotalCharges"].ToString(), CultureInfo.InvariantCulture);
+                //charges = float.Parse(reader["TotalCharges"].ToString().Replace(",", "."));
                 reader.Close();
             }
 
@@ -294,7 +296,7 @@ namespace GestionLocation
         {
             List<string> listeBienGrpeDeBiens = new List<string>();
             // Récupère les biens
-            this.req = "SELECT nombien FROM bien";
+            this.req = "SELECT nombien FROM bien WHERE bienarchive = 0";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             bool finCurseur = !reader.Read();
@@ -359,7 +361,6 @@ namespace GestionLocation
             AfficheTitre();
         }
 
-
         /// <summary>
         /// Met à jour la liste des années pour le bien sélectionné
         /// </summary>
@@ -368,15 +369,14 @@ namespace GestionLocation
             // Récupère les années de début et de fin d'exploitation
             int anneeMini, anneeMaxi;
             cobAnnee.Items.Clear();
-            this.req = "SELECT MIN(YEAR(paiement.periodefacturee)) AS 'AnneeMini', " +
-                "MAX(YEAR(paiement.periodefacturee)) AS 'AnneeMaxi' " +
-                "FROM paiement NATURAL JOIN location NATURAL JOIN bien " +
-                $"WHERE bien.nombien = \"{lstBiens.SelectedItem}\" and montantpaye != 0";
+            this.req = "SELECT MIN(annee) AS 'AnneeMini', MAX(annee) AS 'AnneeMaxi' "+
+                "FROM `chargesannuelles` JOIN bien ON bien.idbien = chargesannuelles.idbien "+
+                $"WHERE bien.nombien = \"{lstBiens.SelectedItem}\"";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             MySqlDataReader reader = this.command.ExecuteReader();
             reader.Read();
             anneeMini = reader.GetInt32(0);
-            anneeMaxi = reader.GetInt32(1);
+            anneeMaxi = int.Parse(reader["AnneeMaxi"].ToString());
             reader.Close();
 
             // Remplit la combobox des années

@@ -207,6 +207,10 @@ namespace GestionLocation
             this.datas.Add("AdresseBien", $"{reader["adressebien"]}");
             this.datas.Add("CPBien", $"{reader["cpbien"]}");
             this.datas.Add("VilleBien", $"{ reader["villebien"]}");
+            this.datas.Add("NumFiscal", $"{ reader["numerofiscal"]}");
+            this.datas.Add("ClasseEnergie", $"{ reader["classeDPE"]}");
+            this.datas.Add("EstimationCoutElec", $"{ reader["estimationconsommation"]}");
+            this.datas.Add("AnneeReference", $"{ reader["anneereference"]}");
             this.datas.Add("TypeHabitat", $"{ reader["typehabitat"]}");
             this.datas.Add("RegJuriImmeuble", $"{ reader["regimejuridique"]}");
             this.datas.Add("PeriodeConstruc", $"{ reader["periodeconstruction"]}");
@@ -260,38 +264,46 @@ namespace GestionLocation
         /// <param name="e"></param>
         private async void BtnValider_ClickAsync(object sender, EventArgs e)
         {
-            if (ChampsRenseignes())
+            try
             {
-                string[] lesId = RecupLesId();
-                if (this.typeReq.Equals("UPDATE"))
+                if (ChampsRenseignes())
                 {
-                    // Construit la requête de modification
-                    ConstruitReqModif(lesId);
+                    string[] lesId = RecupLesId();
+                    if (this.typeReq.Equals("UPDATE"))
+                    {
+                        ConstruitReqModif(lesId);
+                    }
+                    else
+                    {
+                        ConstruitReqAjout(lesId);
+                    }
+
+                    this.command = new MySqlCommand(this.req, Global.Connexion);
+                    this.command.Prepare();
+                    this.command.ExecuteNonQuery();
+
+                    MajTablePaiement(this.id);
+                    this.fenLocation.AfficherBiens();
+                    this.fenLocation.AfficherLocations();
+                    this.fenLocation.GetFenAccueil().AfficherLocations();
+
+                    if (this.typeReq.Equals("INSERT INTO"))
+                    {
+                        await GenererBailAsync(lesId);
+                        GenererEtatDesLieux();
+                    }
+                    this.Dispose();
                 }
-                else
-                {
-                    // Construit la requête d'ajout
-                    ConstruitReqAjout(lesId);
-                }
-                // Exécute la requête d'enregistrement de location
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                this.command.Prepare();
-                this.command.ExecuteNonQuery();
-                // Ajoute/modifie les enregistrements de la table Paiement pour cette location
-                MajTablePaiement(this.id);
-                // Met à jour les champs de la fenêtre de Locations
-                this.fenLocation.AfficherBiens();
-                this.fenLocation.AfficherLocations();
-                this.fenLocation.GetFenAccueil().AfficherLocations();
-                if (this.typeReq.Equals("INSERT INTO"))
-                {
-                    // Génère le bail de location
-                    await GenererBailAsync(lesId);
-                    // Génère les états des lieux
-                    GenererEtatDesLieux();
-                }
-                // Ferme la fenêtre
-                this.Dispose();
+            }
+            catch (System.Net.Sockets.SocketException ex)
+            {
+                MessageBox.Show($"La connexion réseau a été perdue avec l'hôte distant.\n\nDétails : {ex.Message}",
+                    "Erreur réseau", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Une erreur est survenue : {ex.Message}",
+                    "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -369,7 +381,9 @@ namespace GestionLocation
             }
 
             // Crée le fichier
-            string cheminModele = Environment.CurrentDirectory + $"/Baux/Bail{type}.doc";
+            string cheminModele = Environment.CurrentDirectory + $"\\Baux\\Contrat-type de location meublée version 2025.docx";
+            //string cheminModele = Environment.CurrentDirectory + $"/Baux/Bail{type}.doc";
+            MessageBox.Show(cheminModele);
             string cheminDestination = $"C:\\Users\\Don_F\\OneDrive\\Bureau\\Bail{type} {lstLocataires.SelectedItem}.doc";
             File.Copy(cheminModele, cheminDestination, true);
 
@@ -491,7 +505,7 @@ namespace GestionLocation
             // Récupère un jeton si l'ancien date de moins de 7 jours
             if (DateTime.Now > Global.dateBearerToken.AddSeconds(604300))
             {
-                resultat = RecupJetonAPIInsee();
+                resultat = await RecupJetonAPIInseeAsync();
             }
 
             if (resultat)
@@ -585,36 +599,39 @@ namespace GestionLocation
         /// <summary>
         /// Récupère un jeton pour utiliser l'API de l'INSEE
         /// </summary>
-        public bool RecupJetonAPIInsee()
+        public async Task<bool> RecupJetonAPIInseeAsync()
         {
             HttpClient client = new HttpClient();
             var parameters = new FormUrlEncodedContent(new[]
             {
-                new KeyValuePair<string, string>("grant_type", "client_credentials")
-            });
+        new KeyValuePair<string, string>("grant_type", "client_credentials")
+    });
 
-            // Encodage de l'authorization
             var authorization = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{Global.consumerkey}:{Global.secretclient}"));
-
-            // Ajout de l'en-tête Authorization
             client.DefaultRequestHeaders.Add("Authorization", $"Basic {authorization}");
 
-            // Envoi de la requête POST à l'URL spécifiée
-            HttpResponseMessage response = client.PostAsync("https://api.insee.fr/token", parameters).Result;
+            try
+            {
+                HttpResponseMessage response = await client.PostAsync("https://api.insee.fr/token", parameters);
 
-            // Lecture de la réponse
-            if (response.IsSuccessStatusCode)
-            {
-                string responseBody = response.Content.ReadAsStringAsync().Result;
-                dynamic jsonObject = JsonConvert.DeserializeObject(responseBody);
-                Global.bearerToken = jsonObject["access_token"];
-                Global.dateBearerToken = DateTime.Now;
-                return true;
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    dynamic jsonObject = JsonConvert.DeserializeObject(responseBody);
+                    Global.bearerToken = jsonObject["access_token"];
+                    Global.dateBearerToken = DateTime.Now;
+                    return true;
+                }
+                else
+                {
+                    MessageBox.Show("Erreur lors de la récupération du jeton d'accès à l'API de l'INSEE. " +
+                        "Vous devrez renseigner l'IRL vous-même. " + response.ReasonPhrase);
+                    return false;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Erreur lors de la récupération du jeton d'accès à l'API de l'INSEE. "+
-                    "Vous devrez renseigner l'IRL vous-même. "+ response.ReasonPhrase);
+                MessageBox.Show($"Erreur réseau lors de l'authentification INSEE : {ex.Message}");
                 return false;
             }
         }
@@ -674,16 +691,23 @@ namespace GestionLocation
             this.datas.Add("TelCaution", $"{reader["telephonecaution"]}");
             this.datas.Add("EmailCaution", $"{reader["emailcaution"]}");
             reader.Close();
+
+            string donneesCaution = "";
             if (this.datas["NomCaution"].Equals("VISALE"))
             {
                 this.datas.Add("InfoCaution1", $"N° de contrat :");
                 this.datas.Add("InfoCaution2", txtContratVisale.Text);
+                this.datas.Add("SignatureCaution", "");
+                donneesCaution = $"Garantie VISALE. Contrat numéro: {txtContratVisale.Text}";
             }
             else
             {
                 this.datas.Add("InfoCaution1", $"Adresse de la caution :");
                 this.datas.Add("InfoCaution2", this.datas["AdresseCaution"]);
+                this.datas.Add("SignatureCaution", "Signature de la caution");
+                donneesCaution = $"{this.datas["NomPrenomCaution"]}, résidant {this.datas["AdresseCaution"]}";
             }
+            this.datas.Add("DonneesCaution", donneesCaution);
         }
 
 

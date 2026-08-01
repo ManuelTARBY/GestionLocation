@@ -56,7 +56,7 @@ namespace GestionLocation
         public void RemplirComboListeBien()
         {
             // Les biens
-            this.req = "SELECT nombien FROM bien ORDER BY nombien";
+            this.req = "SELECT nombien FROM bien WHERE bienarchive = 0 ORDER BY nombien";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             this.command.Prepare();
             MySqlDataReader reader = this.command.ExecuteReader();
@@ -327,7 +327,7 @@ namespace GestionLocation
         {
             // Calcule la charge annuelle du bien
             float charges = 0;
-            this.req = "SELECT SUM(chargeannuelle) AS 'TotalCharges' FROM chargesannuelles " +
+            this.req = "SELECT COALESCE(SUM(chargeannuelle), 0) AS 'TotalCharges' FROM chargesannuelles " +
                 $"WHERE idbien = {idBien} AND annee = YEAR(NOW())";
             this.command = new MySqlCommand(this.req, Global.Connexion);
             this.command.Prepare();

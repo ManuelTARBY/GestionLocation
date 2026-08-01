@@ -10,7 +10,7 @@ namespace GestionLocation
         private readonly string idPaiement;
         private string req;
         private MySqlCommand command;
-        private readonly Paiements fenPaiements;
+        private Paiements fenPaiements;
         
         /// <summary>
         /// Constructeur de la fenêtre ModifPaiement
@@ -130,9 +130,13 @@ namespace GestionLocation
                 this.command = new MySqlCommand(this.req, Global.Connexion);
                 this.command.Prepare();
                 this.command.ExecuteNonQuery();
+
+
                 // Met à jour l'affichage
                 this.req = fenPaiements.GetRequete();
+                this.fenPaiements.RemplirListePaiements();
                 this.fenPaiements.EnvoiReqSelectPaiements();
+
                 // Si le loyer est réglé, demande s'il faut envoyer la quittance par mail au locataire
                 if (loyerregle == true)
                 {

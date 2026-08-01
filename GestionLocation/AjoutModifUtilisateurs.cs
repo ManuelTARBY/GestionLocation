@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using GestionLocation.DTO;
+using MySql.Data.MySqlClient;
 using System;
 using System.Drawing;
 using System.IO;
@@ -8,81 +9,141 @@ namespace GestionLocation
 {
     public partial class AjoutModifUtilisateurs : Form
     {
-
-        private string req, adresseSmtp;
+        private string adresseSmtp;
         private int port;
-        private MySqlCommand command;
-        private readonly string[] infos;
+        private readonly UtilisateurDTO utilisateur;
+        private readonly bool estNouveau;
         private readonly Connexion fenConnexion;
 
         /// <summary>
-        /// Constructeur de la fenêtreAjoutModifUtilisateur
+        /// Constructeur de la fenêtre AjoutModifUtilisateur
         /// </summary>
-        /// <param name="infos">Contient le type de requête (ajout ou modif)</param>
+        /// <param name="utilisateur">Utilisateur à créer ou modifier</param>
+        /// <param name="estNouveau">True s'il s'agit d'une création, False pour une modification</param>
         /// <param name="fenConnexion">Instance de la classe Connexion</param>
-        public AjoutModifUtilisateurs(string[] infos, Connexion fenConnexion)
+        public AjoutModifUtilisateurs(UtilisateurDTO utilisateur, bool estNouveau, Connexion fenConnexion)
         {
             InitializeComponent();
             this.Text = "Ajout/Modification d'un utilisateur";
-            this.infos = infos;
-            lblID.Text = infos[1];
+            this.utilisateur = utilisateur;
+            this.estNouveau = estNouveau;
             this.fenConnexion = fenConnexion;
-            txtPrenom.Text = infos[4];
-            txtNom.Text = infos[5];
-            txtAdresse.Text = infos[6];
-            txtCp.Text = infos[7];
-            txtVille.Text = infos[8];
-            txtEmail.Text = infos[9];
-            txtPwdEmail.Text = infos[10];
-            txtServeurSMTP.Text = infos[11];
-            txtPort.Text = infos[12];
-            txtSignature.Text = infos[13];
-        }
 
+            lblID.Text = utilisateur.IdUser.ToString();
+            txtPrenom.Text = utilisateur.Prenom;
+            txtNom.Text = utilisateur.Nom;
+            txtAdresse.Text = utilisateur.Adresse;
+            txtCp.Text = utilisateur.CodePostal;
+            txtVille.Text = utilisateur.Ville;
+            txtEmail.Text = utilisateur.Email;
+            txtPwdEmail.Text = utilisateur.PwdEmail;
+            txtServeurSMTP.Text = utilisateur.ServeurSmtp;
+            txtPort.Text = utilisateur.Port == 0 ? "" : utilisateur.Port.ToString();
+            txtSignature.Text = utilisateur.CheminSignature;
+        }
 
         /// <summary>
         /// Enregistre/Modifie l'utilisateur et ouvre la fenêtre Accueil
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnValider_Click(object sender, EventArgs e)
         {
-            if (VerifChamps() == true)
+            if (!VerifChamps())
             {
-
-                string messagerie = ChercherMessagerie();
-                if (ChercherInfosClientMail(messagerie))
-                {
-                    if (this.infos[0].Equals("INSERT INTO"))
-                    {
-                        ConstruitReqAjout();
-                    }
-                    else
-                    {
-                        ConstruitReqModif();
-                    }
-                    EnvoiReqCUD();
-                    // Retaille l'image de la signature
-                    Image signature = ResizeImg();
-                    // Place le fichier dans le répertoire de l'application
-                    string dest = $"{Environment.CurrentDirectory}/Signature/{Global.Capitalize(txtPrenom.Text)} {txtNom.Text.ToUpper()}.png";
-                    signature.Save(dest);
-                    // Modifie l'iduser (n'a d'effet qu'en cas de création d'un utilisateur)
-                    this.fenConnexion.SetIdUser(this.infos[1]);
-                    // Ouvre la fenêtre accueil
-                    Accueil fenAccueil = new Accueil(this.fenConnexion);
-                    this.fenConnexion.Visible = false;
-                    this.Dispose();
-                    fenAccueil.ShowDialog();
-                }
+                return;
             }
+
+            string messagerie = ChercherMessagerie();
+            if (!ChercherInfosClientMail(messagerie))
+            {
+                return;
+            }
+
+            if (this.estNouveau)
+            {
+                InsererUtilisateur();
+            }
+            else
+            {
+                MettreAJourUtilisateur();
+            }
+
+            // Retaille l'image de la signature et la place dans le répertoire de l'application
+            Image signature = ResizeImg();
+            string dest = $"{Environment.CurrentDirectory}/Signature/{Global.Capitalize(txtPrenom.Text)} {txtNom.Text.ToUpper()}.png";
+            signature.Save(dest);
+
+            // Modifie l'iduser (n'a d'effet qu'en cas de création d'un utilisateur)
+            this.fenConnexion.SetIdUser(this.utilisateur.IdUser.ToString());
+
+            Accueil fenAccueil = new Accueil(this.fenConnexion);
+            this.fenConnexion.Visible = false;
+            this.Dispose();
+            fenAccueil.ShowDialog();
         }
 
+        /// <summary>
+        /// Insère un nouvel utilisateur en base
+        /// </summary>
+        private void InsererUtilisateur()
+        {
+            const string req =
+                "INSERT INTO utilisateur " +
+                "(iduser, login, pwd, prenomuser, nomuser, adresseuser, cpuser, villeuser, " +
+                "emailuser, pwdemail, adresseserveursmtp, port, clientid, clientsecret, signature) " +
+                "VALUES (@id, @login, @pwd, @prenom, @nom, @adresse, @cp, @ville, @email, @pwdEmail, " +
+                "@smtp, @port, @clientId, @clientSecret, @signature)";
+
+            using var command = new MySqlCommand(req, Global.Connexion);
+            AjouterParametresCommuns(command);
+            command.ExecuteNonQuery();
+        }
+
+        /// <summary>
+        /// Met à jour un utilisateur existant en base
+        /// </summary>
+        private void MettreAJourUtilisateur()
+        {
+            const string req =
+                "UPDATE utilisateur SET " +
+                "login = @login, pwd = @pwd, prenomuser = @prenom, nomuser = @nom, " +
+                "adresseuser = @adresse, cpuser = @cp, villeuser = @ville, emailuser = @email, " +
+                "pwdemail = @pwdEmail, adresseserveursmtp = @smtp, port = @port, " +
+                "clientid = @clientId, clientsecret = @clientSecret, signature = @signature " +
+                "WHERE iduser = @id";
+
+            using var command = new MySqlCommand(req, Global.Connexion);
+            AjouterParametresCommuns(command);
+            command.ExecuteNonQuery();
+        }
+
+        /// <summary>
+        /// Ajoute les paramètres communs à l'insertion et à la modification.
+        /// clientid/clientsecret viennent du DTO existant et ne sont jamais écrasés
+        /// par cette fenêtre, qui ne propose pas de les modifier.
+        /// </summary>
+        private void AjouterParametresCommuns(MySqlCommand command)
+        {
+            command.Parameters.AddWithValue("@id", this.utilisateur.IdUser);
+            command.Parameters.AddWithValue("@login", this.utilisateur.Login);
+            command.Parameters.AddWithValue("@pwd", this.utilisateur.Pwd);
+            command.Parameters.AddWithValue("@prenom", Global.Capitalize(txtPrenom.Text));
+            command.Parameters.AddWithValue("@nom", txtNom.Text.ToUpper());
+            command.Parameters.AddWithValue("@adresse", txtAdresse.Text);
+            command.Parameters.AddWithValue("@cp", txtCp.Text);
+            command.Parameters.AddWithValue("@ville", txtVille.Text.ToUpper());
+            command.Parameters.AddWithValue("@email", txtEmail.Text);
+            command.Parameters.AddWithValue("@pwdEmail", txtPwdEmail.Text);
+            command.Parameters.AddWithValue("@smtp", this.adresseSmtp);
+            command.Parameters.AddWithValue("@port", this.port);
+            command.Parameters.AddWithValue("@clientId", this.utilisateur.ClientId ?? "");
+            command.Parameters.AddWithValue("@clientSecret", this.utilisateur.ClientSecret ?? "");
+            // Nom de fichier canonique, cohérent avec le "dest" utilisé pour sauvegarder l'image
+            command.Parameters.AddWithValue("@signature", $"{Global.Capitalize(txtPrenom.Text)} {txtNom.Text.ToUpper()}.png");
+        }
 
         /// <summary>
         /// Vérifie que tous les champs soient bien remplis
         /// </summary>
-        /// <returns></returns>
         public bool VerifChamps()
         {
             if (txtPrenom.Text.Equals(""))
@@ -133,18 +194,6 @@ namespace GestionLocation
                 txtPwdEmail.Focus();
                 return false;
             }
-            /*            else if (txtServeurSMTP.Text.Equals(""))
-                        {
-                            MessageBox.Show("Veuillez remplir le champ adresse serveur SMTP svp.");
-                            txtServeurSMTP.Focus();
-                            return false;
-                        }
-                        else if (txtPort.Text.Equals(""))
-                        {
-                            MessageBox.Show("Veuillez remplir le champ port svp.");
-                            txtPort.Focus();
-                            return false;
-                        }*/
             else if (txtSignature.Text.Equals(""))
             {
                 MessageBox.Show("Veuillez choisir une signature.");
@@ -152,20 +201,9 @@ namespace GestionLocation
             }
             else
             {
-                /*try
-                {
-                    int port = int.Parse(txtPort.Text);*/
                 return true;
-                /*                }
-                                catch
-                                {
-                                    MessageBox.Show("Veuillez saisir une valeur correcte pour le champ port svp.");
-                                    txtPort.Focus();
-                                    return false;
-                                }*/
             }
         }
-
 
         /// <summary>
         /// Récupère le type de messagerie
@@ -178,11 +216,9 @@ namespace GestionLocation
             return emails[0];
         }
 
-
         /// <summary>
-        /// Récupère les infos (port et adresse serveur smtp à partir de l'adresse mail)
+        /// Récupère les infos (port et adresse serveur smtp) à partir de l'adresse mail
         /// </summary>
-        /// <param name="messagerie">Type de messagerie</param>
         public bool ChercherInfosClientMail(string messagerie)
         {
             bool trouve = true;
@@ -230,88 +266,54 @@ namespace GestionLocation
             return trouve;
         }
 
-
-        /// <summary>
-        /// Construit la requête d'ajout d'un enregistrement de Utilisateur
-        /// </summary>
-        public void ConstruitReqAjout()
-        {
-            this.req = $"{this.infos[0]} utilisateur (iduser, login, pwd, prenomuser, nomuser, adresseuser, cpuser, villeuser, emailuser, " +
-                $"pwdemail, adresseserveursmtp, port, clientid, clientsecret, signature) " +
-                $"VALUES ({lblID.Text}, \"{infos[2]}\", \"{infos[3]}\", \"{Global.Capitalize(txtPrenom.Text)}\", \"{txtNom.Text.ToUpper()}\", " +
-                $"\"{txtAdresse.Text}\", \'{txtCp.Text}\', \"{txtVille.Text.ToUpper()}\", \"{txtEmail.Text}\", \"{txtPwdEmail.Text}\", " +
-                $"\'{this.adresseSmtp}\', \'{this.port}\', \'{""}\' , \'{""}\', \'{txtSignature.Text}\')";
-        }
-
-
-        /// <summary>
-        /// Construit la requête de modification d'un enregistrement de Utilisateur
-        /// </summary>
-        public void ConstruitReqModif()
-        {
-            this.req = $"{this.infos[0]} login = \'{this.infos[2]}\', pwd = \'{this.infos[3]}\', prenomuser = \'{Global.Capitalize(txtPrenom.Text)}\', " +
-                $"nomuser = \'{txtNom.Text.ToUpper()}\', adresseuser = \'{txtAdresse.Text}\', cpuser = \'{txtCp.Text}\', " +
-                $"villeuser = \'{txtVille.Text.ToUpper()}\', emailuser = \'{txtEmail.Text}\', pwdemail = \'{txtPwdEmail.Text}\', " +
-                $"adresseserveursmtp = \'{this.adresseSmtp}\', port = \'{this.port}\', clientid = \'{""}\' , clientsecret = \'{""}\', " +
-                $"signature = '{txtSignature.Text}' WHERE iduser = {this.infos[1]}";
-        }
-
-
-        /// <summary>
-        /// Envoie la requête de type ajout ou modification
-        /// </summary>
-        public void EnvoiReqCUD()
-        {
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            // préparation de la requête
-            this.command.Prepare();
-            // exécution de la requête
-            this.command.ExecuteNonQuery();
-        }
-
-
         /// <summary>
         /// Gère le clic sur le bouton pour sélectionner la signature
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnExplorateur_Click(object sender, EventArgs e)
         {
             RecupSignature();
         }
 
-
         /// <summary>
-        /// Récupère la signature de l'utilisateur et copie le fichier dans le répertoire "Signature" de l'application
+        /// Récupère la signature de l'utilisateur
         /// </summary>
         public void RecupSignature()
         {
             OpenFileDialog open = new OpenFileDialog();
             string ext;
-            // Boucle tant que le fichier sélectionné n'est pas au format png ou qu'aucun fichier n'a été sélectionné
             do
             {
                 MessageBox.Show("Veuillez choisir un fichier png.");
                 open.ShowDialog();
                 txtSignature.Text = open.FileName;
-                ext = txtSignature.Text.Substring(txtSignature.Text.Length - 4, 4);
+                ext = txtSignature.Text.Length >= 4
+                    ? txtSignature.Text.Substring(txtSignature.Text.Length - 4, 4)
+                    : "";
             } while (txtSignature.Text.Equals("") || !ext.Equals(".png"));
         }
 
-
         /// <summary>
-        /// Redimensionne une image
+        /// Redimensionne une image.
+        /// Charge le fichier via un MemoryStream (et non Image.FromFile) pour ne
+        /// jamais garder de verrou sur le fichier source : essentiel en modification,
+        /// où txtSignature.Text pointe déjà vers le même fichier que la destination
+        /// de sauvegarde (dest), ce qui provoquait "Une erreur générique dans GDI+"
+        /// lors du Save().
         /// </summary>
-        /// <returns>Image redimensionnée</returns>
         public Image ResizeImg()
         {
-            Image img = Image.FromFile(txtSignature.Text);
-            Bitmap imgbitmap = new Bitmap(img);
-            // Calcule le rapport entre la hauteur de l'image d'origine et la hauteur maximum de l'image
+            Bitmap imgbitmap;
+            byte[] bytes = File.ReadAllBytes(txtSignature.Text);
+            using (var stream = new MemoryStream(bytes))
+            using (Image img = Image.FromStream(stream))
+            {
+                imgbitmap = new Bitmap(img);
+            }
+
             float rapport = (float)imgbitmap.Height / Global.HeightMaxSignature;
-            // Calcule la nouvelle longueur de l'image
             int newWidth = (int)(imgbitmap.Width / rapport);
             Image signature = new Bitmap(imgbitmap, new Size(newWidth, Global.HeightMaxSignature));
+            imgbitmap.Dispose();
             return signature;
         }
     }

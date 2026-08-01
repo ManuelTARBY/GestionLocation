@@ -106,8 +106,6 @@ namespace GestionLocation
             this.btnLocations.Text = "Locations";
             this.btnLocations.UseVisualStyleBackColor = true;
             this.btnLocations.Click += new System.EventHandler(this.BtnLocations_Click);
-            this.btnLocations.MouseEnter += new System.EventHandler(this.BtnLocations_MouseEnter);
-            this.btnLocations.MouseLeave += new System.EventHandler(this.BtnLocations_MouseLeave);
             // 
             // btnBiens
             // 
@@ -123,8 +121,6 @@ namespace GestionLocation
             this.btnBiens.Text = "Biens";
             this.btnBiens.UseVisualStyleBackColor = true;
             this.btnBiens.Click += new System.EventHandler(this.BtnBiens_Click);
-            this.btnBiens.MouseEnter += new System.EventHandler(this.BtnBiens_MouseEnter);
-            this.btnBiens.MouseLeave += new System.EventHandler(this.BtnBiens_MouseLeave);
             // 
             // btnLocataires
             // 
@@ -139,8 +135,6 @@ namespace GestionLocation
             this.btnLocataires.Text = "Locataires";
             this.btnLocataires.UseVisualStyleBackColor = true;
             this.btnLocataires.Click += new System.EventHandler(this.BtnLocataires_Click);
-            this.btnLocataires.MouseEnter += new System.EventHandler(this.BtnLocataires_MouseEnter);
-            this.btnLocataires.MouseLeave += new System.EventHandler(this.BtnLocataires_MouseLeave);
             // 
             // btnCautions
             // 
@@ -155,8 +149,6 @@ namespace GestionLocation
             this.btnCautions.Text = "Cautions";
             this.btnCautions.UseVisualStyleBackColor = true;
             this.btnCautions.Click += new System.EventHandler(this.BtnCautions_Click);
-            this.btnCautions.MouseEnter += new System.EventHandler(this.BtnCautions_MouseEnter);
-            this.btnCautions.MouseLeave += new System.EventHandler(this.BtnCautions_MouseLeave);
             // 
             // btnCharges
             // 
@@ -171,8 +163,6 @@ namespace GestionLocation
             this.btnCharges.Text = "Charges";
             this.btnCharges.UseVisualStyleBackColor = true;
             this.btnCharges.Click += new System.EventHandler(this.BtnCharges_Click);
-            this.btnCharges.MouseEnter += new System.EventHandler(this.BtnCharges_MouseEnter);
-            this.btnCharges.MouseLeave += new System.EventHandler(this.BtnCharges_MouseLeave);
             // 
             // btnPaiements
             // 
@@ -187,8 +177,6 @@ namespace GestionLocation
             this.btnPaiements.Text = "Paiements";
             this.btnPaiements.UseVisualStyleBackColor = true;
             this.btnPaiements.Click += new System.EventHandler(this.BtnPaiements_Click);
-            this.btnPaiements.MouseEnter += new System.EventHandler(this.BtnPaiements_MouseEnter);
-            this.btnPaiements.MouseLeave += new System.EventHandler(this.BtnPaiements_MouseLeave);
             // 
             // btnStats
             // 
@@ -203,8 +191,6 @@ namespace GestionLocation
             this.btnStats.Text = "Données";
             this.btnStats.UseVisualStyleBackColor = true;
             this.btnStats.Click += new System.EventHandler(this.BtnDatas_Click);
-            this.btnStats.MouseEnter += new System.EventHandler(this.BtnUser_MouseEnter);
-            this.btnStats.MouseLeave += new System.EventHandler(this.BtnUser_MouseLeave);
             // 
             // tableLayoutPanel1
             // 
@@ -297,8 +283,6 @@ namespace GestionLocation
             this.btnGroupes.Text = "Groupes";
             this.btnGroupes.UseVisualStyleBackColor = true;
             this.btnGroupes.Click += new System.EventHandler(this.BtnGroupes_Click);
-            this.btnGroupes.MouseEnter += new System.EventHandler(this.BtnGroupes_MouseEnter);
-            this.btnGroupes.MouseLeave += new System.EventHandler(this.BtnGroupes_MouseLeave);
             // 
             // Accueil
             // 
