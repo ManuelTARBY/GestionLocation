@@ -1,22 +1,12 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GestionLocation
 {
     public partial class Biens : Form
     {
-
-        private MySqlCommand command;
-        private string req;
-
         /// <summary>
         /// Constructeur
         /// </summary>
@@ -32,21 +22,12 @@ namespace GestionLocation
         public void RemplirLstBiens()
         {
             lstBiens.Items.Clear();
+
             List<string> lesBiens = new List<string>();
-            for (int i = 0; i < 2; i++)
-            {
-                this.command = new MySqlCommand(ConstruitReqListeBien(i), Global.Connexion);
-                MySqlDataReader reader = this.command.ExecuteReader();
-                while (reader.Read())
-                {
-                    // Récupère les biens et les groupe de bien et les tris par ordre alphabétique
-                    lesBiens.Add(reader.GetString(0));
-                    lesBiens.Sort();
-                    //lstBiens.Items.Add(reader.GetString(0));
-                }
-                reader.Close();
-            }
-            // Alimente la liste box des biens et groupes de bien
+            lesBiens.AddRange(ListeBiens());
+            lesBiens.AddRange(ListeGroupesDeBiens());
+            lesBiens.Sort();
+
             foreach (string bien in lesBiens)
             {
                 lstBiens.Items.Add(bien);
@@ -54,98 +35,116 @@ namespace GestionLocation
         }
 
         /// <summary>
-        /// Construit la requête qui sert à remplir la listBox des biens
+        /// Récupère la liste des noms de biens (archivés ou non selon la case cochée)
         /// </summary>
-        /// <returns>Requête</returns>
-        private string ConstruitReqListeBien(int cpt)
+        private List<string> ListeBiens()
         {
-            if (cpt == 0)
+            var resultat = new List<string>();
+
+            const string req = "SELECT nombien FROM bien WHERE bienarchive = @archive ORDER BY nombien";
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@archive", rdbBienArchive.Checked);
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
             {
-                this.req = "SELECT nombien FROM bien WHERE bienarchive = ";
-                if (rdbBienArchive.Checked)
-                {
-                    this.req += "1";
-                }
-                else
-                {
-                    this.req += "0";
-                }
-                this.req += " ORDER BY nombien";
+                resultat.Add(reader.GetString(0));
             }
-            else if (cpt == 1)
+
+            return resultat;
+        }
+
+        /// <summary>
+        /// Récupère la liste des noms de groupes de biens
+        /// </summary>
+        private List<string> ListeGroupesDeBiens()
+        {
+            var resultat = new List<string>();
+
+            const string req = "SELECT nomdugroupe FROM grpedebiens ORDER BY nomdugroupe";
+            using var command = new MySqlCommand(req, Global.Connexion);
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
             {
-                this.req = "SELECT nomdugroupe FROM grpedebiens ORDER BY nomdugroupe";
+                resultat.Add(reader.GetString(0));
             }
-            return this.req;
+
+            return resultat;
         }
 
         /// <summary>
         /// Ouvre la fenêtre d'ajout/modification de bien pour modification
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnModifier_Click(object sender, EventArgs e)
         {
-            if (lstBiens.SelectedIndex > -1)
-            {
-                this.req = $"SELECT idbien FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                MySqlDataReader reader = this.command.ExecuteReader();
-                reader.Read();
-                if (reader.HasRows == false)
-                {
-                    reader.Close();
-                    MessageBox.Show("Vous avez sélectionné un groupe, veuillez sélectionner un bien.");
-                    return;
-                }
-                int id = reader.GetInt32(0);
-                reader.Close();
-                AjoutModifBiens modifBiens = new AjoutModifBiens(this, "UPDATE", id);
-                modifBiens.ShowDialog();
-            }
-            else
+            if (lstBiens.SelectedIndex == -1)
             {
                 MessageBox.Show("Veuillez saisir un bien dans la liste pour pouvoir le modifier.");
+                return;
             }
+
+            int? id = RechercheIdBien(lstBiens.SelectedItem.ToString());
+            if (id == null)
+            {
+                MessageBox.Show("Vous avez sélectionné un groupe, veuillez sélectionner un bien.");
+                return;
+            }
+
+            AjoutModifBiens modifBiens = new AjoutModifBiens(this, estNouveau: false, id.Value);
+            modifBiens.ShowDialog();
         }
 
         /// <summary>
         /// Ouvre la fenêtre d'ajout/modification de bien pour création
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnAjouter_Click(object sender, EventArgs e)
         {
-            AjoutModifBiens modifBiens = new AjoutModifBiens(this, "INSERT INTO");
+            AjoutModifBiens modifBiens = new AjoutModifBiens(this, estNouveau: true);
             modifBiens.ShowDialog();
         }
 
+        /// <summary>
+        /// Archive ou désarchive le bien sélectionné
+        /// </summary>
         private void BtnArchiverDesarchiver_Click(object sender, EventArgs e)
         {
             if (lstBiens.SelectedIndex == -1)
             {
                 MessageBox.Show("Veuillez saisir un bien dans la liste.");
+                return;
             }
-            else
+
+            string nomBien = lstBiens.SelectedItem.ToString();
+
+            const string reqLecture = "SELECT bienarchive FROM bien WHERE nombien = @nom";
+            bool estArchive;
+            using (var command = new MySqlCommand(reqLecture, Global.Connexion))
             {
-                // Requête pour récupérer la valeur de bienarchive pour le bien passé en paramètre
-                this.command = new MySqlCommand($"SELECT bienarchive FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"", Global.Connexion);
-                MySqlDataReader reader = this.command.ExecuteReader();
-                reader.Read();
-                this.req = $"UPDATE bien SET bienarchive = {!(bool)reader["bienarchive"]} WHERE nombien = \"{lstBiens.SelectedItem}\"";
-                reader.Close();
-                // Exécute la requête de modification
-                ExecuteReqIUD();
-                // Met à jour la liste des biens
-                RemplirLstBiens();
+                command.Parameters.AddWithValue("@nom", nomBien);
+                using var reader = command.ExecuteReader();
+                if (!reader.Read())
+                {
+                    MessageBox.Show("Ce bien n'existe plus.");
+                    return;
+                }
+                estArchive = reader.GetBoolean("bienarchive");
             }
+
+            const string reqMaj = "UPDATE bien SET bienarchive = @nouvelEtat WHERE nombien = @nom";
+            using (var command = new MySqlCommand(reqMaj, Global.Connexion))
+            {
+                command.Parameters.AddWithValue("@nouvelEtat", !estArchive);
+                command.Parameters.AddWithValue("@nom", nomBien);
+                command.ExecuteNonQuery();
+            }
+
+            RemplirLstBiens();
         }
 
         /// <summary>
         /// Met à jour la liste des biens
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnRechercher_Click(object sender, EventArgs e)
         {
             RemplirLstBiens();
@@ -154,133 +153,125 @@ namespace GestionLocation
         /// <summary>
         /// Gère l'appui sur le bouton supprimer
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnSupprimer_Click(object sender, EventArgs e)
         {
             if (lstBiens.SelectedIndex == -1)
             {
                 MessageBox.Show("Veuillez saisir un bien dans la liste pour pouvoir le supprimer.");
+                return;
             }
-            else
+
+            string nomBien = lstBiens.SelectedItem.ToString();
+
+            DialogResult result = MessageBox.Show(
+                $"Êtes-vous sûr de vouloir supprimer le bien {nomBien} ?",
+                "Confirmer suppression", MessageBoxButtons.YesNo);
+
+            if (result != DialogResult.Yes)
             {
-                // Demande confirmation de suppression du bien
-                DialogResult result = MessageBox.Show($"Êtes-vous sûr de vouloir supprimer le bien {lstBiens.SelectedItem} ?", "Confirmer suppression", MessageBoxButtons.YesNo);
-                if (result == DialogResult.Yes)
-                {
-                    this.req = $"SELECT idbien FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"";
-                    this.command = new MySqlCommand(this.req, Global.Connexion);
-                    MySqlDataReader reader = this.command.ExecuteReader();
-                    reader.Read();
-                    int id = reader.GetInt32(0);
-                    reader.Close();
-                    // Si la suppression ne génère pas de problème d'intégrité
-                    if (VerifIntegrite(id) == true)
-                    {
-                        this.req = $"DELETE FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"";
-                        ExecuteReqIUD();
-                        RemplirLstBiens();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Ce bien est relié à une ou plusieurs locations. Pour pouvoir le supprimer, vous devez d'abord supprimer" +
-                            " ces locations.");
-                    }
-                }
+                return;
             }
+
+            int? id = RechercheIdBien(nomBien);
+            if (id == null)
+            {
+                MessageBox.Show("Vous avez sélectionné un groupe, impossible de le supprimer depuis cet écran.");
+                return;
+            }
+
+            if (!VerifIntegrite(id.Value))
+            {
+                MessageBox.Show("Ce bien est relié à une ou plusieurs locations. Pour pouvoir le supprimer, vous devez d'abord supprimer" +
+                    " ces locations.");
+                return;
+            }
+
+            const string req = "DELETE FROM bien WHERE nombien = @nom";
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@nom", nomBien);
+            command.ExecuteNonQuery();
+
+            RemplirLstBiens();
         }
 
         /// <summary>
-        /// Exécute une requête insert, update, delete
+        /// Recherche l'id d'un bien à partir de son nom
         /// </summary>
-        private void ExecuteReqIUD()
+        /// <returns>L'id du bien, ou null si le nom ne correspond à aucun bien</returns>
+        private int? RechercheIdBien(string nomBien)
         {
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            // préparation de la requête
-            this.command.Prepare();
-            // exécution de la requête
-            this.command.ExecuteNonQuery();
+            const string req = "SELECT idbien FROM bien WHERE nombien = @nom";
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@nom", nomBien);
+
+            using var reader = command.ExecuteReader();
+            if (!reader.Read())
+            {
+                return null;
+            }
+
+            return reader.GetInt32(0);
         }
 
         /// <summary>
-        /// Vérifie si un bien n'est pas liée à une ou plusieurs locations
+        /// Vérifie si un bien n'est pas lié à une ou plusieurs locations
         /// </summary>
-        /// <param name="id"></param>
         /// <returns>True s'il n'y a pas de conflit d'intégrité, False dans le cas contraire</returns>
         private bool VerifIntegrite(int id)
         {
-            this.req = $"SELECT idlocation FROM location WHERE idbien = {id}";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            List<string> liste = new List<string>();
-            MySqlDataReader reader = this.command.ExecuteReader();
-            // boucle tant que la ligne lue contient quelque chose
-            while (reader.Read())
-            {
-                liste.Add($"{reader["idlocation"]}");
-            }
-            // fermeture du curseur
-            reader.Close();
-            if (liste.Count == 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            const string req = "SELECT COUNT(*) FROM location WHERE idbien = @id";
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@id", id);
+
+            long nbLocations = Convert.ToInt64(command.ExecuteScalar());
+            return nbLocations == 0;
         }
 
         /// <summary>
         /// Gère le clic sur le bouton d'accès à la fiche du bien sélectionné
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnFicheBien_Click(object sender, EventArgs e)
         {
-            // Si aucun bien n'est sélectionné
             if (lstBiens.SelectedIndex == -1)
             {
                 MessageBox.Show("Veuillez sélectionner un bien pour pouvoir afficher sa fiche.");
+                return;
             }
-            else
-            {
-                // Récupère le type et l'id
-                string[] data = RechercheIdBienGroupe();
-                // Crée la fenêtre de fiche du bien avec le type (bien ou groupe) et l'(id en paramètre
-                FicheBien modifBiens = new FicheBien(data);
-                modifBiens.ShowDialog();
-            }
+
+            string[] data = RechercheIdBienGroupe(lstBiens.SelectedItem.ToString());
+            FicheBien modifBiens = new FicheBien(data);
+            modifBiens.ShowDialog();
         }
 
         /// <summary>
-        /// Gère la récupération de l'id du bien ou du groupe à partir de son nom
+        /// Récupère le type (bien ou groupe) et l'id à partir du nom sélectionné.
+        /// Utilise une vraie vérification (reader.Read()) plutôt qu'un try/catch
+        /// pour distinguer "bien" de "groupe" : l'ancien code s'appuyait sur
+        /// l'exception levée par un accès à une ligne inexistante, ce qui capturait
+        /// aussi de vraies erreurs de connexion et les confondait avec ce cas normal.
         /// </summary>
-        /// <returns>Tableau contenant le type (bien ou groupe de biens) et son id</returns>
-        private string[] RechercheIdBienGroupe()
+        /// <returns>Tableau : ["bien" ou "groupe", id, nom]</returns>
+        private string[] RechercheIdBienGroupe(string nomSelectionne)
         {
-            string[] dataBien = { "bien", "", $"{lstBiens.SelectedItem}" };
-            this.req = $"SELECT * FROM bien WHERE nombien = \"{lstBiens.SelectedItem}\"";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader readerBien = this.command.ExecuteReader();
-            try
+            const string reqBien = "SELECT idbien FROM bien WHERE nombien = @nom";
+            using (var command = new MySqlCommand(reqBien, Global.Connexion))
             {
-                readerBien.Read();
-                dataBien[1] = readerBien["idbien"].ToString();
-                readerBien.Close();
+                command.Parameters.AddWithValue("@nom", nomSelectionne);
+                using var reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    return new[] { "bien", reader.GetInt32(0).ToString(), nomSelectionne };
+                }
             }
-            catch
-            {
-                readerBien.Close();
-                dataBien[0] = "groupe";
-                this.req = $"SELECT idgroupe FROM grpedebiens WHERE nomdugroupe = \"{lstBiens.SelectedItem}\"";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                MySqlDataReader readerGrpe = this.command.ExecuteReader();
-                readerGrpe.Read();
-                dataBien[1] = readerGrpe["idgroupe"].ToString();
-                readerGrpe.Close();
-            }
-            return dataBien;
-        }
 
+            const string reqGroupe = "SELECT idgroupe FROM grpedebiens WHERE nomdugroupe = @nom";
+            using (var command = new MySqlCommand(reqGroupe, Global.Connexion))
+            {
+                command.Parameters.AddWithValue("@nom", nomSelectionne);
+                using var reader = command.ExecuteReader();
+                reader.Read();
+                return new[] { "groupe", reader.GetInt32(0).ToString(), nomSelectionne };
+            }
+        }
     }
 }
