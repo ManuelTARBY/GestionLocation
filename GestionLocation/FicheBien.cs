@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
@@ -8,15 +9,11 @@ namespace GestionLocation
 {
     public partial class FicheBien : Form
     {
-
-        private MySqlCommand command;
-        private string req;
         private readonly Dictionary<string, string> infoBien;
         // Id de la location actuelle
         private string idLocActuelle;
         private int dureeLocActuelle, nbDeBiens;
         private readonly List<int> bienSelectionne;
-
 
         /// <summary>
         /// Constructeur de FicheBien
@@ -39,12 +36,10 @@ namespace GestionLocation
             this.bienSelectionne = new List<int>();
             chartCF.Series["Series1"].ChartType = SeriesChartType.Line;
             chartCF.Series["Series1"].Name = "CA annuel";
-            // Crée la série pour les charges annuelles
             Series serieCharges = new Series("Charges annuelles")
             {
                 ChartType = SeriesChartType.Line
             };
-            // Ajoute la série des charges annuelles
             chartCF.Series.Add(serieCharges);
             GetListeDesBiensSelectionnes();
             GetLesAnnees();
@@ -52,84 +47,74 @@ namespace GestionLocation
             RemplirChamps();
         }
 
-
         /// <summary>
-        /// Récupère les années d'exploitation pour un bien ou un groupe de bien
+        /// Récupère les années d'exploitation pour un bien ou un groupe de bien et met à jour le graphique.
+        /// Si aucune location n'existe encore pour le(s) bien(s), affiche le graphique vide plutôt que de planter.
         /// </summary>
-        /// <returns></returns>
         public void GetLesAnnees()
         {
-            int anneeMini, anneeMaxi;
+            int? anneeMini = RecupAnneeMinMax(this.bienSelectionne, min: true);
+            int? anneeMaxi = RecupAnneeMinMax(this.bienSelectionne, min: false);
+
+            if (anneeMini == null || anneeMaxi == null)
+            {
+                int anneeCourante = DateTime.Now.Year;
+                chartCF.ChartAreas[0].AxisX.Minimum = anneeCourante;
+                chartCF.ChartAreas[0].AxisX.Maximum = anneeCourante;
+                chartCF.ChartAreas[0].AxisX.Interval = 1;
+                CompleterChartCF(new List<int>(), this.bienSelectionne);
+                return;
+            }
+
             List<int> lesAnnees = new List<int>();
-            List<int> lesBiens = new List<int>();
-            MySqlDataReader reader;
-            // Si c'est un bien qui est sélectionné
-            if (this.infoBien["type"] == "bien")
-            {
-                lesBiens.Add(int.Parse(this.infoBien["id"]));
-            }
-            // Si c'est un groupe de biens qui est sélectionné
-            else
-            {
-                this.req = $"SELECT idbien FROM lignegroupe WHERE idgroupe = {this.infoBien["id"]}";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                this.command.Prepare();
-                reader = this.command.ExecuteReader();
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        lesBiens.Add(reader.GetInt32(0));
-                    }
-                    reader.Close();
-                }
-            }
-
-            // Détermine la première année d'exploitation
-            this.req = $"SELECT MIN(YEAR(debutlocation)) FROM location " +
-                $"WHERE idbien IN ({string.Join(",", lesBiens.ConvertAll(v => v.ToString()))})";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            this.command.Prepare();
-            reader = this.command.ExecuteReader();
-            reader.Read();
-            anneeMini = reader.GetInt32(0);
-            reader.Close();
-
-            // Détermine la dernière année d'exploitation (sans dépasser l'année actuelle)
-            this.req = $"SELECT LEAST(MAX(YEAR(finlocation)), YEAR(CURDATE())) FROM location " +
-                $"WHERE idbien IN ({string.Join(",", lesBiens.ConvertAll(v => v.ToString()))})";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            this.command.Prepare();
-            reader = this.command.ExecuteReader();
-            reader.Read();
-            anneeMaxi = reader.GetInt32(0);
-            reader.Close();
-
-            for (int i = anneeMini; i <= anneeMaxi; i++)
+            for (int i = anneeMini.Value; i <= anneeMaxi.Value; i++)
             {
                 lesAnnees.Add(i);
             }
 
-            // Met à jour la chart du cash-flow par année
-            // Réglez les valeurs minimales et maximales de l'axe des abscisses
-            chartCF.ChartAreas[0].AxisX.Minimum = anneeMini;
-            chartCF.ChartAreas[0].AxisX.Maximum = anneeMaxi;
-
-            // Assurez-vous que les valeurs de l'axe des abscisses sont affichées correctement
+            chartCF.ChartAreas[0].AxisX.Minimum = anneeMini.Value;
+            chartCF.ChartAreas[0].AxisX.Maximum = anneeMaxi.Value;
             chartCF.ChartAreas[0].AxisX.Interval = 1;
-            CompleterChartCF(lesAnnees, lesBiens);
+            CompleterChartCF(lesAnnees, this.bienSelectionne);
         }
 
+        /// <summary>
+        /// Récupère l'année min ou max d'exploitation pour une liste de biens.
+        /// Retourne null si aucune location n'existe (au lieu de planter sur un MIN/MAX NULL).
+        /// </summary>
+        private int? RecupAnneeMinMax(List<int> lesBiens, bool min)
+        {
+            if (lesBiens.Count == 0)
+            {
+                return null;
+            }
+
+            string idsParams = string.Join(",", lesBiens.Select((_, idx) => $"@id{idx}"));
+            string req = min
+                ? $"SELECT MIN(YEAR(debutlocation)) FROM location WHERE idbien IN ({idsParams})"
+                : $"SELECT LEAST(MAX(YEAR(finlocation)), YEAR(CURDATE())) FROM location WHERE idbien IN ({idsParams})";
+
+            using var command = new MySqlCommand(req, Global.Connexion);
+            for (int i = 0; i < lesBiens.Count; i++)
+            {
+                command.Parameters.AddWithValue($"@id{i}", lesBiens[i]);
+            }
+
+            using var reader = command.ExecuteReader();
+            if (reader.Read() && !reader.IsDBNull(0))
+            {
+                return reader.GetInt32(0);
+            }
+            return null;
+        }
 
         /// <summary>
         /// Permet de récupérer les infos sur le bien ou le groupe de bien sélectionné
         /// </summary>
-        /// <returns>Infos sur le bien ou le groupe de bien sélectionné</returns>
         public Dictionary<string, string> GetInfoBien()
         {
             return this.infoBien;
         }
-
 
         /// <summary>
         /// Récupère la liste des biens concernés par l'affichage de la fenêtre
@@ -137,47 +122,39 @@ namespace GestionLocation
         public void GetListeDesBiensSelectionnes()
         {
             this.bienSelectionne.Clear();
+
             if (this.infoBien["type"] == "bien")
             {
                 this.bienSelectionne.Add(int.Parse(this.infoBien["id"]));
+                return;
             }
-            else if (this.infoBien["type"] == "groupe")
+
+            const string req = "SELECT idbien FROM lignegroupe WHERE idgroupe = @idgroupe";
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@idgroupe", int.Parse(this.infoBien["id"]));
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
             {
-                this.req = "SELECT idbien FROM lignegroupe WHERE idgroupe = " +
-                       $"(SELECT idgroupe FROM grpedebiens WHERE idgroupe = {this.infoBien["id"]})";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                MySqlDataReader reader = this.command.ExecuteReader();
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        this.bienSelectionne.Add(reader.GetInt32(0));
-                    }
-                    reader.Close();
-                }
+                this.bienSelectionne.Add(reader.GetInt32(0));
             }
         }
 
-
         /// <summary>
-        /// Revoie le type de bien sélectionné
+        /// Renvoie le type de bien sélectionné
         /// </summary>
-        /// <returns>Chaîne contenant le type de bien sélectionné</returns>
         public string GetTypeBien()
         {
             return this.infoBien["type"];
         }
 
-
         /// <summary>
         /// Retourne la liste des biens sélectionnés
         /// </summary>
-        /// <returns> Liste des biens sélectionnés</returns>
         public List<int> GetLesBiens()
         {
             return this.bienSelectionne;
         }
-
 
         /// <summary>
         /// Remplit tous les champs de la fenêtre
@@ -191,68 +168,60 @@ namespace GestionLocation
             RemplirListeLocations();
         }
 
-
         /// <summary>
         /// Remplit les champs relatifs au locataire (nom et durée de la location)
         /// </summary>
         public void RemplirLocataire()
         {
-            // Si le bien n'est pas occupé ou qu'il s'agit d'un groupe de bien
             if (this.idLocActuelle.Equals("0") || this.infoBien["type"].Equals("groupe"))
             {
                 txtDureeOccup.Visible = false;
                 lblDureeOccup.Visible = false;
+                return;
             }
-            // Sinon
-            else
-            {
-                // Cherche l'id du locataire relié à cette location
-                string idLocataire;
-                this.req = $"SELECT idlocataire FROM location WHERE idlocation ={this.idLocActuelle}";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                MySqlDataReader reader = this.command.ExecuteReader();
-                reader.Read();
-                idLocataire = reader.GetString(0);
-                reader.Close();
-                // Recherche du nom complet du locataire à partir de son id
-                txtActuelLocat.Text = RecupLocataire(idLocataire);
-                // Calcule la durée de l'actuelle location en mois
-                txtDureeOccup.Text = ConvertJoursVersMois(this.dureeLocActuelle);
-            }
-        }
 
+            const string req = "SELECT idlocataire FROM location WHERE idlocation = @idLoc";
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@idLoc", this.idLocActuelle);
+
+            using var reader = command.ExecuteReader();
+            reader.Read();
+            string idLocataire = reader.GetString(0);
+            reader.Close();
+
+            txtActuelLocat.Text = RecupLocataire(idLocataire);
+            txtDureeOccup.Text = ConvertJoursVersMois(this.dureeLocActuelle);
+        }
 
         /// <summary>
         /// Récupère le nom complet d'un locataire à partir de son id
         /// </summary>
-        /// <param name="idLocat">Id du locataire à trouver</param>
-        /// <returns>Nom complet du locataire</returns>
         public string RecupLocataire(string idLocat)
         {
-            string leNom;
-            this.req = "SELECT CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', SUBSTRING_INDEX(nomlocataire, ',' , 1)) " +
-                $"FROM locataire WHERE idlocataire ={idLocat}";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
+            const string req =
+                "SELECT CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', SUBSTRING_INDEX(nomlocataire, ',', 1)) " +
+                "FROM locataire WHERE idlocataire = @id";
+
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@id", idLocat);
+
+            using var reader = command.ExecuteReader();
             reader.Read();
-            leNom = reader.GetString(0);
-            reader.Close();
-            return leNom;
+            return reader.GetString(0);
         }
 
-
         /// <summary>
-        /// Gère les couleurs d'alerte en cas d'anomalie
+        /// Gère les couleurs d'alerte en cas d'anomalie.
+        /// Ne tente plus de parser "-" en float (cause du plantage quand les charges
+        /// annuelles ne sont pas renseignées pour un bien).
         /// </summary>
         public void AppliquerCouleurs()
         {
-            // Charges imputables
             float charges = float.Parse(txtCharges.Text.Replace(" €", ""));
-            float chImput = 0;
-            if (!txtChargesImputables.Text.Equals("-"))
-            {
-                chImput = float.Parse(txtChargesImputables.Text.Replace(" €", ""));
-            }
+            float chImput = txtChargesImputables.Text.Equals("-")
+                ? 0
+                : float.Parse(txtChargesImputables.Text.Replace(" €", ""));
+
             if (chImput > charges)
             {
                 txtChargesImputables.BackColor = System.Drawing.Color.DarkRed;
@@ -264,7 +233,14 @@ namespace GestionLocation
                 txtChargesImputables.ForeColor = System.Drawing.SystemColors.WindowText;
             }
 
-            // Vacance locative
+            // Le seuil de rentabilité n'est pas calculable si les charges annuelles sont inconnues
+            if (txtSeuilRenta.Text.Equals("-"))
+            {
+                txtVacanceLocative.BackColor = System.Drawing.SystemColors.Control;
+                txtVacanceLocative.ForeColor = System.Drawing.SystemColors.WindowText;
+                return;
+            }
+
             float renta = float.Parse(txtSeuilRenta.Text.Replace(" %", ""));
             float vacance = float.Parse(txtVacanceLocative.Text.Replace(" %", ""));
             if (vacance > 100 - renta)
@@ -279,7 +255,6 @@ namespace GestionLocation
             }
         }
 
-
         /// <summary>
         /// Remplit les champs de la fenêtre avec les données issues de la table Bien
         /// </summary>
@@ -288,454 +263,446 @@ namespace GestionLocation
             switch (this.infoBien["type"])
             {
                 case "bien":
-                    this.req = $"SELECT * FROM bien WHERE idbien = {this.infoBien["id"]}";
-                    this.command = new MySqlCommand(this.req, Global.Connexion);
-                    this.command.Prepare();
-                    MySqlDataReader reader = this.command.ExecuteReader();
-                    reader.Read();
-                    // Remplissage des champs récupérés dans la ligne
-                    lblNomBien.Text = $"{this.infoBien["nom"].ToUpper()}   -   {reader.GetString(5)} {reader.GetString(6)} {reader.GetString(7).ToUpper()}";
-                    txtLoyerHC.Text = $"{reader.GetFloat(2):N} €";
-                    txtCharges.Text = $"{reader.GetFloat(3):N} €";
-                    txtLoyerCC.Text = $"{reader.GetFloat(4):N} €";
-                    try
-                    {
-                        txtChargesImputables.Text = $"{reader.GetFloat(8):N} €";
-                    }
-                    catch
-                    {
-                        txtChargesImputables.Text = "-";
-                    }
-                    try
-                    {
-                        txtChargesAnnuelles.Text = $"{reader.GetFloat(9):N} €";
-                    }
-                    catch
-                    {
-                        txtChargesAnnuelles.Text = "-";
-                    }
-                    if ((bool)reader["bienarchive"])
-                    {
-                        txtArchive.Text = "Oui";
-                    }
-                    else
-                    {
-                        txtArchive.Text = "Non";
-                    }
-                    reader.Close();
+                    RemplirBienUnique();
                     break;
                 case "groupe":
-                    lblActuelLocat.Visible = false;
-                    txtActuelLocat.Visible = false;
-                    lblArchive.Visible = false;
-                    txtArchive.Visible = false;
-                    lblDebutExploit.Visible = false;
-                    txtDebutExploit.Visible = false;
-                    lblFinExploit.Visible = false;
-                    txtFinExploit.Visible = false;
-                    lblNomBien.Text = $"{this.infoBien["nom"].ToUpper()}";
-                    txtChargesAnnuelles.Text = RecupChargesAnnuGrpe().ToString("N") + " €";
-                    RemplirLoyerChargeGrpe();
-                    break;
-                default:
+                    RemplirBienGroupe();
                     break;
             }
             CalculSeuilRenta(txtLoyerCC.Text);
         }
 
+        private void RemplirBienUnique()
+        {
+            const string req =
+                "SELECT adressebien, cpbien, villebien, loyerhc, charges, loyercc, " +
+                "chargesimputables, chargeannuelles, bienarchive " +
+                "FROM bien WHERE idbien = @id";
+
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@id", this.infoBien["id"]);
+
+            using var reader = command.ExecuteReader();
+            reader.Read();
+
+            lblNomBien.Text = $"{this.infoBien["nom"].ToUpper()}   -   " +
+                $"{reader.GetString("adressebien")} {reader.GetString("cpbien")} {reader.GetString("villebien").ToUpper()}";
+            txtLoyerHC.Text = $"{reader.GetFloat("loyerhc"):N} €";
+            txtCharges.Text = $"{reader.GetFloat("charges"):N} €";
+            txtLoyerCC.Text = $"{reader.GetFloat("loyercc"):N} €";
+
+            txtChargesImputables.Text = reader.IsDBNull(reader.GetOrdinal("chargesimputables"))
+                ? "-"
+                : $"{reader.GetFloat("chargesimputables"):N} €";
+
+            // chargeannuelles est un INT en base (pas un FLOAT) : lire avec GetInt32,
+            // pas GetFloat, sinon la lecture échoue systématiquement (colonne toujours
+            // affichée à "-" même quand elle est renseignée).
+            txtChargesAnnuelles.Text = reader.IsDBNull(reader.GetOrdinal("chargeannuelles"))
+                ? "-"
+                : $"{reader.GetInt32("chargeannuelles"):N} €";
+
+            txtArchive.Text = reader.GetBoolean("bienarchive") ? "Oui" : "Non";
+        }
+
+        private void RemplirBienGroupe()
+        {
+            lblActuelLocat.Visible = false;
+            txtActuelLocat.Visible = false;
+            lblArchive.Visible = false;
+            txtArchive.Visible = false;
+            lblDebutExploit.Visible = false;
+            txtDebutExploit.Visible = false;
+            lblFinExploit.Visible = false;
+            txtFinExploit.Visible = false;
+            lblNomBien.Text = $"{this.infoBien["nom"].ToUpper()}";
+            txtChargesAnnuelles.Text = RecupChargesAnnuGrpe().ToString("N") + " €";
+            RemplirLoyerChargeGrpe();
+        }
 
         /// <summary>
         /// Remplit les champs de la fenêtre issus de la table Location
         /// </summary>
         public void RemplirLocation()
         {
-            // Calcule le nombre de locations
             CalculNbLoc();
-            double[] dureeExploit;
-            double exploitJours = 0;
-            double exploitAnnees = 0;
+            double exploitJours;
+            double exploitAnnees;
+
             switch (this.infoBien["type"])
             {
                 case "bien":
                     this.nbDeBiens = 1;
-                    // Calcule le début d'exploitation
-                    this.req = $"SELECT MIN(debutlocation) FROM (SELECT debutlocation FROM location WHERE idbien={this.infoBien["id"]}) AS reqC";
-                    txtDebutExploit.Text = CalculDebutExploit();
-
-                    // Calcule la fin d'exploitation
-                    this.req = $"SELECT MAX(finlocation) FROM (SELECT finlocation FROM location WHERE idbien={this.infoBien["id"]}) AS reqD";
-                    txtFinExploit.Text = CalculFinExploit();
-
-                    // Calcule la durée d'exploitation
-                    dureeExploit = CalculDureeExploit(txtDebutExploit.Text, txtFinExploit.Text);
-                    exploitJours = dureeExploit[0];
-                    exploitAnnees = dureeExploit[1];
+                    txtDebutExploit.Text = CalculDebutExploit(this.infoBien["id"]);
+                    txtFinExploit.Text = CalculFinExploit(this.infoBien["id"]);
+                    double[] duree = CalculDureeExploit(txtDebutExploit.Text, txtFinExploit.Text);
+                    exploitJours = duree[0];
+                    exploitAnnees = duree[1];
                     break;
+
                 case "groupe":
                     this.nbDeBiens = this.bienSelectionne.Count;
-                    string[] lesDebutExploit = new string[nbDeBiens];
-                    string[] lesFinExploit = new string[nbDeBiens];
-                    for (int i = 0; i < nbDeBiens; i++)
+                    exploitJours = 0;
+                    exploitAnnees = 0;
+                    foreach (int idBien in this.bienSelectionne)
                     {
-                        this.req = $"SELECT MIN(debutlocation) FROM (SELECT debutlocation FROM location WHERE idbien={this.bienSelectionne[i]}) AS reqA";
-                        lesDebutExploit[i] = CalculDebutExploit();
-                        this.req = $"SELECT MAX(finlocation) FROM (SELECT finlocation FROM location WHERE idbien={this.bienSelectionne[i]}) AS reqB";
-                        lesFinExploit[i] = CalculFinExploit();
-                    }
-                    for (int j = 0; j < nbDeBiens; j++)
-                    {
-                        dureeExploit = CalculDureeExploit(lesDebutExploit[j], lesFinExploit[j]);
-                        exploitJours += dureeExploit[0];
-                        exploitAnnees += dureeExploit[1];
+                        string debutExploit = CalculDebutExploit(idBien.ToString());
+                        string finExploit = CalculFinExploit(idBien.ToString());
+                        double[] d = CalculDureeExploit(debutExploit, finExploit);
+                        exploitJours += d[0];
+                        exploitAnnees += d[1];
                     }
                     break;
+
                 default:
+                    exploitJours = 0;
+                    exploitAnnees = 0;
                     break;
             }
-            // Affichages des durées d'exploitation
-            txtDureeExploitEnJours.Text = String.Format("{0: # ###}", exploitJours);
-            txtDureeExploitEnAnnees.Text = String.Format("{0:0.#}", exploitAnnees);
+
+            txtDureeExploitEnJours.Text = string.Format("{0: # ###}", exploitJours);
+            txtDureeExploitEnAnnees.Text = string.Format("{0:0.#}", exploitAnnees);
 
             // Récupération des durées de location
-            switch (this.infoBien["type"])
-            {
-                case "bien":
-                    this.req = $"SELECT * FROM location WHERE idbien={this.infoBien["id"]}";
-                    break;
-                case "groupe":
-                    this.req = $"SELECT * FROM location WHERE idbien IN (SELECT idbien FROM lignegroupe WHERE idgroupe = {this.infoBien["id"]})";
-                    break;
-                default:
-                    break;
-            }
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
+            string req = this.infoBien["type"].Equals("bien")
+                ? "SELECT idlocation, debutlocation, finlocation FROM location WHERE idbien = @id"
+                : "SELECT idlocation, debutlocation, finlocation FROM location " +
+                  "WHERE idbien IN (SELECT idbien FROM lignegroupe WHERE idgroupe = @id)";
+
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@id", this.infoBien["id"]);
+
             List<int> lesDureesDeLoc = new List<int>();
             DateTime today = DateTime.Now;
-            while (reader.Read())
+
+            using (var reader = command.ExecuteReader())
             {
-                DateTime debutLoc = DateTime.ParseExact($"{reader.GetDateTime(4):d}", "d", null);
-                DateTime finLoc = DateTime.ParseExact($"{reader.GetDateTime(5):d}", "d", null);
-                // Si la location est l'actuelle location
-                if (debutLoc < today && finLoc > today)
+                while (reader.Read())
                 {
-                    this.idLocActuelle = reader.GetString(0);
-                    if (finLoc > today.AddDays(30))
+                    DateTime debutLoc = reader.GetDateTime("debutlocation").Date;
+                    DateTime finLoc = reader.GetDateTime("finlocation").Date;
+
+                    if (debutLoc < today && finLoc > today)
                     {
-                        finLoc = today.AddDays(30);
-                        this.dureeLocActuelle = finLoc.Subtract(debutLoc).Days + 1;
+                        this.idLocActuelle = reader.GetInt32("idlocation").ToString();
+                        if (finLoc > today.AddDays(30))
+                        {
+                            finLoc = today.AddDays(30);
+                            this.dureeLocActuelle = finLoc.Subtract(debutLoc).Days + 1;
+                        }
+                        else
+                        {
+                            this.dureeLocActuelle = today.Subtract(debutLoc).Days + 1;
+                        }
                     }
-                    else
-                    {
-                        this.dureeLocActuelle = today.Subtract(debutLoc).Days + 1;
-                    }
+
+                    lesDureesDeLoc.Add(finLoc.Subtract(debutLoc).Days + 1);
                 }
-                lesDureesDeLoc.Add(finLoc.Subtract(debutLoc).Days + 1);
             }
-            reader.Close();
-            // Calcul des durées mini, moyenne et maxi de location
+
             int dureeTotaleDeLoc = 0, dureeMini = 10000, dureeMaxi = 0;
-            foreach (int duree in lesDureesDeLoc)
+            foreach (int duree2 in lesDureesDeLoc)
             {
-                dureeTotaleDeLoc += duree;
-                dureeMini = Math.Min(dureeMini, duree);
-                dureeMaxi = Math.Max(dureeMaxi, duree);
+                dureeTotaleDeLoc += duree2;
+                dureeMini = Math.Min(dureeMini, duree2);
+                dureeMaxi = Math.Max(dureeMaxi, duree2);
             }
-            // Conversion et affichage des valeurs
-            txtDureeMoyenneLoc.Text = ConvertJoursVersMois(dureeTotaleDeLoc / int.Parse(txtNbLoc.Text));
+
+            int nbLoc = int.Parse(txtNbLoc.Text);
+            if (nbLoc == 0)
+            {
+                // Aucune location : évite la division par zéro
+                txtDureeMoyenneLoc.Text = "-";
+                txtDureeMiniLoc.Text = "-";
+                txtDureeMaxiLoc.Text = "-";
+                txtVacanceLocative.Text = "-";
+                return;
+            }
+
+            txtDureeMoyenneLoc.Text = ConvertJoursVersMois(dureeTotaleDeLoc / nbLoc);
             txtDureeMiniLoc.Text = ConvertJoursVersMois(dureeMini);
             txtDureeMaxiLoc.Text = ConvertJoursVersMois(dureeMaxi);
 
-            // Calcul de la vacance locative
             if (this.infoBien["type"].Equals("groupe"))
             {
                 dureeTotaleDeLoc /= this.nbDeBiens;
             }
-            double vacanceJours = exploitJours / this.nbDeBiens - dureeTotaleDeLoc;
-            float vacancePrc = (float)Math.Round(vacanceJours / (exploitJours / this.nbDeBiens) * 100, 1);
-            txtVacanceLocative.Text = $"{vacancePrc} %";
-        }
 
+            if (exploitJours == 0)
+            {
+                txtVacanceLocative.Text = "0 %";
+            }
+            else
+            {
+                double vacanceJours = exploitJours / this.nbDeBiens - dureeTotaleDeLoc;
+                float vacancePrc = (float)Math.Round(vacanceJours / (exploitJours / this.nbDeBiens) * 100, 1);
+                txtVacanceLocative.Text = $"{vacancePrc} %";
+            }
+        }
 
         /// <summary>
         /// Convertit un nombre de jours en mois
         /// </summary>
-        /// <param name="jours">Nombre de jours à convertir</param>
-        /// <returns>Durée équivalente en mois</returns>
         public string ConvertJoursVersMois(int jours)
         {
-            double mois = Math.Round((jours / 30.42), 1);
+            double mois = Math.Round(jours / 30.42, 1);
             return mois.ToString();
         }
-
 
         /// <summary>
         /// Gère le clic sur le bouton fermer
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnFermer_Click(object sender, EventArgs e)
         {
             this.Dispose();
         }
-
 
         /// <summary>
         /// Remplit le champ relatif au nombre de locations du bien
         /// </summary>
         public void CalculNbLoc()
         {
-            if (this.infoBien["type"].Equals("bien"))
-            {
-                this.req = $"SELECT COUNT(idlocation) AS 'Nb de loc' FROM (SELECT idlocation FROM location WHERE idbien={this.infoBien["id"]}) AS req";
-            }
-            else
-            {
-                this.req = $"SELECT COUNT(idlocation) AS 'Nb de loc' FROM location WHERE idbien IN (SELECT idbien FROM lignegroupe WHERE idgroupe = \'{this.infoBien["id"]}\')";
-            }
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
-            reader.Read();
-            txtNbLoc.Text = reader["Nb de loc"].ToString();
-            reader.Close();
+            string req = this.infoBien["type"].Equals("bien")
+                ? "SELECT COUNT(idlocation) FROM location WHERE idbien = @id"
+                : "SELECT COUNT(idlocation) FROM location WHERE idbien IN (SELECT idbien FROM lignegroupe WHERE idgroupe = @id)";
+
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@id", this.infoBien["id"]);
+            txtNbLoc.Text = Convert.ToInt32(command.ExecuteScalar()).ToString();
         }
 
-
         /// <summary>
-        /// Remplit le champ relatif au début d'exploitation du bien
+        /// Calcule la date de début d'exploitation d'un bien.
+        /// Retourne "-" si le bien n'a jamais eu de location (au lieu de planter).
         /// </summary>
-        /// <returns>Date de début d'exploitation sous forme de chaîne</returns>
-        public string CalculDebutExploit()
+        public string CalculDebutExploit(string idBien)
         {
-            string debutExploit;
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
+            const string req = "SELECT MIN(debutlocation) FROM location WHERE idbien = @id";
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@id", idBien);
+
+            using var reader = command.ExecuteReader();
             reader.Read();
-            try
+            if (reader.IsDBNull(0))
             {
-                debutExploit = $"{reader.GetDateTime(0):d}";
+                return "-";
             }
-            catch
-            {
-                debutExploit = "-";
-            }
-            reader.Close();
-            return debutExploit;
+            return $"{reader.GetDateTime(0):d}";
         }
 
-
         /// <summary>
-        /// Remplit le champ relatif à la fin d'exploitation du bien
+        /// Calcule la date de fin d'exploitation d'un bien (plafonnée à aujourd'hui + 30 jours).
+        /// Retourne "-" si le bien n'a jamais eu de location.
         /// </summary>
-        /// <return>Date de fin d'exploitation sous forme de chaîne</return>
-        public string CalculFinExploit()
+        public string CalculFinExploit(string idBien)
         {
-            string finExploit;
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
+            const string req = "SELECT MAX(finlocation) FROM location WHERE idbien = @id";
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@id", idBien);
+
+            using var reader = command.ExecuteReader();
             reader.Read();
-            try
+            if (reader.IsDBNull(0))
             {
-                if (reader.GetDateTime(0) > DateTime.Now.AddDays(30))
-                {
-                    finExploit = DateTime.Now.AddDays(30).ToString("dd/MM/yyyy");
-                }
-                else
-                {
-                    finExploit = $"{reader.GetDateTime(0):d}";
-                }
+                return "-";
             }
-            catch
-            {
-                finExploit = "-";
-            }
-            reader.Close();
-            return finExploit;
+
+            DateTime fin = reader.GetDateTime(0);
+            return fin > DateTime.Now.AddDays(30)
+                ? DateTime.Now.AddDays(30).ToString("dd/MM/yyyy")
+                : $"{fin:d}";
         }
 
-
         /// <summary>
-        /// Remplit les champs relatifs aux durées d'exploitation pour le bien
+        /// Calcule la durée d'exploitation en jours et en années.
+        /// Retourne [0, 0] si aucune donnée n'est disponible (au lieu de planter sur "-").
         /// </summary>
         public double[] CalculDureeExploit(string debExpl, string finExpl)
         {
+            if (debExpl.Equals("-") || finExpl.Equals("-"))
+            {
+                return new double[] { 0, 0 };
+            }
+
             DateTime debutExploit = DateTime.ParseExact(debExpl, "d", null);
             DateTime finExploit = DateTime.ParseExact(finExpl, "d", null);
             TimeSpan dureeExploit = finExploit.Subtract(debutExploit);
+
             double[] lesDurees = new double[2];
             lesDurees[0] = dureeExploit.Days;
-            double exploitAnnees = (double)(dureeExploit.TotalDays / 365);
-            lesDurees[1] = Math.Round(exploitAnnees, 1);
+            lesDurees[1] = Math.Round(dureeExploit.TotalDays / 365, 1);
             return lesDurees;
         }
-
 
         /// <summary>
         /// Gère le calcul du seuil de rentabilité
         /// </summary>
-        /// <param name="loyerCC">Loyer charges comprises</param>
         public void CalculSeuilRenta(string loyerCC)
         {
-            // Si les charges annuelles sont inconnues
             if (txtChargesAnnuelles.Text.Equals("-"))
             {
                 txtSeuilRenta.Text = "-";
                 txtSeuilRentaJours.Text = "-";
+                return;
             }
-            // Sinon
-            else
-            {
-                float loyCC = float.Parse(loyerCC.Replace(" €", ""));
-                float strChargesAnnuelles = float.Parse(txtChargesAnnuelles.Text.Replace(" €", ""));
-                float loyerCCAnnuel = loyCC * 12;
-                float renta = strChargesAnnuelles / loyerCCAnnuel * 100;
-                // En pourcentage
-                txtSeuilRenta.Text = $"{String.Format("{0:0.#}", renta)}";
-                txtSeuilRenta.Text = $"{Math.Round(renta, 1)} %";
-                // En jours
-                float rentaJours = (365 * renta / 100);
-                txtSeuilRentaJours.Text = $"{String.Format("{0:0.}", rentaJours)}";
-            }
-        }
 
+            float loyCC = float.Parse(loyerCC.Replace(" €", ""));
+            float chargesAnnuelles = float.Parse(txtChargesAnnuelles.Text.Replace(" €", ""));
+            float loyerCCAnnuel = loyCC * 12;
+            float renta = chargesAnnuelles / loyerCCAnnuel * 100;
+
+            txtSeuilRenta.Text = $"{Math.Round(renta, 1)} %";
+
+            float rentaJours = 365 * renta / 100;
+            txtSeuilRentaJours.Text = $"{string.Format("{0:0.}", rentaJours)}";
+        }
 
         /// <summary>
         /// Ouvre la page qui liste toutes les charges propres au bien
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnListeCharges_Click(object sender, EventArgs e)
         {
             ListeCharges fenListeCharges = new ListeCharges(this);
             fenListeCharges.ShowDialog();
         }
 
-
         /// <summary>
-        /// Remplit le champ des charges annuelles pour un groupe de biens
+        /// Calcule le montant des charges annuelles pour un groupe de biens
         /// </summary>
-        /// <returns>Montant des charges annuelles pour ce groupe de biens</returns>
         public float RecupChargesAnnuGrpe()
         {
-            float totalCh;
-            this.req = $"SELECT SUM(chargeannuelles) AS 'total' FROM bien " +
-                $"WHERE idbien IN ({string.Join(",", this.bienSelectionne.ConvertAll(v => v.ToString()))})";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
+            if (this.bienSelectionne.Count == 0)
+            {
+                return 0;
+            }
+
+            string idsParams = string.Join(",", this.bienSelectionne.Select((_, i) => $"@id{i}"));
+            string req = $"SELECT SUM(chargeannuelles) FROM bien WHERE idbien IN ({idsParams})";
+
+            using var command = new MySqlCommand(req, Global.Connexion);
+            for (int i = 0; i < this.bienSelectionne.Count; i++)
+            {
+                command.Parameters.AddWithValue($"@id{i}", this.bienSelectionne[i]);
+            }
+
+            using var reader = command.ExecuteReader();
             reader.Read();
-            //totalCh = reader["total"].ToString();
-            totalCh = reader.GetFloat(0);
-            reader.Close();
-            return totalCh;
+            return reader.IsDBNull(0) ? 0 : reader.GetFloat(0);
         }
 
-
         /// <summary>
-        /// Remplit les champs LoyerHC, Charges, Charges imputables et LoyerCC pour un groupe de biens
+        /// Remplit les champs LoyerHC, Charges, Charges imputables et LoyerCC pour un groupe de biens.
+        /// Utilisait GetInt32 sur des colonnes FLOAT, ce qui provoquait un plantage systématique
+        /// à l'ouverture de la fiche d'un groupe : corrigé en GetFloat.
         /// </summary>
         public void RemplirLoyerChargeGrpe()
         {
-            this.req = $"SELECT SUM(loyerHC) AS 'Loyers HC', SUM(charges) AS 'Total charges', SUM(loyercc) AS 'Loyers CC', " +
-                "SUM(chargesimputables) AS 'Imputables' FROM bien " +
-                $"WHERE idbien IN ({string.Join(",", this.bienSelectionne.ConvertAll(v => v.ToString()))})";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
-            reader.Read();
-            //txtLoyerHC.Text = reader["Loyers HC"].ToString() + " €";
-            txtLoyerHC.Text = reader.GetInt32(0).ToString("N") + " €";
-            //txtCharges.Text = reader["Total charges"].ToString() + " €";
-            txtCharges.Text = reader.GetInt32(1).ToString("N") + " €";
-            //txtLoyerCC.Text = reader["Loyers CC"].ToString() + " €";
-            txtLoyerCC.Text = reader.GetInt32(2).ToString("N") + " €";
-            //txtChargesImputables.Text = reader["Imputables"].ToString() + " €";
-            txtChargesImputables.Text = reader.GetInt32(3).ToString("N") + " €";
-            reader.Close();
-        }
+            if (this.bienSelectionne.Count == 0)
+            {
+                txtLoyerHC.Text = txtCharges.Text = txtLoyerCC.Text = txtChargesImputables.Text = "-";
+                return;
+            }
 
+            string idsParams = string.Join(",", this.bienSelectionne.Select((_, i) => $"@id{i}"));
+            string req = "SELECT SUM(loyerHC), SUM(charges), SUM(loyercc), SUM(chargesimputables) " +
+                         $"FROM bien WHERE idbien IN ({idsParams})";
+
+            using var command = new MySqlCommand(req, Global.Connexion);
+            for (int i = 0; i < this.bienSelectionne.Count; i++)
+            {
+                command.Parameters.AddWithValue($"@id{i}", this.bienSelectionne[i]);
+            }
+
+            using var reader = command.ExecuteReader();
+            reader.Read();
+
+            txtLoyerHC.Text = (reader.IsDBNull(0) ? 0 : reader.GetFloat(0)).ToString("N") + " €";
+            txtCharges.Text = (reader.IsDBNull(1) ? 0 : reader.GetFloat(1)).ToString("N") + " €";
+            txtLoyerCC.Text = (reader.IsDBNull(2) ? 0 : reader.GetFloat(2)).ToString("N") + " €";
+            txtChargesImputables.Text = (reader.IsDBNull(3) ? 0 : reader.GetFloat(3)).ToString("N") + " €";
+        }
 
         /// <summary>
         /// Remplit le DataGridView avec la liste des locations
         /// </summary>
         public void RemplirListeLocations()
         {
-            if (this.infoBien["type"].Equals("bien"))
-            {
-                this.req = "SELECT CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', nomlocataire) AS 'Locataire', " +
-                    "debutlocation AS 'Début de location', LEAST(finlocation, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY)) AS 'Fin de location', " +
-                    "CONCAT(ROUND(DATEDIFF(LEAST(finlocation, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY)), DATE_SUB(debutlocation, INTERVAL 1 DAY)) / 30.417, 1), ' mois') AS 'Durée' " +
-                    $"FROM location NATURAL JOIN locataire WHERE idbien = {this.infoBien["id"]} ORDER BY debutlocation DESC";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                MySqlDataReader reader = this.command.ExecuteReader();
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        datListeLocations.Rows.Add(reader.GetString(0), reader.GetDateTime(1).ToString("dd/MM/yyyy"), reader.GetDateTime(2).ToString("dd/MM/yyyy"), reader.GetString(3));
-                    }
-                }
-                reader.Close();
-            }
-            else
+            if (!this.infoBien["type"].Equals("bien"))
             {
                 datListeLocations.Visible = false;
+                return;
+            }
+
+            const string req =
+                "SELECT CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', nomlocataire) AS locataire, " +
+                "debutlocation, LEAST(finlocation, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY)) AS finlocation_ajustee, " +
+                "CONCAT(ROUND(DATEDIFF(LEAST(finlocation, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY)), " +
+                "DATE_SUB(debutlocation, INTERVAL 1 DAY)) / 30.417, 1), ' mois') AS duree " +
+                "FROM location NATURAL JOIN locataire WHERE idbien = @id ORDER BY debutlocation DESC";
+
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@id", this.infoBien["id"]);
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                datListeLocations.Rows.Add(
+                    reader.GetString("locataire"),
+                    reader.GetDateTime("debutlocation").ToString("dd/MM/yyyy"),
+                    reader.GetDateTime("finlocation_ajustee").ToString("dd/MM/yyyy"),
+                    reader.GetString("duree"));
             }
         }
 
-
         /// <summary>
-        /// Met à jour la chart
+        /// Met à jour la chart du cash-flow par année
         /// </summary>
         public void CompleterChartCF(List<int> lesAnnees, List<int> lesBiens)
         {
             chartCF.Series["CA annuel"].Points.Clear();
             chartCF.Series["Charges annuelles"].Points.Clear();
-            // Récupère le CA par année
-            Dictionary<int, float> lesCA = new Dictionary<int, float>();
-            foreach (int annee in lesAnnees)
+
+            if (lesBiens.Count == 0)
             {
-                this.req = "SELECT SUM(montantpaye) FROM paiement NATURAL JOIN location NATURAL JOIN bien " +
-                      $"WHERE periodefacturee LIKE '{annee}%' AND " +
-                      $"idbien IN ({string.Join(",", lesBiens.ConvertAll(v => v.ToString()))})";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                this.command.Prepare();
-                MySqlDataReader reader = this.command.ExecuteReader();
-                reader.Read();
-                lesCA.Add(annee, reader.GetFloat(0));
-                reader.Close();
+                return;
             }
 
-            // Intègre les données par année dans le graphique
-            foreach (var uneAnnee in lesCA)
+            string idsParams = string.Join(",", lesBiens.Select((_, i) => $"@id{i}"));
+
+            foreach (int annee in lesAnnees)
             {
-                chartCF.Series["CA annuel"].Points.AddXY(uneAnnee.Key, uneAnnee.Value);
-                chartCF.Series["Charges annuelles"].Points.AddXY(uneAnnee.Key, GetChargesAnnuelles(uneAnnee.Key));
+                // COALESCE(..., 0) : évite un plantage si aucun paiement n'existe pour cette année
+                string req = "SELECT COALESCE(SUM(montantpaye), 0) FROM paiement NATURAL JOIN location NATURAL JOIN bien " +
+                             $"WHERE periodefacturee LIKE @periode AND idbien IN ({idsParams})";
+
+                using var command = new MySqlCommand(req, Global.Connexion);
+                command.Parameters.AddWithValue("@periode", $"{annee}%");
+                for (int i = 0; i < lesBiens.Count; i++)
+                {
+                    command.Parameters.AddWithValue($"@id{i}", lesBiens[i]);
+                }
+
+                float ca = Convert.ToSingle(command.ExecuteScalar());
+                chartCF.Series["CA annuel"].Points.AddXY(annee, ca);
+                chartCF.Series["Charges annuelles"].Points.AddXY(annee, GetChargesAnnuelles(annee));
             }
         }
 
-
         /// <summary>
-        /// Calcule le total des charges payées sur une année
+        /// Calcule le total des charges payées sur une année pour les biens sélectionnés
         /// </summary>
-        /// <param name="annee">Année pour laquelle on veut calculer le montant des charges annuelles</param>
-        /// <returns>Montant des charges annuelles</returns>
         public float GetChargesAnnuelles(int annee)
         {
-            // Déclarations
             float ch = 0;
-            MySqlDataReader reader;
+            const string req = "SELECT COALESCE(SUM(chargeannuelle), 0) FROM chargesannuelles " +
+                                "WHERE idbien = @id AND annee = @annee";
 
-            // Charges fixes
             foreach (int bien in this.bienSelectionne)
             {
-                // Récupère les charges de l'année pour le bien
-                this.req = "SELECT COALESCE(SUM(chargeannuelle), 0) FROM chargesannuelles " +
-                    $"WHERE idbien = {bien} AND annee = {annee}";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                this.command.Prepare();
-                reader = this.command.ExecuteReader();
-                reader.Read();
-                ch += reader.GetFloat(0);
-                reader.Close();
+                using var command = new MySqlCommand(req, Global.Connexion);
+                command.Parameters.AddWithValue("@id", bien);
+                command.Parameters.AddWithValue("@annee", annee);
+                ch += Convert.ToSingle(command.ExecuteScalar());
             }
             return ch;
         }
