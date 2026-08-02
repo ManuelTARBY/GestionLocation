@@ -125,12 +125,6 @@ namespace GestionLocation
             cbxProdChauff.SelectedIndex = reader.GetString("prodchauff") == "Individuelle" ? 0 : 1;
             cbxProdEauChaude.SelectedIndex = reader.GetString("prodeauchaude") == "Individuelle" ? 0 : 1;
 
-            // Champs optionnels (nullable en base)
-            txtChargesImputables.Text = reader.IsDBNull(reader.GetOrdinal("chargesimputables"))
-                ? "" : reader.GetFloat("chargesimputables").ToString(System.Globalization.CultureInfo.InvariantCulture);
-            txtChargesAnnuelles.Text = reader.IsDBNull(reader.GetOrdinal("chargeannuelles"))
-                ? "" : reader.GetInt32("chargeannuelles").ToString();
-
             // Champs obligatoires
             txtNumeroFiscal.Text = reader.GetString("numerofiscal");
             txtEstimationConso.Text = reader.GetString("estimationconsommation");
@@ -237,17 +231,6 @@ namespace GestionLocation
             command.Parameters.AddWithValue("@prodchauff", cbxProdChauff.SelectedItem.ToString());
             command.Parameters.AddWithValue("@prodeauchaude", cbxProdEauChaude.SelectedItem.ToString());
 
-            // Champs optionnels : chaîne vide -> DBNull (colonnes nullable en base)
-            command.Parameters.AddWithValue("@chargesimputables",
-                string.IsNullOrWhiteSpace(txtChargesImputables.Text)
-                    ? (object)DBNull.Value
-                    : float.Parse(txtChargesImputables.Text.Replace(',', '.'), System.Globalization.CultureInfo.InvariantCulture));
-
-            command.Parameters.AddWithValue("@chargeannuelles",
-                string.IsNullOrWhiteSpace(txtChargesAnnuelles.Text)
-                    ? (object)DBNull.Value
-                    : int.Parse(txtChargesAnnuelles.Text));
-
             // Champs obligatoires
             command.Parameters.AddWithValue("@numerofiscal", txtNumeroFiscal.Text);
             command.Parameters.AddWithValue("@classeDpe", cbxClasseDPE.SelectedItem.ToString());
@@ -267,23 +250,6 @@ namespace GestionLocation
                 || txtEstimationConso.Text.Equals("") || txtAnneeReference.Text.Equals(""))
             {
                 MessageBox.Show("Veuillez remplir tous les champs obligatoires pour pouvoir valider la saisie.");
-                return false;
-            }
-
-            // Champs optionnels : si renseignés, doivent être dans un format valide
-            if (!string.IsNullOrWhiteSpace(txtChargesImputables.Text) &&
-                !float.TryParse(txtChargesImputables.Text.Replace(',', '.'),
-                    System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out _))
-            {
-                MessageBox.Show("Erreur de saisie pour les charges imputables.");
-                txtChargesImputables.Focus();
-                return false;
-            }
-
-            if (!string.IsNullOrWhiteSpace(txtChargesAnnuelles.Text) && !int.TryParse(txtChargesAnnuelles.Text, out _))
-            {
-                MessageBox.Show("Erreur de saisie pour les charges annuelles.");
-                txtChargesAnnuelles.Focus();
                 return false;
             }
 
