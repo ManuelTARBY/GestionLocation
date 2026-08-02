@@ -6,281 +6,344 @@ namespace GestionLocation
 {
     public partial class AjoutModifBiens : Form
     {
-
-        private MySqlCommand command;
         private readonly Biens leBien;
-        private string req;
         private readonly int id;
-        private readonly string typeReq;
-        private readonly string[] rubBiens = {"idbien", "nombien", "loyerhc", "charges", "loyercc", "adressebien", "cpbien", 
-            "villebien", "bienarchive", "typehabitat", "regimejuridique", "periodeconstruction", "superficie", "nbpiece",
-            "description", "elementequip", "autre", "prodchauff", "prodeauchaude"};
+        private readonly bool estNouveau;
 
         /// <summary>
-        /// Consstructeur de la fenêtre AjoutModifBiens
+        /// Constructeur de la fenêtre AjoutModifBiens
         /// </summary>
         /// <param name="fenBien">Instance de la fenêtre Biens</param>
-        /// <param name="typeReq">Type de requête (ajout ou modif)</param>
-        /// <param name="id">Id du bien</param>
-        public AjoutModifBiens(Biens fenBien, string typeReq, int id = 0)
+        /// <param name="estNouveau">True pour une création, False pour une modification</param>
+        /// <param name="id">Id du bien (ignoré si estNouveau = true)</param>
+        public AjoutModifBiens(Biens fenBien, bool estNouveau, int id = 0)
         {
             InitializeComponent();
             RemplitLesCombos();
             this.Text = "Ajout/Modification d'un bien";
             this.leBien = fenBien;
-            this.id = id;
-            this.typeReq = typeReq;
-            if (this.id == 0)
+            this.estNouveau = estNouveau;
+
+            if (estNouveau)
             {
-                this.req = "SELECT MAX(req.idbien) FROM (SELECT idbien FROM bien) AS req";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                this.command.Prepare();
-                MySqlDataReader reader = this.command.ExecuteReader();
-                reader.Read();
-                this.id = reader.GetInt32(0) + 1;
-                reader.Close();
+                this.id = ProchainIdBien();
             }
             else
             {
+                this.id = id;
                 AfficheInfo(this.id);
             }
+
             lblID.Text = $"ID : {this.id}";
         }
 
+        /// <summary>
+        /// Calcule le prochain id disponible pour un nouveau bien.
+        /// IFNULL(...) évite une exception si la table est vide (MAX renverrait NULL).
+        /// </summary>
+        private int ProchainIdBien()
+        {
+            const string req = "SELECT IFNULL(MAX(idbien), 0) + 1 FROM bien";
+            using var command = new MySqlCommand(req, Global.Connexion);
+            return Convert.ToInt32(command.ExecuteScalar());
+        }
 
         /// <summary>
         /// Remplit les combobox de la fenêtre
         /// </summary>
         public void RemplitLesCombos()
         {
-            // Types d'habitat
             cbxTypeHabitat.Items.Add("Appartement");
             cbxTypeHabitat.Items.Add("Maison");
             cbxTypeHabitat.Items.Add("Chambre en colocation");
 
-            // Régimes juridiques
             cbxRegimeJuri.Items.Add("Mono propriété");
             cbxRegimeJuri.Items.Add("Copropriété");
 
-            // Modes de production de chauffage
             cbxProdChauff.Items.Add("Individuelle");
             cbxProdChauff.Items.Add("Collective");
 
-            // Mode de production d'eau chaude
             cbxProdEauChaude.Items.Add("Individuelle");
             cbxProdEauChaude.Items.Add("Collective");
+
+            // Classe DPE
+            foreach (char classe in "ABCDEFG")
+            {
+                cbxClasseDPE.Items.Add(classe.ToString());
+            }
         }
 
-
         /// <summary>
-        /// Remplit les champs
+        /// Remplit les champs à partir de l'id du bien
         /// </summary>
-        /// <param name="id"></param>
         private void AfficheInfo(int id)
         {
-            this.req = $"SELECT * FROM bien WHERE idbien = {id}";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            this.command.Prepare();
-            MySqlDataReader reader = this.command.ExecuteReader();
-            reader.Read();
-            // affichage des champs récupérés dans la ligne
-            txtNom.Text = reader.GetString(1);
-            txtLoyerHC.Text = reader.GetString(2);
-            txtCharges.Text = reader.GetString(3);
-            txtLoyerCC.Text = reader.GetString(4);
-            txtAdresse.Text = reader.GetString(5);
-            txtCp.Text = reader.GetString(6);
-            txtVille.Text = reader.GetString(7);
-            if ((bool)reader["bienarchive"])
-            {
-                cbxArchive.Checked = true;
-            }
-            else
-            {
-                cbxArchive.Checked = false;
-            }
-            if (reader.GetString(11).Equals("Appartement")) {
-                cbxTypeHabitat.SelectedIndex = 0;
-            }
-            else if (reader.GetString(11).Equals("Maison"))
-            {
-                cbxTypeHabitat.SelectedIndex = 1;
-            }
-            else
-            {
-                cbxTypeHabitat.SelectedIndex = 2;
-            }
-            if (reader.GetString(12).Equals("Mono propriété"))
-            { 
-                cbxRegimeJuri.SelectedIndex = 0;
-            }
-            else
-            {
+            const string req =
+                "SELECT nombien, loyerhc, charges, loyercc, adressebien, cpbien, villebien, bienarchive, " +
+                "typehabitat, regimejuridique, periodeconstruction, superficie, nbpiece, description, " +
+                "elementequip, autre, prodchauff, prodeauchaude, chargesimputables, chargeannuelles, " +
+                "numerofiscal, classeDPE, estimationconsommation, anneereference " +
+                "FROM bien WHERE idbien = @id";
 
-                cbxRegimeJuri.SelectedIndex = 1;
-            }
-            txtPerConstruc.Text = reader.GetString(13);
-            txtSuperficie.Text = reader.GetString(14);
-            txtNbPiece.Text = reader.GetString(15);
-            txtDescriLogement.Text = reader.GetString(16);
-            txtElemEquip.Text = reader.GetString(17);
-            txtAutre.Text = reader.GetString(18);
-            if (reader.GetString(19).Equals("Individuelle"))
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@id", id);
+
+            using var reader = command.ExecuteReader();
+            if (!reader.Read())
             {
-                cbxProdChauff.SelectedIndex = 0;
+                MessageBox.Show("Ce bien n'existe plus.");
+                this.Dispose();
+                return;
             }
-            else
+
+            txtNom.Text = reader.GetString("nombien");
+            txtLoyerHC.Text = reader.GetString("loyerhc");
+            txtCharges.Text = reader.GetString("charges");
+            txtLoyerCC.Text = reader.GetString("loyercc");
+            txtAdresse.Text = reader.GetString("adressebien");
+            txtCp.Text = reader.GetString("cpbien");
+            txtVille.Text = reader.GetString("villebien");
+            cbxArchive.Checked = reader.GetBoolean("bienarchive");
+
+            string typeHabitat = reader.GetString("typehabitat");
+            cbxTypeHabitat.SelectedIndex = typeHabitat switch
             {
-                cbxProdChauff.SelectedIndex = 1;
-            }
-            if (reader.GetString(20).Equals("Individuelle"))
-            {
-                cbxProdEauChaude.SelectedIndex = 0;
-            }
-            else
-            {
-                cbxProdEauChaude.SelectedIndex = 1;
-            }
-            // fermeture du curseur
-            reader.Close();
+                "Appartement" => 0,
+                "Maison" => 1,
+                _ => 2
+            };
+
+            cbxRegimeJuri.SelectedIndex = reader.GetString("regimejuridique") == "Mono propriété" ? 0 : 1;
+
+            txtPerConstruc.Text = reader.GetString("periodeconstruction");
+            txtSuperficie.Text = reader.GetString("superficie");
+            txtNbPiece.Text = reader.GetString("nbpiece");
+            txtDescriLogement.Text = reader.GetString("description");
+            txtElemEquip.Text = reader.GetString("elementequip");
+            txtAutre.Text = reader.GetString("autre");
+
+            cbxProdChauff.SelectedIndex = reader.GetString("prodchauff") == "Individuelle" ? 0 : 1;
+            cbxProdEauChaude.SelectedIndex = reader.GetString("prodeauchaude") == "Individuelle" ? 0 : 1;
+
+            // Champs optionnels (nullable en base)
+            txtChargesImputables.Text = reader.IsDBNull(reader.GetOrdinal("chargesimputables"))
+                ? "" : reader.GetFloat("chargesimputables").ToString(System.Globalization.CultureInfo.InvariantCulture);
+            txtChargesAnnuelles.Text = reader.IsDBNull(reader.GetOrdinal("chargeannuelles"))
+                ? "" : reader.GetInt32("chargeannuelles").ToString();
+
+            // Champs obligatoires
+            txtNumeroFiscal.Text = reader.GetString("numerofiscal");
+            txtEstimationConso.Text = reader.GetString("estimationconsommation");
+            txtAnneeReference.Text = reader.GetString("anneereference");
+
+            string classeDpe = reader.GetString("classeDPE");
+            cbxClasseDPE.SelectedIndex = cbxClasseDPE.Items.IndexOf(classeDpe);
         }
 
         /// <summary>
         /// Gère le clic sur le bouton "Valider"
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnValider_Click(object sender, EventArgs e)
         {
-            if (ChampsRenseignes())
+            if (!ChampsRenseignes())
             {
-                if (this.typeReq.Equals("UPDATE"))
+                return;
+            }
+
+            try
+            {
+                if (this.estNouveau)
                 {
-                    // Construit la requête de modification
-                    ConstruitReqModif();
+                    InsererBien();
                 }
                 else
                 {
-                    // Construit la requête d'ajout
-                    ConstruitReqAjout();
+                    MettreAJourBien();
                 }
-                // Exécute la requête
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                this.command.Parameters.AddWithValue("@nombien", Global.Capitalize(txtNom.Text));
-                this.command.Parameters.AddWithValue("@adresse", txtAdresse.Text);
-                this.command.Parameters.AddWithValue("@laville", txtVille.Text.ToUpper());
-                this.command.Parameters.AddWithValue("@description", txtDescriLogement.Text);
-                this.command.Parameters.AddWithValue("@eltequipement", txtElemEquip.Text);
-                this.command.Parameters.AddWithValue("@autre", txtAutre.Text);
-                // préparation de la requête
-                this.command.Prepare();
-                // exécution de la requête
-                this.command.ExecuteNonQuery();
+
                 this.leBien.RemplirLstBiens();
                 this.Dispose();
             }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Une erreur est survenue lors de l'enregistrement du bien : " + ex.Message);
+            }
         }
 
         /// <summary>
-        /// Vérifie si tous les champs ont été renseignés
+        /// Insère un nouveau bien
         /// </summary>
-        /// <returns></returns>
+        private void InsererBien()
+        {
+            const string req =
+                "INSERT INTO bien (idbien, nombien, loyerhc, charges, loyercc, adressebien, cpbien, villebien, " +
+                "bienarchive, typehabitat, regimejuridique, periodeconstruction, superficie, nbpiece, description, " +
+                "elementequip, autre, prodchauff, prodeauchaude, chargesimputables, chargeannuelles, " +
+                "numerofiscal, classeDPE, estimationconsommation, anneereference) " +
+                "VALUES (@id, @nombien, @loyerhc, @charges, @loyercc, @adresse, @cp, @laville, @archive, " +
+                "@typehabitat, @regime, @periode, @superficie, @nbpiece, @description, @eltequipement, @autre, " +
+                "@prodchauff, @prodeauchaude, @chargesimputables, @chargeannuelles, @numerofiscal, @classeDpe, " +
+                "@estimconso, @anneeref)";
+
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@id", this.id);
+            AjouterParametresCommuns(command);
+            command.ExecuteNonQuery();
+        }
+
+        /// <summary>
+        /// Met à jour un bien existant
+        /// </summary>
+        private void MettreAJourBien()
+        {
+            const string req =
+                "UPDATE bien SET nombien = @nombien, loyerhc = @loyerhc, charges = @charges, loyercc = @loyercc, " +
+                "adressebien = @adresse, cpbien = @cp, villebien = @laville, bienarchive = @archive, " +
+                "typehabitat = @typehabitat, regimejuridique = @regime, periodeconstruction = @periode, " +
+                "superficie = @superficie, nbpiece = @nbpiece, description = @description, " +
+                "elementequip = @eltequipement, autre = @autre, prodchauff = @prodchauff, " +
+                "prodeauchaude = @prodeauchaude, chargesimputables = @chargesimputables, " +
+                "chargeannuelles = @chargeannuelles, numerofiscal = @numerofiscal, classeDPE = @classeDpe, " +
+                "estimationconsommation = @estimconso, anneereference = @anneeref " +
+                "WHERE idbien = @id";
+
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@id", this.id);
+            AjouterParametresCommuns(command);
+            command.ExecuteNonQuery();
+        }
+
+        /// <summary>
+        /// Ajoute les paramètres communs à l'ajout et à la modification
+        /// </summary>
+        private void AjouterParametresCommuns(MySqlCommand command)
+        {
+            command.Parameters.AddWithValue("@nombien", Global.Capitalize(txtNom.Text));
+            command.Parameters.AddWithValue("@loyerhc", txtLoyerHC.Text.Replace(',', '.'));
+            command.Parameters.AddWithValue("@charges", txtCharges.Text.Replace(',', '.'));
+            command.Parameters.AddWithValue("@loyercc", txtLoyerCC.Text.Replace(',', '.'));
+            command.Parameters.AddWithValue("@adresse", txtAdresse.Text);
+            command.Parameters.AddWithValue("@cp", txtCp.Text);
+            command.Parameters.AddWithValue("@laville", txtVille.Text.ToUpper());
+            command.Parameters.AddWithValue("@archive", cbxArchive.Checked);
+            command.Parameters.AddWithValue("@typehabitat", cbxTypeHabitat.SelectedItem.ToString());
+            command.Parameters.AddWithValue("@regime", cbxRegimeJuri.SelectedItem.ToString());
+            command.Parameters.AddWithValue("@periode", txtPerConstruc.Text);
+            command.Parameters.AddWithValue("@superficie", txtSuperficie.Text.Replace(',', '.'));
+            command.Parameters.AddWithValue("@nbpiece", txtNbPiece.Text);
+            command.Parameters.AddWithValue("@description", txtDescriLogement.Text);
+            command.Parameters.AddWithValue("@eltequipement", txtElemEquip.Text);
+            command.Parameters.AddWithValue("@autre", txtAutre.Text);
+            command.Parameters.AddWithValue("@prodchauff", cbxProdChauff.SelectedItem.ToString());
+            command.Parameters.AddWithValue("@prodeauchaude", cbxProdEauChaude.SelectedItem.ToString());
+
+            // Champs optionnels : chaîne vide -> DBNull (colonnes nullable en base)
+            command.Parameters.AddWithValue("@chargesimputables",
+                string.IsNullOrWhiteSpace(txtChargesImputables.Text)
+                    ? (object)DBNull.Value
+                    : float.Parse(txtChargesImputables.Text.Replace(',', '.'), System.Globalization.CultureInfo.InvariantCulture));
+
+            command.Parameters.AddWithValue("@chargeannuelles",
+                string.IsNullOrWhiteSpace(txtChargesAnnuelles.Text)
+                    ? (object)DBNull.Value
+                    : int.Parse(txtChargesAnnuelles.Text));
+
+            // Champs obligatoires
+            command.Parameters.AddWithValue("@numerofiscal", txtNumeroFiscal.Text);
+            command.Parameters.AddWithValue("@classeDpe", cbxClasseDPE.SelectedItem.ToString());
+            command.Parameters.AddWithValue("@estimconso", txtEstimationConso.Text);
+            command.Parameters.AddWithValue("@anneeref", txtAnneeReference.Text);
+        }
+
+        /// <summary>
+        /// Vérifie si tous les champs ont été renseignés et sont valides
+        /// </summary>
         private bool ChampsRenseignes()
         {
             if (txtNom.Text.Equals("") || txtLoyerHC.Text.Equals("") || txtCharges.Text.Equals("") || txtLoyerCC.Text.Equals("")
-                || txtAdresse.Text.Equals("") || txtCp.Text.Equals("") || txtVille.Text.Equals(""))
+                || txtAdresse.Text.Equals("") || txtCp.Text.Equals("") || txtVille.Text.Equals("")
+                || txtSuperficie.Text.Equals("") || txtNbPiece.Text.Equals("")
+                || txtNumeroFiscal.Text.Equals("") || cbxClasseDPE.SelectedItem == null
+                || txtEstimationConso.Text.Equals("") || txtAnneeReference.Text.Equals(""))
             {
-                MessageBox.Show("Veuillez remplir tous les champs pour pouvoir valider la saisie.");
+                MessageBox.Show("Veuillez remplir tous les champs obligatoires pour pouvoir valider la saisie.");
                 return false;
             }
-            else
+
+            // Champs optionnels : si renseignés, doivent être dans un format valide
+            if (!string.IsNullOrWhiteSpace(txtChargesImputables.Text) &&
+                !float.TryParse(txtChargesImputables.Text.Replace(',', '.'),
+                    System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out _))
             {
-                try
-                {
-                    float prix = float.Parse(txtLoyerHC.Text);
-                }
-                catch
-                {
-                    MessageBox.Show("Erreur de saisie pour le montant du loyer hors charges.");
-                    txtLoyerHC.Focus();
-                    return false;
-                }
-
-                try
-                {
-                    float prix = float.Parse(txtCharges.Text);
-                }
-                catch
-                {
-                    MessageBox.Show("Erreur de saisie pour le montant des charges.");
-                    txtCharges.Focus();
-                    return false;
-                }
-                return true;
+                MessageBox.Show("Erreur de saisie pour les charges imputables.");
+                txtChargesImputables.Focus();
+                return false;
             }
-        }
 
-        /// <summary>
-        /// Construit la requête de modification
-        /// </summary>
-        private void ConstruitReqModif()
-        {
-            this.req = $"{this.typeReq} bien SET ";
-            this.req += $"idbien = {this.id}, nombien = @nombien, loyerHC = \"{txtLoyerHC.Text.Replace(',', '.')}\", " +
-                $"charges = \"{txtCharges.Text.Replace(',', '.')}\", loyerCC = \"{txtLoyerCC.Text.Replace(',', '.')}\", adressebien = @adresse, " +
-                $"cpbien = \"{txtCp.Text}\", villebien = @laville, bienarchive = {cbxArchive.Checked}, " +
-                $"typehabitat = \"{cbxTypeHabitat.SelectedItem}\", regimejuridique = \"{cbxRegimeJuri.SelectedItem}\", " +
-                $"periodeconstruction = \"{txtPerConstruc.Text}\", superficie = \"{txtSuperficie.Text}\", " +
-                $"nbpiece = \"{txtNbPiece.Text}\", description = @description, " +
-                $"elementequip = @eltequipement, autre = @autre," +
-                $"prodchauff = \"{cbxProdChauff.SelectedItem}\", prodeauchaude = \"{cbxProdEauChaude.SelectedItem}\" "+
-                $"WHERE idbien = {this.id}";
-        }
-
-        /// <summary>
-        /// Construit la requête d'ajout
-        /// </summary>
-        private void ConstruitReqAjout()
-        {
-            this.req = $"{this.typeReq} bien (";
-            for (int i = 0; i < this.rubBiens.Length - 1; i++)
+            if (!string.IsNullOrWhiteSpace(txtChargesAnnuelles.Text) && !int.TryParse(txtChargesAnnuelles.Text, out _))
             {
-                this.req += $"{rubBiens[i]}, ";
+                MessageBox.Show("Erreur de saisie pour les charges annuelles.");
+                txtChargesAnnuelles.Focus();
+                return false;
             }
-            this.req += $"{rubBiens[rubBiens.Length-1]}) VALUES ({this.id}, @nombien, \"{txtLoyerHC.Text.Replace(',', '.')}\", \"{txtCharges.Text.Replace(',', '.')}\", " +
-                $"\"{txtLoyerCC.Text.Replace(',', '.')}\", @adresse, \"{txtCp.Text}\", @laville, {cbxArchive.Checked}, " +
-                $"\"{cbxTypeHabitat.SelectedItem}\", \"{cbxRegimeJuri.SelectedItem}\", \"{txtPerConstruc.Text}\", \"{txtSuperficie.Text}\", " +
-                $"\"{txtNbPiece.Text}\", @description, @eltequipement, @autre, \"{cbxProdChauff.SelectedItem}\", \"{cbxProdEauChaude.SelectedItem}\")";
-        }
 
+            if (!float.TryParse(txtLoyerHC.Text.Replace(',', '.'),
+                    System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out _))
+            {
+                MessageBox.Show("Erreur de saisie pour le montant du loyer hors charges.");
+                txtLoyerHC.Focus();
+                return false;
+            }
+
+            if (!float.TryParse(txtCharges.Text.Replace(',', '.'),
+                    System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out _))
+            {
+                MessageBox.Show("Erreur de saisie pour le montant des charges.");
+                txtCharges.Focus();
+                return false;
+            }
+
+            if (!float.TryParse(txtSuperficie.Text.Replace(',', '.'),
+                    System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out _))
+            {
+                MessageBox.Show("Erreur de saisie pour la superficie.");
+                txtSuperficie.Focus();
+                return false;
+            }
+
+            if (!int.TryParse(txtNbPiece.Text, out _))
+            {
+                MessageBox.Show("Erreur de saisie pour le nombre de pièces.");
+                txtNbPiece.Focus();
+                return false;
+            }
+
+            return true;
+        }
 
         /// <summary>
         /// Modifie le montant du loyer CC à chaque modification du loyer HC
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void TxtLoyerHC_TextChanged(object sender, EventArgs e)
         {
             RecalculeLoyerCC();
         }
-
 
         /// <summary>
         /// Recalcule le montant du loyer CC en fonction du contenu des champs LoyerHc et Charges
         /// </summary>
         private void RecalculeLoyerCC()
         {
-            float.TryParse(txtLoyerHC.Text, out float loyerHc);
-            float.TryParse(txtCharges.Text, out float charges);
-            txtLoyerCC.Text = (loyerHc + charges).ToString();
+            float.TryParse(txtLoyerHC.Text.Replace(',', '.'),
+                System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out float loyerHc);
+            float.TryParse(txtCharges.Text.Replace(',', '.'),
+                System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out float charges);
+            txtLoyerCC.Text = (loyerHc + charges).ToString(System.Globalization.CultureInfo.InvariantCulture);
         }
-
 
         /// <summary>
         /// Modifie le montant du loyer CC à chaque modification des charges
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void TxtCharges_TextChanged(object sender, EventArgs e)
         {
             RecalculeLoyerCC();
