@@ -1,23 +1,16 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GestionLocation
 {
     public partial class GroupesDeBiens : Form
     {
-        // id du groupe, contenu de la requête
-        private string req, type;
         private int idGrpe;
-        private MySqlCommand command;
-        
+        private bool estNouveau;
+
         public GroupesDeBiens()
         {
             InitializeComponent();
@@ -28,286 +21,361 @@ namespace GestionLocation
         /// <summary>
         /// Gère l'accès à la partie droite de la fenêtre
         /// </summary>
-        /// <param name="val"></param>
         private void AfficheDroite(bool val)
         {
             txtNomGroupe.Enabled = val;
             btnValider.Enabled = val;
-            if (val == false)
+            if (!val)
             {
                 txtNomGroupe.Text = "";
                 cbxCompoGroupe.Items.Clear();
             }
         }
-
 
         /// <summary>
         /// Remplit la liste des groupes
         /// </summary>
         public void RemplirListeGroupes()
         {
-            this.req = $"SELECT * FROM grpedebiens ORDER BY nomdugroupe";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
-            bool finCurseur = !reader.Read();
-            while (!finCurseur)
-            {
-                lstGroupes.Items.Add(reader["nomdugroupe"]);
-                finCurseur = !reader.Read();
-            }
-            reader.Close();
-        }
+            lstGroupes.Items.Clear();
 
+            const string req = "SELECT nomdugroupe FROM grpedebiens ORDER BY nomdugroupe";
+            using var command = new MySqlCommand(req, Global.Connexion);
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                lstGroupes.Items.Add(reader.GetString(0));
+            }
+        }
 
         /// <summary>
-        /// Rafraîchit la liste des biens qui composent le groupe sélectionné
+        /// Rafraîchit la liste des biens qui composent le groupe sélectionné.
+        /// Rattachée à SelectedIndexChanged (et non plus MouseClick) : avec MouseClick,
+        /// changer la sélection au clavier (flèches) ne rafraîchissait pas lstContenuGroupe,
+        /// laissant l'affichage désynchronisé de la sélection réelle.
+        /// À REBRANCHER dans le Designer : remplacer l'abonnement à l'évènement MouseClick
+        /// de lstGroupes par un abonnement à SelectedIndexChanged pointant sur cette méthode.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void LstGroupes_MouseClick(object sender, MouseEventArgs e)
+        private void LstGroupes_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (lstGroupes.SelectedItem != null)
+            if (lstGroupes.SelectedItem == null)
             {
-                cbxCompoGroupe.Items.Clear();
-                txtNomGroupe.Text = "";
-                lstContenuGroupe.Items.Clear();
-                this.req = $"SELECT nombien FROM bien WHERE idbien IN (SELECT idbien FROM lignegroupe WHERE idgroupe = (SELECT idgroupe FROM grpedebiens WHERE nomdugroupe = \"{lstGroupes.SelectedItem}\")) ORDER BY nombien";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                MySqlDataReader reader = this.command.ExecuteReader();
-                bool finCurseur = !reader.Read();
-                while (!finCurseur)
-                {
-                    lstContenuGroupe.Items.Add(reader["nombien"]);
-                    finCurseur = !reader.Read();
-                }
-                reader.Close();
+                return;
+            }
+
+            cbxCompoGroupe.Items.Clear();
+            txtNomGroupe.Text = "";
+            lstContenuGroupe.Items.Clear();
+
+            const string req =
+                "SELECT nombien FROM bien WHERE idbien IN (" +
+                "SELECT idbien FROM lignegroupe WHERE idgroupe = (" +
+                "SELECT idgroupe FROM grpedebiens WHERE nomdugroupe = @nom)) " +
+                "ORDER BY nombien";
+
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@nom", lstGroupes.SelectedItem.ToString());
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                lstContenuGroupe.Items.Add(reader.GetString(0));
             }
         }
-
 
         /// <summary>
         /// Ferme la fenêtre
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnFermer_Click(object sender, EventArgs e)
         {
             this.Dispose();
         }
 
-
         /// <summary>
         /// Lance la procédure de création d'un groupe
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnCreer_Click(object sender, EventArgs e)
         {
             AfficheDroite(true);
             cbxCompoGroupe.Items.Clear();
-            this.type = "insert";
-            this.req = $"SELECT MAX(idgroupe) AS idmax FROM grpedebiens";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
-            reader.Read();
-            this.idGrpe = Int32.Parse(reader["idmax"].ToString()) + 1;
-            reader.Close();
+            this.estNouveau = true;
+            this.idGrpe = ProchainIdGroupe();
             RemplirCbxCompoGroupe();
         }
 
+        /// <summary>
+        /// Calcule le prochain id de groupe disponible.
+        /// IFNULL(...) évite un plantage sur la création du tout premier groupe
+        /// (MAX() renvoie NULL sur une table vide).
+        /// </summary>
+        private int ProchainIdGroupe()
+        {
+            const string req = "SELECT IFNULL(MAX(idgroupe), 0) + 1 FROM grpedebiens";
+            using var command = new MySqlCommand(req, Global.Connexion);
+            return Convert.ToInt32(command.ExecuteScalar());
+        }
 
         /// <summary>
-        /// Enregistre les modifications dans la table des groupes de biens et celle des lignes de groupes
+        /// Enregistre les modifications dans la table des groupes de biens et celle des lignes de groupes.
+        /// L'ensemble des opérations est fait dans une transaction : si un bien sélectionné a été
+        /// supprimé entre-temps, tout est annulé plutôt que de laisser le groupe dans un état à moitié
+        /// enregistré.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnValider_Click(object sender, EventArgs e)
         {
-            if (!txtNomGroupe.Text.Equals("") && cbxCompoGroupe.CheckedItems.Count >= 2)
+            if (txtNomGroupe.Text.Equals(""))
             {
-                switch (this.type)
-                {
-                    case "update":
-                        /*this.req = $"UPDATE grpedebiens SET nomdugroupe = \'{txtNomGroupe.Text}\' WHERE idgroupe = {this.idGrpe}";*/
-                        this.req = $"UPDATE grpedebiens SET nomdugroupe = @nomgroupe WHERE idgroupe = {this.idGrpe}";
-                        ExecuteReqUID();
-                        this.req = $"DELETE FROM lignegroupe WHERE idgroupe = {this.idGrpe}";
-                        ExecuteReqUID();
-                        break;
-                    case "insert":
-                        // Met à jour la table grpedebiens
-                        /*this.req = $"INSERT INTO grpedebiens (idgroupe, nomdugroupe) VALUES ({this.idGrpe}, \'{txtNomGroupe.Text}\')";*/
-                        this.req = $"INSERT INTO grpedebiens (idgroupe, nomdugroupe) VALUES ({this.idGrpe}, @nomgroupe)";
-                        ExecuteReqUID();
-                        // Met à jour la table lignegroupe
-                        this.req = $"";
-                        break;
-                    default:
-                        break;
-                }
-                
-                // Ajout des enregistrements de lignegroupe
-                string[] lesBiensChecked = new string[cbxCompoGroupe.CheckedItems.Count];
-                // Récupère les noms des biens sélectionnés
-                for (int i = 0; i < cbxCompoGroupe.CheckedItems.Count; i++)
-                {
-                    lesBiensChecked[i] = cbxCompoGroupe.CheckedItems[i].ToString();
-                }
-                // Récupère les id de chacun des biens sélectionnés
-                for (int j = 0; j < lesBiensChecked.Count(); j++)
-                {
-                    this.req = $"SELECT idbien FROM bien WHERE nombien = \'{lesBiensChecked[j]}\'";
-                    this.command = new MySqlCommand(this.req, Global.Connexion);
-                    MySqlDataReader reader = this.command.ExecuteReader();
-                    reader.Read();
-                    // Construit la requête pour ajouter l'enregistrement dans la table lignegroupe
-                    this.req = $"INSERT INTO lignegroupe (idgroupe, idbien) VALUES ({this.idGrpe},{int.Parse(reader["idbien"].ToString())})";
-                    reader.Close();
-                    ExecuteReqUID();
-                }
-                AfficheDroite(false);
-                lstContenuGroupe.Items.Clear();
-                lstGroupes.Items.Clear();
-                RemplirListeGroupes();
+                MessageBox.Show("Vous devez saisir un nom pour le groupe.");
+                return;
             }
-            else
+
+            if (cbxCompoGroupe.CheckedItems.Count < 2)
             {
-                if (txtNomGroupe.Text.Equals(""))
+                MessageBox.Show("Vous devez sélectionner au moins deux biens.");
+                return;
+            }
+
+            List<string> biensSelectionnes = cbxCompoGroupe.CheckedItems
+                .Cast<object>()
+                .Select(o => o.ToString())
+                .ToList();
+
+            using var transaction = Global.Connexion.BeginTransaction();
+            try
+            {
+                if (this.estNouveau)
                 {
-                    MessageBox.Show("Vous devez saisir un nom pour le groupe.");
+                    InsererGroupe(transaction);
                 }
-                else if (cbxCompoGroupe.CheckedItems.Count <= 1)
+                else
                 {
-                    MessageBox.Show($"Vous devez sélectionner au moins deux biens.");
+                    MettreAJourGroupe(transaction);
                 }
+
+                EnregistrerCompositionGroupe(biensSelectionnes, transaction);
+
+                transaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                MessageBox.Show("Erreur lors de l'enregistrement du groupe : " + ex.Message);
+                return;
+            }
+
+            AfficheDroite(false);
+            lstContenuGroupe.Items.Clear();
+            lstGroupes.Items.Clear();
+            RemplirListeGroupes();
+        }
+
+        private void InsererGroupe(MySqlTransaction transaction)
+        {
+            const string req = "INSERT INTO grpedebiens (idgroupe, nomdugroupe) VALUES (@id, @nom)";
+            using var command = new MySqlCommand(req, Global.Connexion, transaction);
+            command.Parameters.AddWithValue("@id", this.idGrpe);
+            command.Parameters.AddWithValue("@nom", txtNomGroupe.Text);
+            command.ExecuteNonQuery();
+        }
+
+        private void MettreAJourGroupe(MySqlTransaction transaction)
+        {
+            const string reqMaj = "UPDATE grpedebiens SET nomdugroupe = @nom WHERE idgroupe = @id";
+            using (var command = new MySqlCommand(reqMaj, Global.Connexion, transaction))
+            {
+                command.Parameters.AddWithValue("@nom", txtNomGroupe.Text);
+                command.Parameters.AddWithValue("@id", this.idGrpe);
+                command.ExecuteNonQuery();
+            }
+
+            const string reqSuppr = "DELETE FROM lignegroupe WHERE idgroupe = @id";
+            using (var command = new MySqlCommand(reqSuppr, Global.Connexion, transaction))
+            {
+                command.Parameters.AddWithValue("@id", this.idGrpe);
+                command.ExecuteNonQuery();
             }
         }
 
+        /// <summary>
+        /// Enregistre la composition du groupe (une ligne par bien). Lève une exception si un
+        /// bien sélectionné n'existe plus en base, ce qui déclenche le rollback de la transaction
+        /// appelante plutôt que de laisser lignegroupe à moitié rempli.
+        /// </summary>
+        private void EnregistrerCompositionGroupe(List<string> biensSelectionnes, MySqlTransaction transaction)
+        {
+            foreach (string nomBien in biensSelectionnes)
+            {
+                const string reqId = "SELECT idbien FROM bien WHERE nombien = @nom";
+                int idBien;
+                using (var command = new MySqlCommand(reqId, Global.Connexion, transaction))
+                {
+                    command.Parameters.AddWithValue("@nom", nomBien);
+                    using var reader = command.ExecuteReader();
+                    if (!reader.Read())
+                    {
+                        throw new InvalidOperationException($"Le bien \"{nomBien}\" n'existe plus.");
+                    }
+                    idBien = reader.GetInt32(0);
+                }
+
+                const string reqInsert = "INSERT INTO lignegroupe (idgroupe, idbien) VALUES (@idgroupe, @idbien)";
+                using var cmdInsert = new MySqlCommand(reqInsert, Global.Connexion, transaction);
+                cmdInsert.Parameters.AddWithValue("@idgroupe", this.idGrpe);
+                cmdInsert.Parameters.AddWithValue("@idbien", idBien);
+                cmdInsert.ExecuteNonQuery();
+            }
+        }
 
         /// <summary>
-        /// Remplit la combobox de la liste des biens
+        /// Remplit la combobox de la liste des biens, en cochant ceux qui composent déjà le
+        /// groupe en cas de modification
         /// </summary>
         public void RemplirCbxCompoGroupe()
         {
-            MySqlDataReader reader;
-            bool finCurseur;
-            // S'il s'agit d'un update, récupère les noms de tous les biens
-            List<string> lesBiens = new List<string>();
-            if (this.type.Equals("update"))
-            {
-                this.req = $"SELECT nombien FROM bien WHERE idbien IN (SELECT idbien FROM lignegroupe WHERE idgroupe = {this.idGrpe})";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                reader = this.command.ExecuteReader();
-                finCurseur = !reader.Read();
-                while (!finCurseur)
-                {
-                    lesBiens.Add(reader["nombien"].ToString());
-                    finCurseur = !reader.Read();
-                }
-                reader.Close();
-            }
-            this.req = $"SELECT idbien, nombien FROM bien ORDER BY nombien";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            reader = this.command.ExecuteReader();
-            finCurseur = !reader.Read();
-            while (!finCurseur)
-            {
-                cbxCompoGroupe.Items.Add(reader["nombien"]);
-                if (lesBiens.Contains(reader["nombien"].ToString()))
-                {
-                    cbxCompoGroupe.SetItemChecked(cbxCompoGroupe.Items.IndexOf(reader["nombien"]), true);
-                }
-                finCurseur = !reader.Read();
-            }
-            reader.Close();
-        }
+            List<string> biensDuGroupe = new List<string>();
 
+            if (!this.estNouveau)
+            {
+                const string reqComposition =
+                    "SELECT nombien FROM bien WHERE idbien IN (SELECT idbien FROM lignegroupe WHERE idgroupe = @id)";
+                using var command = new MySqlCommand(reqComposition, Global.Connexion);
+                command.Parameters.AddWithValue("@id", this.idGrpe);
+                using var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    biensDuGroupe.Add(reader.GetString(0));
+                }
+            }
+
+            const string reqTousBiens = "SELECT nombien FROM bien ORDER BY nombien";
+            using (var command = new MySqlCommand(reqTousBiens, Global.Connexion))
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    string nomBien = reader.GetString(0);
+                    cbxCompoGroupe.Items.Add(nomBien);
+                    if (biensDuGroupe.Contains(nomBien))
+                    {
+                        cbxCompoGroupe.SetItemChecked(cbxCompoGroupe.Items.Count - 1, true);
+                    }
+                }
+            }
+        }
 
         /// <summary>
-        /// Supprime le groupe
+        /// Supprime le groupe sélectionné (et sa composition), de façon atomique
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnSupprimer_Click(object sender, EventArgs e)
         {
-            if (lstGroupes.SelectedItem != null)
-            {
-                // Demande confirmation de suppression du groupe
-                DialogResult result = MessageBox.Show($"Êtes-vous sûr de vouloir supprimer le groupe : {lstGroupes.SelectedItem} ?", "Confirmer suppression", MessageBoxButtons.YesNo);
-                if (result == DialogResult.Yes)
-                {
-                    // Récupère l'id du groupe sélectionné
-                    RecupID();
-                    this.req = $"DELETE FROM lignegroupe WHERE idgroupe = {this.idGrpe}";
-                    ExecuteReqUID();
-                    this.req = $"DELETE FROM grpedebiens WHERE idgroupe = {this.idGrpe}";
-                    ExecuteReqUID();
-                    lstContenuGroupe.Items.Clear();
-                    lstGroupes.Items.Clear();
-                    RemplirListeGroupes();
-                }
-            }
-            else
+            if (lstGroupes.SelectedItem == null)
             {
                 MessageBox.Show("Veuillez sélectionner un groupe pour pouvoir le supprimer");
+                return;
             }
-        }
 
+            DialogResult result = MessageBox.Show(
+                $"Êtes-vous sûr de vouloir supprimer le groupe : {lstGroupes.SelectedItem} ?",
+                "Confirmer suppression", MessageBoxButtons.YesNo);
+
+            if (result != DialogResult.Yes)
+            {
+                return;
+            }
+
+            int? id = RecupID(lstGroupes.SelectedItem.ToString());
+            if (id == null)
+            {
+                MessageBox.Show("Ce groupe n'existe plus.");
+                return;
+            }
+            this.idGrpe = id.Value;
+
+            using var transaction = Global.Connexion.BeginTransaction();
+            try
+            {
+                const string reqSupprLignes = "DELETE FROM lignegroupe WHERE idgroupe = @id";
+                using (var command = new MySqlCommand(reqSupprLignes, Global.Connexion, transaction))
+                {
+                    command.Parameters.AddWithValue("@id", this.idGrpe);
+                    command.ExecuteNonQuery();
+                }
+
+                const string reqSupprGroupe = "DELETE FROM grpedebiens WHERE idgroupe = @id";
+                using (var command = new MySqlCommand(reqSupprGroupe, Global.Connexion, transaction))
+                {
+                    command.Parameters.AddWithValue("@id", this.idGrpe);
+                    command.ExecuteNonQuery();
+                }
+
+                transaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                MessageBox.Show("Erreur lors de la suppression du groupe : " + ex.Message);
+                return;
+            }
+
+            lstContenuGroupe.Items.Clear();
+            lstGroupes.Items.Clear();
+            RemplirListeGroupes();
+        }
 
         /// <summary>
         /// Lance la procédure de modification d'un groupe
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnModifier_Click(object sender, EventArgs e)
         {
-            if (lstGroupes.SelectedItem != null)
-            {
-                cbxCompoGroupe.Items.Clear();
-                AfficheDroite(true);
-                this.type = "update";
-                RecupID();
-                this.req = $"SELECT nomdugroupe FROM grpedebiens WHERE idgroupe = {this.idGrpe}";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                MySqlDataReader reader = this.command.ExecuteReader();
-                reader.Read();
-                txtNomGroupe.Text = reader["nomdugroupe"].ToString();
-                reader.Close();
-                RemplirCbxCompoGroupe();
-            }
-            else
+            if (lstGroupes.SelectedItem == null)
             {
                 MessageBox.Show("Veuillez sélectionner un groupe pour pouvoir le modifier.");
+                return;
             }
+
+            cbxCompoGroupe.Items.Clear();
+            AfficheDroite(true);
+            this.estNouveau = false;
+
+            int? id = RecupID(lstGroupes.SelectedItem.ToString());
+            if (id == null)
+            {
+                MessageBox.Show("Ce groupe n'existe plus.");
+                AfficheDroite(false);
+                return;
+            }
+            this.idGrpe = id.Value;
+
+            const string req = "SELECT nomdugroupe FROM grpedebiens WHERE idgroupe = @id";
+            using (var command = new MySqlCommand(req, Global.Connexion))
+            {
+                command.Parameters.AddWithValue("@id", this.idGrpe);
+                using var reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    txtNomGroupe.Text = reader.GetString(0);
+                }
+            }
+
+            RemplirCbxCompoGroupe();
         }
 
-
         /// <summary>
-        /// Exécute une requête de type update, insert ou delete
+        /// Récupère l'id du groupe à partir de son nom
         /// </summary>
-        private void ExecuteReqUID()
+        /// <returns>L'id du groupe, ou null s'il n'existe pas</returns>
+        public int? RecupID(string nomGroupe)
         {
-            // Exécute la requête
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            this.command.Parameters.AddWithValue("@nomgroupe", txtNomGroupe.Text);
-            // préparation de la requête
-            this.command.Prepare();
-            // exécution de la requête
-            this.command.ExecuteNonQuery();
-        }
+            const string req = "SELECT idgroupe FROM grpedebiens WHERE nomdugroupe = @nom";
+            using var command = new MySqlCommand(req, Global.Connexion);
+            command.Parameters.AddWithValue("@nom", nomGroupe);
 
-
-        /// <summary>
-        /// Récupère l'id du groupe sélectionné
-        /// </summary>
-        public void RecupID()
-        {
-            this.req = $"SELECT idgroupe FROM grpedebiens WHERE nomdugroupe = \"{lstGroupes.SelectedItem}\"";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
-            reader.Read();
-            this.idGrpe = Int32.Parse(reader["idgroupe"].ToString());
-            reader.Close();
+            using var reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                return reader.GetInt32(0);
+            }
+            return null;
         }
     }
 }

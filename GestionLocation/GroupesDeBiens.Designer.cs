@@ -104,7 +104,7 @@ namespace GestionLocation
             this.lstGroupes.Name = "lstGroupes";
             this.lstGroupes.Size = new System.Drawing.Size(421, 204);
             this.lstGroupes.TabIndex = 0;
-            this.lstGroupes.MouseClick += new System.Windows.Forms.MouseEventHandler(this.LstGroupes_MouseClick);
+            this.lstGroupes.SelectedIndexChanged += new System.EventHandler(this.LstGroupes_SelectedIndexChanged);
             // 
             // tableLayoutPanel4
             // 
