@@ -1,26 +1,28 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GestionLocation
 {
     public partial class Cautions : Form
     {
+        /// <summary>
+        /// Classe interne pour stocker à la fois l'ID et le Nom dans la ListBox
+        /// </summary>
+        private class CautionItem
+        {
+            public int Id { get; set; }
+            public string NomComplet { get; set; }
 
-        private MySqlCommand command;
-        private string req;
+            public override string ToString()
+            {
+                return NomComplet;
+            }
+        }
 
         /// <summary>
         /// Constructeur Cautions
         /// </summary>
-        /// <param name="connexion">Connexion SQL appelant la fenêtre</param>
         public Cautions()
         {
             InitializeComponent();
@@ -34,47 +36,33 @@ namespace GestionLocation
         public void RemplirLstCautions()
         {
             lstCautions.Items.Clear();
-            ConstruitReqListeCautions();
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
-            /* lecture de la première ligne du curseur (finCurseur passe à false en fin de
-            curseur) */
-            bool finCurseur = !reader.Read();
-            // boucle tant que la ligne lue contient quelque chose
-            // (donc tant que la fin du curseur n'est pas atteinte)
-            while (!finCurseur)
-            {
-                // affichage des champs récupérés dans la ligne
-                lstCautions.Items.Add($"{reader["nomcompletcaution"]}");
-                // lecture de la ligne suivante dans le curseur
-                finCurseur = !reader.Read();
-            }
-            // fermeture du curseur
-            reader.Close();
-        }
 
-        /// <summary>
-        /// Construit la requête qui sert à remplir la listBox des cautions
-        /// </summary>
-        private void ConstruitReqListeCautions()
-        {
-            this.req = "SELECT nomcompletcaution FROM caution WHERE cautionarchivee = ";
-            if (rdbCautionArchive.Checked)
+            const string req = @"SELECT idcaution, nomcompletcaution 
+                                FROM caution 
+                                WHERE cautionarchivee = @archive 
+                                ORDER BY nomcaution";
+
+            using (var command = new MySqlCommand(req, Global.Connexion))
             {
-                this.req += "1";
+                command.Parameters.AddWithValue("@archive", rdbCautionArchive.Checked ? 1 : 0);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        lstCautions.Items.Add(new CautionItem
+                        {
+                            Id = reader.GetInt32("idcaution"),
+                            NomComplet = reader["nomcompletcaution"].ToString()
+                        });
+                    }
+                }
             }
-            else
-            {
-                this.req += "0";
-            }
-            this.req += " ORDER BY nomcaution";
         }
 
         /// <summary>
         /// Gère le rafraîchissement de la recherche des cautions
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnRechercher_Click(object sender, EventArgs e)
         {
             RemplirLstCautions();
@@ -83,146 +71,115 @@ namespace GestionLocation
         /// <summary>
         /// Inverse le statut d'archive de la caution sélectionnée
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnArchiver_Click(object sender, EventArgs e)
         {
-            if (lstCautions.SelectedItem == null)
+            if (lstCautions.SelectedItem is CautionItem caution)
             {
-                MessageBox.Show("Veuillez sélectionner une caution dans la liste pour pouvoir l'archiver ou la désarchiver.");
+                // Si la vue actuelle est "Archivés", la bascule passe à 0 (Non-archivé), et vice-versa
+                int nouvelEtatArchive = rdbCautionArchive.Checked ? 0 : 1;
+
+                const string req = "UPDATE caution SET cautionarchivee = @archive WHERE idcaution = @id";
+
+                using (var command = new MySqlCommand(req, Global.Connexion))
+                {
+                    command.Parameters.AddWithValue("@archive", nouvelEtatArchive);
+                    command.Parameters.AddWithValue("@id", caution.Id);
+                    command.ExecuteNonQuery();
+                }
+
+                RemplirLstCautions();
             }
             else
             {
-                // Requête pour récupérer la valeur de locatairearchive pour le bien passé en paramètre
-                this.command = new MySqlCommand($"SELECT cautionarchivee FROM caution WHERE nomcompletcaution = \"{lstCautions.SelectedItem}\"", Global.Connexion);
-                MySqlDataReader reader = this.command.ExecuteReader();
-                reader.Read();
-                this.req = $"UPDATE caution SET cautionarchivee = {!(bool)reader["cautionarchivee"]} WHERE nomcompletcaution = \"{lstCautions.SelectedItem}\"";
-                reader.Close();
-                // Exécute la requête de modification
-                ExecuteReqIUD();
-                // Met à jour la liste des cautions
-                RemplirLstCautions();
+                MessageBox.Show("Veuillez sélectionner une caution dans la liste pour pouvoir l'archiver ou la désarchiver.",
+                                "Sélection requise", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-        }
-
-        /// <summary>
-        /// Exécute une requête insert, update, delete
-        /// </summary>
-        private void ExecuteReqIUD()
-        {
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            // préparation de la requête
-            this.command.Prepare();
-            // exécution de la requête
-            this.command.ExecuteNonQuery();
         }
 
         /// <summary>
         /// Gère la suppression de la caution sélectionnée
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnSupprimer_Click(object sender, EventArgs e)
         {
-            if (lstCautions.SelectedItem == null)
+            if (lstCautions.SelectedItem is CautionItem caution)
             {
-                MessageBox.Show("Veuillez saisir une caution dans la liste pour pouvoir la supprimer.");
-            }
-            else
-            {
-                // Demande confirmation de suppression du bien
-                DialogResult result = MessageBox.Show($"Êtes-vous sûr de vouloir supprimer la caution : {lstCautions.SelectedItem} ?", "Confirmer suppression", MessageBoxButtons.YesNo);
+                DialogResult result = MessageBox.Show(
+                    $"Êtes-vous sûr de vouloir supprimer la caution : {caution.NomComplet} ?",
+                    "Confirmer suppression",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
                 if (result == DialogResult.Yes)
                 {
-                    this.req = $"SELECT idcaution FROM caution WHERE nomcompletcaution = \"{lstCautions.SelectedItem}\"";
-                    this.command = new MySqlCommand(this.req, Global.Connexion);
-                    MySqlDataReader reader = this.command.ExecuteReader();
-                    reader.Read();
-                    int id = reader.GetInt32(0);
-                    reader.Close();
-                    if (VerifIntegrite(id) == true)
+                    if (VerifIntegrite(caution.Id))
                     {
-                        this.req = $"DELETE FROM caution WHERE nomcompletcaution = \"{lstCautions.SelectedItem}\"";
-                        ExecuteReqIUD();
+                        const string req = "DELETE FROM caution WHERE idcaution = @id";
+                        using (var command = new MySqlCommand(req, Global.Connexion))
+                        {
+                            command.Parameters.AddWithValue("@id", caution.Id);
+                            command.ExecuteNonQuery();
+                        }
+
                         RemplirLstCautions();
                     }
                     else
                     {
-                        MessageBox.Show("Cette caution est reliée à une ou plusieurs locations. Vous ne pouvez pas la supprimer.");
+                        MessageBox.Show("Cette caution est reliée à une ou plusieurs locations. Vous ne pouvez pas la supprimer.",
+                                        "Suppression impossible", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
                 }
             }
+            else
+            {
+                MessageBox.Show("Veuillez sélectionner une caution dans la liste pour pouvoir la supprimer.",
+                                "Sélection requise", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         /// <summary>
-        /// Ouvre la fenêtre AjoutModifCaution pour réaliser un ajout
+        /// Ouvre la fenêtre AjoutModifCautions pour réaliser un ajout
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnAjouter_Click(object sender, EventArgs e)
         {
-            AjoutModifCautions modifCaution = new AjoutModifCautions(this, "INSERT INTO");
-            modifCaution.ShowDialog();
+            using (var modifCaution = new AjoutModifCautions(this, "INSERT INTO"))
+            {
+                modifCaution.ShowDialog();
+            }
         }
 
         /// <summary>
-        /// Ouvre la fenêtre AjoutModifCaution pour réaliser une modification
+        /// Ouvre la fenêtre AjoutModifCautions pour réaliser une modification
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnModifier_Click(object sender, EventArgs e)
         {
-            if (lstCautions.SelectedItem != null)
+            if (lstCautions.SelectedItem is CautionItem caution)
             {
-                // Récupère l'id du locataire sélectionné à l'aide d'une requête Select
-                this.req = $"SELECT idcaution FROM caution WHERE nomcompletcaution = \"{lstCautions.SelectedItem}\"";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                MySqlDataReader reader = this.command.ExecuteReader();
-                reader.Read();
-                int id = reader.GetInt32(0);
-                reader.Close();
-                // Crée puis ouvre la fenêtre d'ajout/modif caution
-                AjoutModifCautions modifCaution = new AjoutModifCautions(this, "UPDATE", id);
-                modifCaution.ShowDialog();
+                using (var modifCaution = new AjoutModifCautions(this, "UPDATE", caution.Id))
+                {
+                    modifCaution.ShowDialog();
+                }
             }
             else
             {
-                MessageBox.Show("Veuillez sélectionner une caution dans la liste pour pouvoir la modifier.");
+                MessageBox.Show("Veuillez sélectionner une caution dans la liste pour pouvoir la modifier.",
+                                "Sélection requise", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
         /// <summary>
         /// Vérifie si une caution n'est pas liée à une ou plusieurs locations
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">ID de la caution</param>
         /// <returns>True s'il n'y a pas de conflit d'intégrité, False dans le cas contraire</returns>
         private bool VerifIntegrite(int id)
         {
-            this.req = $"SELECT idlocation FROM location WHERE idcaution = {id}";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            List<string> liste = new List<string>();
-            MySqlDataReader reader = this.command.ExecuteReader();
-            /* lecture de la première ligne du curseur (finCurseur passe à false en fin de
-            curseur) */
-            bool finCurseur = !reader.Read();
-            // boucle tant que la ligne lue contient quelque chose
-            // (donc tant que la fin du curseur n'est pas atteinte)
-            while (!finCurseur)
+            const string req = "SELECT COUNT(*) FROM location WHERE idcaution = @id";
+
+            using (var command = new MySqlCommand(req, Global.Connexion))
             {
-                liste.Add($"{reader["idlocation"]}");
-                // lecture de la ligne suivante dans le curseur
-                finCurseur = !reader.Read();
-            }
-            // fermeture du curseur
-            reader.Close();
-            if (liste.Count == 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
+                command.Parameters.AddWithValue("@id", id);
+                long count = Convert.ToInt64(command.ExecuteScalar());
+                return count == 0;
             }
         }
     }
