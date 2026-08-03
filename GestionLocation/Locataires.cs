@@ -1,21 +1,24 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GestionLocation
 {
     public partial class Locataires : Form
     {
+        /// <summary>
+        /// Classe interne permettant d'embarquer l'ID et le nom dans la ListBox
+        /// </summary>
+        private class LocataireItem
+        {
+            public int Id { get; set; }
+            public string NomComplet { get; set; }
 
-        private MySqlCommand command;
-        private string req;
+            public override string ToString()
+            {
+                return NomComplet;
+            }
+        }
 
         /// <summary>
         /// Constructeur de Locataires
@@ -23,6 +26,7 @@ namespace GestionLocation
         public Locataires()
         {
             InitializeComponent();
+            this.Text = "Locataires";
             RemplirLstLocataires();
         }
 
@@ -32,48 +36,33 @@ namespace GestionLocation
         public void RemplirLstLocataires()
         {
             lstLocataires.Items.Clear();
-            this.command = new MySqlCommand(ConstruitReqListeLocataires(), Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
-            /* lecture de la première ligne du curseur (finCurseur passe à false en fin de
-            curseur) */
-            bool finCurseur = !reader.Read();
-            // boucle tant que la ligne lue contient quelque chose
-            // (donc tant que la fin du curseur n'est pas atteinte)
-            while (!finCurseur)
-            {
-                // affichage des champs récupérés dans la ligne
-                lstLocataires.Items.Add($"{reader["nomcompletlocataire"]}");
-                // lecture de la ligne suivante dans le curseur
-                finCurseur = !reader.Read();
-            }
-            // fermeture du curseur
-            reader.Close();
-        }
 
-        /// <summary>
-        /// Construit la requête qui sert à remplir la listBox des locataires
-        /// </summary>
-        /// <returns></returns>
-        private string ConstruitReqListeLocataires()
-        {
-            this.req = "SELECT nomcompletlocataire FROM locataire WHERE locatairearchive = ";
-            if (rdbLocataireArchive.Checked)
+            const string req = @"SELECT idlocataire, nomcompletlocataire 
+                                FROM locataire 
+                                WHERE locatairearchive = @archive 
+                                ORDER BY nomlocataire";
+
+            using (var command = new MySqlCommand(req, Global.Connexion))
             {
-                this.req += "1";
+                command.Parameters.AddWithValue("@archive", rdbLocataireArchive.Checked ? 1 : 0);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        lstLocataires.Items.Add(new LocataireItem
+                        {
+                            Id = reader.GetInt32("idlocataire"),
+                            NomComplet = reader["nomcompletlocataire"].ToString()
+                        });
+                    }
+                }
             }
-            else
-            {
-                this.req += "0";
-            }
-            this.req += " ORDER BY nomlocataire";
-            return this.req;
         }
 
         /// <summary>
         /// Met à jour la liste des locataires
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnRechercher_Click(object sender, EventArgs e)
         {
             RemplirLstLocataires();
@@ -82,147 +71,116 @@ namespace GestionLocation
         /// <summary>
         /// Change le statut d'archive d'un locataire
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnArchiver_Click(object sender, EventArgs e)
         {
-            if (lstLocataires.SelectedItem == null)
+            if (lstLocataires.SelectedItem is LocataireItem locataire)
             {
-                MessageBox.Show("Veuillez saisir un locataire dans la liste pour pouvoir l'archiver ou le désarchiver.");
+                int nouvelEtatArchive = rdbLocataireArchive.Checked ? 0 : 1;
+
+                const string req = "UPDATE locataire SET locatairearchive = @archive WHERE idlocataire = @id";
+
+                using (var command = new MySqlCommand(req, Global.Connexion))
+                {
+                    command.Parameters.AddWithValue("@archive", nouvelEtatArchive);
+                    command.Parameters.AddWithValue("@id", locataire.Id);
+                    command.ExecuteNonQuery();
+                }
+
+                RemplirLstLocataires();
             }
             else
             {
-                // Requête pour récupérer la valeur de locatairearchive pour le bien passé en paramètre
-                this.command = new MySqlCommand($"SELECT locatairearchive FROM locataire WHERE nomcompletlocataire = \"{lstLocataires.SelectedItem}\"", Global.Connexion);
-                MySqlDataReader reader = this.command.ExecuteReader();
-                reader.Read();
-                this.req = $"UPDATE locataire SET locatairearchive = {!(bool)reader["locatairearchive"]} WHERE nomcompletlocataire = \"{lstLocataires.SelectedItem}\"";
-                reader.Close();
-                // Exécute la requête de modification
-                ExecuteReqIUD();
-                // Met à jour la liste des locataires
-                RemplirLstLocataires();
+                MessageBox.Show("Veuillez sélectionner un locataire dans la liste pour pouvoir l'archiver ou le désarchiver.",
+                                "Sélection requise", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-        }
-
-        /// <summary>
-        /// Exécute une requête insert, update, delete
-        /// </summary>
-        private void ExecuteReqIUD()
-        {
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            // préparation de la requête
-            this.command.Prepare();
-            // exécution de la requête
-            this.command.ExecuteNonQuery();
         }
 
         /// <summary>
         /// Gère la suppression d'un locataire
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnSupprimer_Click(object sender, EventArgs e)
         {
-            if (lstLocataires.SelectedItem == null)
+            if (lstLocataires.SelectedItem is LocataireItem locataire)
             {
-                MessageBox.Show("Veuillez saisir un locataire dans la liste pour pouvoir le supprimer.");
-            }
-            else
-            {
-                // Demande confirmation de suppression du locataire
-                DialogResult result = MessageBox.Show($"Êtes-vous sûr de vouloir supprimer le locataire : {lstLocataires.SelectedItem} ?", "Confirmer suppression", MessageBoxButtons.YesNo);
+                DialogResult result = MessageBox.Show(
+                    $"Êtes-vous sûr de vouloir supprimer le locataire : {locataire.NomComplet} ?",
+                    "Confirmer suppression",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
                 if (result == DialogResult.Yes)
                 {
-                    this.req = $"SELECT idlocataire FROM locataire WHERE nomcompletlocataire = \"{lstLocataires.SelectedItem}\"";
-                    this.command = new MySqlCommand(this.req, Global.Connexion);
-                    MySqlDataReader reader = this.command.ExecuteReader();
-                    reader.Read();
-                    int id = reader.GetInt32(0);
-                    reader.Close();
-                    if (VerifIntegrite(id) == true)
+                    if (VerifIntegrite(locataire.Id))
                     {
-                        this.req = $"DELETE FROM locataire WHERE nomcompletlocataire = \"{lstLocataires.SelectedItem}\"";
-                        ExecuteReqIUD();
+                        const string req = "DELETE FROM locataire WHERE idlocataire = @id";
+
+                        using (var command = new MySqlCommand(req, Global.Connexion))
+                        {
+                            command.Parameters.AddWithValue("@id", locataire.Id);
+                            command.ExecuteNonQuery();
+                        }
+
                         RemplirLstLocataires();
                     }
                     else
                     {
                         MessageBox.Show("Ce locataire est relié à une ou plusieurs locations. Pour pouvoir le supprimer, vous devez d'abord " +
-                            "supprimer les locations auxquelles il est rattachées.");
+                                        "supprimer les locations auxquelles il est rattaché.",
+                                        "Suppression impossible", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
                 }
+            }
+            else
+            {
+                MessageBox.Show("Veuillez sélectionner un locataire dans la liste pour pouvoir le supprimer.",
+                                "Sélection requise", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
         /// <summary>
         /// Ouvre la fenêtre d'ajout/modification de locataire pour création
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnAjouter_Click(object sender, EventArgs e)
         {
-            AjoutModifLocataires modifLocataire = new AjoutModifLocataires(this, "INSERT INTO");
-            modifLocataire.ShowDialog();
+            using (var modifLocataire = new AjoutModifLocataires(this, "INSERT INTO"))
+            {
+                modifLocataire.ShowDialog();
+            }
         }
 
         /// <summary>
-        /// Ouvre le fenêtre d'ajout/modification de locataire pour modification
+        /// Ouvre la fenêtre d'ajout/modification de locataire pour modification
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnModifier_Click(object sender, EventArgs e)
         {
-            if (lstLocataires.SelectedItem != null)
+            if (lstLocataires.SelectedItem is LocataireItem locataire)
             {
-                // Récupère l'id du locataire sélectionné à l'aide d'une requête Select
-                this.req = $"SELECT idlocataire FROM locataire WHERE nomcompletlocataire = \"{lstLocataires.SelectedItem}\"";
-                this.command = new MySqlCommand(this.req, Global.Connexion);
-                MySqlDataReader reader = this.command.ExecuteReader();
-                reader.Read();
-                int id = reader.GetInt32(0);
-                reader.Close();
-                // Crée puis ouvre la fenêtre d'ajout/modif locataire
-                AjoutModifLocataires modifLocataire = new AjoutModifLocataires(this, "UPDATE", id);
-                modifLocataire.ShowDialog();
+                using (var modifLocataire = new AjoutModifLocataires(this, "UPDATE", locataire.Id))
+                {
+                    modifLocataire.ShowDialog();
+                }
             }
             else
             {
-                MessageBox.Show("Veuillez sélectionner un locataire dans la liste pour pouvoir le modifier.");
+                MessageBox.Show("Veuillez sélectionner un locataire dans la liste pour pouvoir le modifier.",
+                                "Sélection requise", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
         /// <summary>
         /// Vérifie si un locataire n'est pas lié à une ou plusieurs locations
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">ID du locataire</param>
         /// <returns>True s'il n'y a pas de conflit d'intégrité, False dans le cas contraire</returns>
         private bool VerifIntegrite(int id)
         {
-            this.req = $"SELECT idlocation FROM location WHERE idlocataire = {id}";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            List<string> liste = new List<string>();
-            MySqlDataReader reader = this.command.ExecuteReader();
-            /* lecture de la première ligne du curseur (finCurseur passe à false en fin de
-            curseur) */
-            bool finCurseur = !reader.Read();
-            // boucle tant que la ligne lue contient quelque chose
-            // (donc tant que la fin du curseur n'est pas atteinte)
-            while (!finCurseur)
+            const string req = "SELECT COUNT(*) FROM location WHERE idlocataire = @id";
+
+            using (var command = new MySqlCommand(req, Global.Connexion))
             {
-                liste.Add($"{reader["idlocation"]}");
-                // lecture de la ligne suivante dans le curseur
-                finCurseur = !reader.Read();
-            }
-            // fermeture du curseur
-            reader.Close();
-            if (liste.Count == 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
+                command.Parameters.AddWithValue("@id", id);
+                long count = Convert.ToInt64(command.ExecuteScalar());
+                return count == 0;
             }
         }
     }
