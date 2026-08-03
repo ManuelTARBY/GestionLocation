@@ -1,21 +1,20 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Windows.Forms;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using System.IO;
-using System.Globalization;
 using MimeKit;
 using MailKit.Security;
 using Developpez.Dotnet;
+using iTextFont = iTextSharp.text.Font;
 
 namespace GestionLocation
 {
     public partial class Paiements : Form
     {
-
-        private MySqlCommand command;
         private string req, laPeriode, leLocataire, leBailleur;
         private readonly string idUser;
         private string emailLocataire;
@@ -28,63 +27,61 @@ namespace GestionLocation
         /// <summary>
         /// Constructeur de la fenêtre Paiements
         /// </summary>
-        /// <param name="connexion">Connexion à la base de données</param>
-        public Paiements(Object fenetre, int idLocation = 0)
+        public Paiements(object fenetre, int idLocation = 0)
         {
             InitializeComponent();
-            if (typeof(Accueil).IsInstanceOfType(fenetre))
-            {
-                this.fenAccueil = fenetre as Accueil;
-                this.idUser = this.fenAccueil.GetIdUser();
 
-            }
-            else
+            if (fenetre is Accueil accueil)
             {
-                this.fenLocation = fenetre as Locations;
+                this.fenAccueil = accueil;
+                this.idUser = this.fenAccueil.GetIdUser();
+            }
+            else if (fenetre is Locations location)
+            {
+                this.fenLocation = location;
                 this.idUser = this.fenLocation.GetIdUser();
             }
+
             this.idLocation = idLocation;
-            // Instancie le dictionnaire contenant le détail du paiement en clé et son id en valeur
             this.lesPaiements = new Dictionary<string, string>();
-            // Instancie le dictionnaire contenant le détail de la location en clé et son id en valeur
             this.lesId = new Dictionary<string, int>();
+
             AfficherLocations();
             RemplirListePaiements();
             SelectionnerLocation();
         }
-
 
         /// <summary>
         /// Liste tous les paiements
         /// </summary>
         public void RemplirListePaiements()
         {
-            // Détermination de la requête
             this.req = "SELECT nombien, periodefacturee, montantdu, montantpaye, datepaiement, resteapayer, idpaiement, idlocation, " +
-                $"CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', SUBSTRING_INDEX(nomlocataire, ',', 1)) AS 'Locataire'" +
-                $"FROM paiement NATURAL JOIN location NATURAL JOIN bien NATURAL JOIN locataire WHERE locationarchivee = {Global.LocArchiv} ";
+                       "CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', SUBSTRING_INDEX(nomlocataire, ',', 1)) AS Locataire " +
+                       "FROM paiement " +
+                       "NATURAL JOIN location " +
+                       "NATURAL JOIN bien " +
+                       "NATURAL JOIN locataire " +
+                       "WHERE locationarchivee = @locArchiv ";
+
             if (this.idLocation != 0)
             {
-                this.req += $"AND idlocation = {this.idLocation}";
+                this.req += "AND idlocation = @idLocation ";
             }
             else
             {
-                if (lstLocations.SelectedItem == null)
+                this.req += "AND loyerregle = False ";
+                if (lstLocations.SelectedItem != null && this.lesId.TryGetValue(lstLocations.SelectedItem.ToString(), out int selectedId))
                 {
-                    this.req += $"AND loyerregle = False";
-                }
-                else
-                {
-                    this.idLocation = this.lesId[lstLocations.SelectedItem.ToString()];
-                    this.req += $"AND loyerregle = False AND idlocation = {this.idLocation}";
+                    this.idLocation = selectedId;
+                    this.req += "AND idlocation = @idLocation ";
                 }
             }
-            this.req += " ORDER BY periodefacturee, nombien";
 
-            // Affiche les enregistrements de la table Paiement et récupère les idpaiement et idlocation dans un dictionnaire
+            this.req += "ORDER BY periodefacturee, nombien";
+
             EnvoiReqSelectPaiements();
         }
-
 
         /// <summary>
         /// Lance la requête, affiche les enregistrements de paiements et enregistre les id
@@ -93,83 +90,116 @@ namespace GestionLocation
         {
             this.lesPaiements.Clear();
             lstPaiements.Items.Clear();
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            this.command.Parameters.AddWithValue("@id", this.idLocation);
-            MySqlDataReader reader = this.command.ExecuteReader();
-            bool finCurseur = !reader.Read();
-            while (!finCurseur)
+
+            try
             {
-                string dateRegle = $"{reader.GetDateTime(4):d}";
-                if (dateRegle.Equals("01/01/0001"))
+                using (var cmd = new MySqlCommand(this.req, Global.Connexion))
                 {
-                    dateRegle = "-";
+                    cmd.Parameters.AddWithValue("@locArchiv", Global.LocArchiv);
+                    cmd.Parameters.AddWithValue("@idLocation", this.idLocation);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string dateRegle = "-";
+                            if (reader["datepaiement"] != DBNull.Value)
+                            {
+                                DateTime dt = Convert.ToDateTime(reader["datepaiement"]);
+                                if (dt != DateTime.MinValue && dt.Year > 1)
+                                {
+                                    dateRegle = dt.ToString("d");
+                                }
+                            }
+
+                            DateTime periodeDate = Convert.ToDateTime(reader["periodefacturee"]);
+                            string periodeStr = periodeDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture);
+
+                            string ligne = $"{reader["nombien"]} ({reader["Locataire"]}) || {periodeStr} || " +
+                                           $"Montant dû : {reader["montantdu"]} || Montant payé : {reader["montantpaye"]} || Date : {dateRegle} || Restant dû : {reader["resteapayer"]}";
+
+                            lstPaiements.Items.Add(ligne);
+                            this.lesPaiements[ligne] = reader["idpaiement"].ToString();
+                        }
+                    }
                 }
-                string ligne = $"{reader["nombien"]} ({reader["Locataire"]}) || {reader.GetDateTime(1):MMMM yyyy} || " +
-                    $"Montant dû : {reader.GetString(2)} || Montant payé : {reader.GetString(3)} || Date : {dateRegle}" +
-                    $" || Restant dû : {reader.GetString(5)}";
-                lstPaiements.Items.Add(ligne);
-                this.lesPaiements.Add(ligne, reader["idpaiement"].ToString());
-                finCurseur = !reader.Read();
             }
-            reader.Close();
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"Erreur lors du chargement de la liste des paiements :\n{ex.Message}",
+                                "Erreur BDD", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
         /// Retrouve le nom du bien à partir d'un id de location
         /// </summary>
-        /// <param name="idloc">id de la location</param>
-        /// <returns>Nom du bien concerné par cet id de location</returns>
         public string RecupNomBien(string idloc)
         {
-            string lenom;
-            string req = $"SELECT nombien FROM bien NATURAL JOIN location WHERE idlocation = {idloc}";
-            MySqlCommand command = new MySqlCommand(req, Global.Connexion);
-            MySqlDataReader reader = command.ExecuteReader();
-            reader.Read();
-            lenom = reader["nombien"].ToString();
-            reader.Close();
-            return lenom;
+            const string reqNom = "SELECT nombien FROM bien NATURAL JOIN location WHERE idlocation = @idLoc";
+            try
+            {
+                using (var cmd = new MySqlCommand(reqNom, Global.Connexion))
+                {
+                    cmd.Parameters.AddWithValue("@idLoc", idloc);
+                    object result = cmd.ExecuteScalar();
+                    return result?.ToString() ?? string.Empty;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"Erreur lors de la récupération du bien :\n{ex.Message}",
+                                "Erreur BDD", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return string.Empty;
+            }
         }
-
 
         /// <summary>
         /// Met à jour la liste des locations en fonction des critères sélectionnés par l'utilisateur
         /// </summary>
         public void AfficherLocations()
         {
-            // Vide le champ liste, paiements et le dictionnaire contenant les id
             lstLocations.Items.Clear();
             lstPaiements.Items.Clear();
             lesId.Clear();
-            // Construit la requête
-            this.req = "SELECT nombien AS `Bien`, CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', SUBSTRING_INDEX(nomlocataire, ',', 1)) " +
-                "AS `Locataire`, debutlocation AS `Début de location`, " +
-                "finlocation AS `Fin de location`, nomcompletcaution AS `Caution`, idlocation AS `id` " +
-                "FROM location JOIN locataire USING(idlocataire) JOIN bien USING(idbien) JOIN caution USING(idcaution) " +
-                $"WHERE locationarchivee = {Global.LocArchiv} ORDER BY nombien";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
-            bool finCurseur = !reader.Read();
-            while (!finCurseur)
-            {
-                // Affichage des champs récupérés dans la ligne
-                string item = $"{reader["Bien"]} || {reader["Locataire"]} || Du {reader.GetDateTime(2):d} au {reader.GetDateTime(3):d} || Caution : {reader["Caution"]}";
-                lstLocations.Items.Add(item);
-                lesId.Add(item, (int)(reader["id"]));
-                finCurseur = !reader.Read();
-            }
-            reader.Close();
-            // Paramètre le texte sur le messagePied du bouton afficher locations archivees/non archivées
-            if (Global.LocArchiv)
-            {
-                btnFiltreArchive.Text = "Afficher les locations non archivées";
-            }
-            else
-            {
-                btnFiltreArchive.Text = "Afficher les locations archivées";
-            }
-        }
 
+            const string reqLoc = "SELECT nombien AS Bien, " +
+                                  "CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', SUBSTRING_INDEX(nomlocataire, ',', 1)) AS Locataire, " +
+                                  "debutlocation, finlocation, nomcompletcaution AS Caution, idlocation AS id " +
+                                  "FROM location " +
+                                  "JOIN locataire USING(idlocataire) " +
+                                  "JOIN bien USING(idbien) " +
+                                  "JOIN caution USING(idcaution) " +
+                                  "WHERE locationarchivee = @locArchiv ORDER BY nombien";
+
+            try
+            {
+                using (var cmd = new MySqlCommand(reqLoc, Global.Connexion))
+                {
+                    cmd.Parameters.AddWithValue("@locArchiv", Global.LocArchiv);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            DateTime debut = Convert.ToDateTime(reader["debutlocation"]);
+                            DateTime fin = Convert.ToDateTime(reader["finlocation"]);
+
+                            string item = $"{reader["Bien"]} || {reader["Locataire"]} || Du {debut:d} au {fin:d} || Caution : {reader["Caution"]}";
+                            lstLocations.Items.Add(item);
+                            this.lesId[item] = Convert.ToInt32(reader["id"]);
+                        }
+                    }
+                }
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"Erreur lors du chargement des locations :\n{ex.Message}",
+                                "Erreur BDD", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            btnFiltreArchive.Text = Global.LocArchiv ? "Afficher les locations non archivées" : "Afficher les locations archivées";
+        }
 
         /// <summary>
         /// Sélectionne la location concernée par les paiements affichés
@@ -180,166 +210,131 @@ namespace GestionLocation
             {
                 if (paire.Value == this.idLocation)
                 {
-                    lstLocations.SelectedIndex = lstLocations.Items.IndexOf(paire.Key);
+                    lstLocations.SelectedItem = paire.Key;
                     return;
                 }
             }
         }
 
-
         /// <summary>
         /// Ferme la fenêtre
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnFermer_Click(object sender, EventArgs e)
         {
             this.Dispose();
         }
 
-
         /// <summary>
         /// Gère l'ouverture de la fenêtre de modification d'un enregistrement
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnSaisirPaiement_Click(object sender, EventArgs e)
         {
             if (lstPaiements.SelectedItem == null)
             {
-                MessageBox.Show("Veuillez sélectionner un paiement dans la liste pour pouvoir le modifier");
+                MessageBox.Show("Veuillez sélectionner un paiement dans la liste pour pouvoir le modifier.",
+                                "Sélection requise", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
             }
-            else
+
+            using (ModifPaiements fenModifPaiement = new ModifPaiements(this))
             {
-                // Récupère l'id de la location
-                //this.idLocation = ;
-                ModifPaiements fenModifPaiement = new ModifPaiements(this);
                 fenModifPaiement.ShowDialog();
             }
         }
 
-
         /// <summary>
         /// Affiche les locations archivées ou non archivées
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnFiltreArchive_Click(object sender, EventArgs e)
         {
             Global.LocArchiv = !Global.LocArchiv;
             AfficherLocations();
         }
 
-
         /// <summary>
         /// Met à jour la liste des paiements pour n'afficher que ceux qui ne sont pas réglés
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnNonRegle_Click(object sender, EventArgs e)
         {
-
             this.req = "SELECT nombien, periodefacturee, montantdu, montantpaye, datepaiement, resteapayer, idpaiement, idlocation, " +
-                "CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', SUBSTRING_INDEX(nomlocataire, ',', 1)) AS 'Locataire'" +
-                "FROM paiement NATURAL JOIN location NATURAL JOIN bien NATURAL JOIN locataire ";
-            if (lstLocations.SelectedItem != null)
+                       "CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', SUBSTRING_INDEX(nomlocataire, ',', 1)) AS Locataire " +
+                       "FROM paiement " +
+                       "NATURAL JOIN location " +
+                       "NATURAL JOIN bien " +
+                       "NATURAL JOIN locataire " +
+                       "WHERE loyerregle = False ";
+
+            if (lstLocations.SelectedItem != null && this.lesId.TryGetValue(lstLocations.SelectedItem.ToString(), out int locId))
             {
-                this.req += $"WHERE loyerregle = False AND idlocation = {this.lesId[lstLocations.SelectedItem.ToString()]} " +
-                    $"ORDER BY periodefacturee, nombien";
+                this.idLocation = locId;
+                this.req += "AND idlocation = @idLocation ";
             }
             else
             {
                 this.idLocation = 0;
-                this.req += $"WHERE loyerregle = False ORDER BY periodefacturee, nombien";
             }
+
+            this.req += "ORDER BY periodefacturee, nombien";
             EnvoiReqSelectPaiements();
         }
 
-
         /// <summary>
-        /// Permet d'obtenir l'id du paiement
+        /// Permet d'obtenir l'id du paiement sélectionné
         /// </summary>
-        /// <returns>ID de la location</returns>
         public string GetIdPaiement()
         {
-            return this.lesPaiements[lstPaiements.SelectedItem.ToString()];
+            if (lstPaiements.SelectedItem != null && this.lesPaiements.TryGetValue(lstPaiements.SelectedItem.ToString(), out string id))
+            {
+                return id;
+            }
+            return string.Empty;
         }
 
+        public string GetRequete() => this.req;
+
+        public int GetIdLocation() => this.idLocation;
 
         /// <summary>
-        /// Permet de récupérer la requête
+        /// Envoie une quittance par mail au locataire
         /// </summary>
-        /// <returns>Requête</returns>
-        public string GetRequete()
-        {
-            return this.req;
-        }
-
-
-        /// <summary>
-        /// Retourne l'id de la location concernée
-        /// </summary>
-        /// <returns>Id de la location concernée</returns>
-        public int GetIdLocation()
-        {
-            return this.idLocation;
-        }
-
-
-        /// <summary>
-        /// Envoi une quittance par mail au locataire
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnEnvoyerQuittance_Click(object sender, EventArgs e)
         {
-
-            //GenererQuittanceAnnee("2025");
-
             if (lstPaiements.SelectedItem == null)
             {
-                MessageBox.Show("Veuillez sélectionner un paiement dans la liste pour pouvoir envoyer sa quittance.");
+                MessageBox.Show("Veuillez sélectionner un paiement dans la liste pour pouvoir envoyer sa quittance.",
+                                "Sélection requise", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
             }
-            else
+
+            string idPaiement = GetIdPaiement();
+            if (!string.IsNullOrEmpty(idPaiement))
             {
-                //if (VerifMail() != "")
-                //{
-                GestionQuittance(GetIdPaiement());
-                //}
-                /* else
-            //     {
-            //         MessageBox.Show("Impossible d'envoyer la quittance au locataire, vous n'avez pas renseigné son adresse mail.");
-            //     }*/
+                GestionQuittance(idPaiement);
             }
         }
-
 
         /// <summary>
-        /// Vérifie si une adresse mail est renseignée pour le locataire
+        /// Vérifie si une adresse mail est renseignée pour le locataire (1 seule requête SQL optimisée)
         /// </summary>
-        /// <returns>Contenu renseigné pour l'adresse mail</returns>
         public string VerifMail()
         {
-            // Récupère l'id du locataire
-            this.req = $"SELECT idlocataire FROM location WHERE idlocation = {this.idLocation}";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            MySqlDataReader reader = this.command.ExecuteReader();
-            reader.Read();
-            string idLocataire = reader["idlocataire"].ToString();
-            reader.Close();
-
-            // Récupère l'adresse mail du locataire
-            this.req = $"SELECT emailocataire FROM locataire WHERE idlocataire = {idLocataire}";
-            this.command = new MySqlCommand(req.ToString(), Global.Connexion);
-            reader = this.command.ExecuteReader();
-            string adresse;
-            reader.Read();
-            adresse = reader["emailocataire"].ToString();
-            reader.Close();
-
-            return adresse;
+            const string reqMail = "SELECT emailocataire FROM locataire JOIN location USING(idlocataire) WHERE idlocation = @idLocation";
+            try
+            {
+                using (var cmd = new MySqlCommand(reqMail, Global.Connexion))
+                {
+                    cmd.Parameters.AddWithValue("@idLocation", this.idLocation);
+                    object result = cmd.ExecuteScalar();
+                    return result?.ToString() ?? string.Empty;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"Erreur lors de la vérification de l'email :\n{ex.Message}",
+                                "Erreur BDD", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return string.Empty;
+            }
         }
-
 
         /// <summary>
         /// Gère la procédure de création et d'envoi par mail de la quittance de loyer
@@ -347,472 +342,358 @@ namespace GestionLocation
         public void GestionQuittance(string idPaiement)
         {
             GenererQuittance(idPaiement);
-            //EnvoyerQuittance();
+            // EnvoyerQuittance();
         }
 
         /// <summary>
-        /// Génère tous les quittances d'une année civile
+        /// Génère toutes les quittances d'une année civile
         /// </summary>
         public void GenererQuittanceAnnee(string annee)
         {
-            this.req = @"
-            SELECT idpaiement, idlocation 
-            FROM paiement 
-            WHERE periodefacturee >= @debutperiode 
-            AND periodefacturee <= @finperiode";
-
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            this.command.Parameters.AddWithValue("@debutperiode", $"{annee}0101");
-            this.command.Parameters.AddWithValue("@finperiode", $"{annee}1231");
+            const string reqAnnee = @"SELECT idpaiement, idlocation 
+                                      FROM paiement 
+                                      WHERE periodefacturee >= @debutperiode 
+                                      AND periodefacturee <= @finperiode";
 
             List<int> idsPaiement = new List<int>();
             List<int> idsLocation = new List<int>();
 
-            using (MySqlDataReader reader = this.command.ExecuteReader())
+            try
             {
-                while (reader.Read())
+                using (var cmd = new MySqlCommand(reqAnnee, Global.Connexion))
                 {
-                    idsPaiement.Add(reader.GetInt32("idpaiement"));
-                    idsLocation.Add(reader.GetInt32("idlocation"));
+                    cmd.Parameters.AddWithValue("@debutperiode", $"{annee}0101");
+                    cmd.Parameters.AddWithValue("@finperiode", $"{annee}1231");
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            idsPaiement.Add(reader.GetInt32("idpaiement"));
+                            idsLocation.Add(reader.GetInt32("idlocation"));
+                        }
+                    }
+                }
+
+                if (idsPaiement.Count == 0)
+                {
+                    MessageBox.Show("Aucun paiement trouvé pour cette période.",
+                                    "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                for (int i = 0; i < idsPaiement.Count; i++)
+                {
+                    this.idLocation = idsLocation[i];
+                    GenererQuittance(idsPaiement[i].ToString());
                 }
             }
-
-            if (idsPaiement.Count == 0)
+            catch (MySqlException ex)
             {
-                throw new Exception("Aucun paiement trouvé pour cette période.");
-            }
-
-            // Génération des quittances
-            //foreach (int idPaiement in idsPaiement)
-            for (int i = 0 ; i < idsPaiement.Count; i++)
-            {
-                this.idLocation = idsLocation[i];
-                GenererQuittance(idsPaiement[i].ToString());
+                MessageBox.Show($"Erreur lors de la génération des quittances annuelles :\n{ex.Message}",
+                                "Erreur BDD", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-
         /// <summary>
-        /// Génère la quittance
+        /// Génère la quittance PDF en une seule requête SQL sécurisée
         /// </summary>
         public void GenererQuittance(string idPaiement)
         {
-            // Récupère les coordonnées sur l'utilisateur
-            this.req = $"SELECT * FROM utilisateur WHERE iduser = @id";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            this.command.Parameters.AddWithValue("@id", this.idUser);
-            string adresseRue, adresseCp, adresseVille;
+            const string reqFull = @"
+                SELECT 
+                    u.nomuser, u.prenomuser, u.adresseuser, u.cpuser, u.villeuser,
+                    loc.debutlocation, loc.finlocation,
+                    l.nomlocataire, l.prenomlocataire, l.emailocataire,
+                    b.charges, b.loyercc, b.adressebien, b.cpbien, b.villebien,
+                    p.montantpaye, p.datepaiement, p.periodefacturee
+                FROM paiement p
+                JOIN location loc ON p.idlocation = loc.idlocation
+                JOIN locataire l ON loc.idlocataire = l.idlocataire
+                JOIN bien b ON loc.idbien = b.idbien
+                JOIN utilisateur u ON u.iduser = @idUser
+                WHERE p.idpaiement = @idPaiement";
 
-            using (MySqlDataReader reader = this.command.ExecuteReader())
+            try
             {
-                if (reader.Read())
+                using (var cmd = new MySqlCommand(reqFull, Global.Connexion))
                 {
-                    this.leBailleur = $"{reader.GetString(3)} {reader.GetString(4)}";
-                    adresseRue = reader.GetString(5);
-                    adresseCp = reader.GetString(6);
-                    adresseVille = reader.GetString(7);
-                }
-                else
-                {
-                    throw new Exception("Aucune donnée trouvée pour Utilisateur.");
+                    cmd.Parameters.AddWithValue("@idPaiement", idPaiement);
+                    cmd.Parameters.AddWithValue("@idUser", this.idUser);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (!reader.Read())
+                        {
+                            MessageBox.Show("Impossible de récupérer les données nécessaires à la quittance.",
+                                            "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
+                        // Extraction sécurisée des données par nom de colonne
+                        this.leBailleur = $"{reader["prenomuser"]} {reader["nomuser"]}";
+                        string adresseRueBailleur = reader["adresseuser"].ToString();
+                        string adresseCpBailleur = reader["cpuser"].ToString();
+                        string adresseVilleBailleur = reader["villeuser"].ToString();
+
+                        DateTime datDebutLoc = Convert.ToDateTime(reader["debutlocation"]);
+                        DateTime datFinLoc = Convert.ToDateTime(reader["finlocation"]);
+
+                        string nomLoc = reader["nomlocataire"].ToString();
+                        string prenomLoc = reader["prenomlocataire"].ToString();
+                        this.leLocataire = $"{prenomLoc} {nomLoc}";
+                        this.emailLocataire = reader["emailocataire"].ToString();
+
+                        decimal charges = Convert.ToDecimal(reader["charges"]);
+                        decimal loyercc = Convert.ToDecimal(reader["loyercc"]);
+                        string adresseRueBien = reader["adressebien"].ToString();
+                        string adresseCpVilleBien = $"{reader["cpbien"]} {reader["villebien"]}";
+
+                        decimal totalRecu = Convert.ToDecimal(reader["montantpaye"]);
+                        DateTime datePaiement = reader["datepaiement"] != DBNull.Value ? Convert.ToDateTime(reader["datepaiement"]) : DateTime.MinValue;
+                        DateTime periodeFactureeComp = Convert.ToDateTime(reader["periodefacturee"]);
+                        this.laPeriode = periodeFactureeComp.ToString("MMMM yyyy", CultureInfo.CurrentCulture);
+
+                        // Formatage des dates
+                        string debutLoc = datDebutLoc.ToString("d", CultureInfo.GetCultureInfo("fr-FR"));
+                        string finLoc = datFinLoc.ToString("d", CultureInfo.GetCultureInfo("fr-FR"));
+                        string strPeriodeFacturee = periodeFactureeComp.ToString("d", CultureInfo.GetCultureInfo("fr-FR"));
+                        string strDatePaiement = (datePaiement == DateTime.MinValue || datePaiement.Year <= 1) ? "-" : datePaiement.ToShortDateString();
+
+                        // Création du répertoire destination si inexistant
+                        string dossierQuittances = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Quittances");
+                        Directory.CreateDirectory(dossierQuittances);
+                        string cheminFichier = Path.Combine(dossierQuittances, $"Quittance {this.leLocataire} - {this.laPeriode}.pdf");
+
+                        // Génération du PDF
+                        using (var fs = new FileStream(cheminFichier, FileMode.Create, FileAccess.Write, FileShare.None))
+                        {
+                            using (Document quittance = new Document(PageSize.A4))
+                            {
+                                PdfWriter.GetInstance(quittance, fs);
+                                quittance.Open();
+
+                                // Polices de caractères pour iTextSharp
+                                iTextFont fTitre = new iTextFont(iTextFont.FontFamily.HELVETICA, 18f, iTextFont.BOLD, BaseColor.BLACK);
+                                iTextFont fNormal = new iTextFont(iTextFont.FontFamily.HELVETICA, 11f, iTextFont.NORMAL, BaseColor.BLACK);
+                                iTextFont fItalique = new iTextFont(iTextFont.FontFamily.HELVETICA, 11f, iTextFont.ITALIC, BaseColor.BLACK);
+                                iTextFont fPiedPage = new iTextFont(iTextFont.FontFamily.HELVETICA, 8f, iTextFont.ITALIC, BaseColor.BLACK);
+                                iTextFont fPetitEspace = new iTextFont(iTextFont.FontFamily.HELVETICA, 2f, iTextFont.ITALIC, BaseColor.BLACK);
+                                iTextFont fGrasSouligne = new iTextFont(iTextFont.FontFamily.HELVETICA, 11f, iTextFont.BOLD | iTextFont.UNDERLINE, BaseColor.BLACK);
+                                iTextFont fGras = new iTextFont(iTextFont.FontFamily.HELVETICA, 11f, iTextFont.BOLD, BaseColor.BLACK);
+
+                                Paragraph titre = new Paragraph($"QUITTANCE DE LOYER\n{this.laPeriode.ToUpper()}\n\n", fTitre) { Alignment = Element.ALIGN_CENTER };
+                                quittance.Add(titre);
+
+                                Paragraph enTeteBailleur = new Paragraph("Le bailleur :", fGrasSouligne) { Alignment = Element.ALIGN_LEFT };
+                                quittance.Add(enTeteBailleur);
+                                quittance.Add(new Paragraph($"{this.leBailleur}\n{adresseRueBailleur}\n{adresseCpBailleur} {adresseVilleBailleur}", fItalique) { Alignment = Element.ALIGN_LEFT });
+
+                                Paragraph enTeteLocataire = new Paragraph("Le locataire :", fGrasSouligne) { Alignment = Element.ALIGN_RIGHT };
+                                quittance.Add(enTeteLocataire);
+                                quittance.Add(new Paragraph($"{this.leLocataire}\n{adresseRueBien}\n{adresseCpVilleBien}\n\n", fItalique) { Alignment = Element.ALIGN_RIGHT });
+
+                                string villeCapitalize = Global.Capitalize(adresseVilleBailleur);
+                                quittance.Add(new Paragraph($"Fait à {villeCapitalize}, le {DateTime.Today:dd MMMM yyyy}\n\n", fItalique) { Alignment = Element.ALIGN_RIGHT });
+
+                                quittance.Add(new Paragraph("Adresse de la location :", fGrasSouligne) { Alignment = Element.ALIGN_LEFT });
+                                quittance.Add(new Paragraph($"{adresseRueBien} {adresseCpVilleBien}", fGras) { Alignment = Element.ALIGN_LEFT });
+
+                                // Calcul des dates de période
+                                int nbJours = DateTime.DaysInMonth(periodeFactureeComp.Year, periodeFactureeComp.Month);
+                                string periodeFin = $"{nbJours:D2}/{periodeFactureeComp.Month:D2}/{periodeFactureeComp.Year}";
+
+                                if (strPeriodeFacturee.Equals(debutLoc))
+                                {
+                                    strPeriodeFacturee = debutLoc;
+                                }
+                                else if (periodeFactureeComp.Month == datFinLoc.Month && periodeFactureeComp.Year == datFinLoc.Year)
+                                {
+                                    periodeFin = finLoc;
+                                }
+
+                                // Conversion montant en lettres
+                                long euros = (long)Math.Truncate(totalRecu);
+                                long centimesVal = (long)Math.Round((totalRecu - euros) * 100);
+                                string centimesText = centimesVal > 0 ? $" et {NumberConverter.Spell((int)centimesVal)} centimes" : string.Empty;
+
+                                string blocContenu = $"\nJe soussigné {this.leBailleur} propriétaire du logement désigné ci-dessus, déclare avoir reçu de " +
+                                    $"{this.leLocataire} la somme de {totalRecu:F2}€ ({NumberConverter.Spell((int)euros)} euros" +
+                                    $"{centimesText}) au titre du paiement du loyer et des charges pour la " +
+                                    $"période du {strPeriodeFacturee} au {periodeFin} et lui en donne quittance sous réserve de tous mes droits.\n\n";
+                                quittance.Add(new Paragraph(blocContenu, fItalique) { Alignment = Element.ALIGN_JUSTIFIED });
+
+                                // Détails du règlement
+                                quittance.Add(new Paragraph("Détails du règlement :", fGrasSouligne) { Alignment = Element.ALIGN_LEFT });
+                                quittance.Add(new Phrase("\n", fPetitEspace));
+
+                                decimal ratioChargeLoyer = loyercc > 0 ? (charges / loyercc) : 0;
+                                decimal chargesRecues = Math.Round(totalRecu * ratioChargeLoyer, 2);
+                                decimal loyerRecu = Math.Round(totalRecu - chargesRecues, 2);
+
+                                PdfPTable tabDetails = new PdfPTable(2) { WidthPercentage = 40, HorizontalAlignment = 0 };
+                                AddColumnToTab("Loyer hors charges :", fNormal, Element.ALIGN_LEFT, tabDetails);
+                                AddColumnToTab($"{loyerRecu:F2} euros", fNormal, Element.ALIGN_RIGHT, tabDetails);
+
+                                AddColumnToTab("Charges :", fNormal, Element.ALIGN_LEFT, tabDetails);
+                                AddColumnToTab($"{chargesRecues:F2} euros", fNormal, Element.ALIGN_RIGHT, tabDetails);
+
+                                AddColumnToTab("Total :", fNormal, Element.ALIGN_LEFT, tabDetails);
+                                AddColumnToTab($"{totalRecu:F2} euros", fNormal, Element.ALIGN_RIGHT, tabDetails);
+
+                                AddColumnToTab("Date du règlement :", fNormal, Element.ALIGN_LEFT, tabDetails);
+                                AddColumnToTab(strDatePaiement, fNormal, Element.ALIGN_RIGHT, tabDetails);
+
+                                quittance.Add(tabDetails);
+                                quittance.Add(new Phrase("\n"));
+
+                                // Signature
+                                quittance.Add(new Paragraph(this.leBailleur, fGras) { Alignment = Element.ALIGN_RIGHT });
+
+                                string cheminSignature = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Signature", $"{this.leBailleur}.png");
+                                if (File.Exists(cheminSignature))
+                                {
+                                    using (var imgStream = new FileStream(cheminSignature, FileMode.Open, FileAccess.Read, FileShare.Read))
+                                    {
+                                        Image signature = Image.GetInstance(imgStream);
+                                        signature.ScalePercent(17);
+                                        signature.SetAbsolutePosition(quittance.PageSize.Width - quittance.RightMargin - signature.ScaledWidth, signature.AbsoluteY);
+                                        quittance.Add(signature);
+                                    }
+                                }
+
+                                quittance.Add(new Phrase("\n\n\n\n\n\n\n\n"));
+                                string messagePied = "Cette quittance annule tous les reçus qui auraient pu être établis précédemment en cas de paiement partiel du " +
+                                    "montant du présent terme. Elle est à conserver pendant trois ans par le locataire (loi n° 89-462 du 6 juillet 1989 : art. 7-1).";
+                                quittance.Add(new Paragraph(messagePied, fPiedPage) { Alignment = Element.ALIGN_JUSTIFIED });
+
+                                quittance.Close();
+                            }
+                        }
+                    }
                 }
             }
-
-            // Récupère les données sur la location
-            //int idLocation = GetIdLocation();
-            int idLocation = this.idLocation;
-            this.req = $"SELECT * FROM location WHERE idlocation = @idLocation";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            this.command.Parameters.AddWithValue("@idLocation", idLocation);
-            DateTime datDebutLoc = new DateTime();
-            DateTime datFinLoc = new DateTime();
-            using (MySqlDataReader reader = this.command.ExecuteReader())
+            catch (Exception ex)
             {
-                if (reader.Read())
-                {
-                    datDebutLoc = reader.GetDateTime(4);
-                    datFinLoc = reader.GetDateTime(5);
-                }
-                else
-                {
-                    throw new Exception("Aucune donnée trouvée pour la location recherchée.");
-                }
+                MessageBox.Show($"Erreur lors de la génération de la quittance :\n{ex.Message}",
+                                "Erreur de génération", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            string debutLoc = datDebutLoc.ToString("d", CultureInfo.CreateSpecificCulture("fr-FR"));
-            string finLoc = datFinLoc.ToString("d", CultureInfo.CreateSpecificCulture("fr-FR"));
-
-            // Récupère les coordonnées sur le locataire
-            this.req = $"SELECT * FROM locataire WHERE idlocataire = (SELECT idlocataire FROM location WHERE idlocation = @idLocation)";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            this.command.Parameters.AddWithValue("@idLocation", idLocation);
-            using (MySqlDataReader reader = this.command.ExecuteReader())
-            {
-                if (reader.Read())
-                {
-                    this.leLocataire = $"{reader.GetString(3)}";
-                    this.emailLocataire = $"{reader.GetString(10)}";
-                }
-                else
-                {
-                    throw new Exception("Aucune donnée trouvée pour le locataire recherché.");
-                }
-            }
-            string[] prenomNomSep = this.leLocataire.Split(' ');
-            this.leLocataire = prenomNomSep[1] + " " + prenomNomSep[0];
-
-            // Récupère les données sur le bien
-            this.req = $"SELECT * FROM bien WHERE idbien = (SELECT idbien FROM location WHERE idlocation = @idLocation)";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            this.command.Parameters.AddWithValue("@idLocation", idLocation);
-            string charges, loyercc, adresseRueBien, adresseCpVilleBien;
-            using (MySqlDataReader reader = this.command.ExecuteReader())
-            {
-                if (reader.Read())
-                {
-                    charges = $"{reader.GetString(3)}";
-                    loyercc = $"{reader.GetString(4)}";
-                    adresseRueBien = $"{reader.GetString(5)}";
-                    adresseCpVilleBien = $"{reader.GetString(6)} {reader.GetString(7)}";
-                }
-                else
-                {
-                    throw new Exception("Aucune donnée trouvée pour le bien recherché.");
-                }
-            }
-
-            // Récupère les données sur le paiement (montantdu, réglé, période facturée, date du paiement)
-            this.req = $"SELECT * FROM paiement WHERE idpaiement = @idPaiement";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            this.command.Parameters.AddWithValue("@idPaiement", idPaiement);
-            DateTime periodeFactureeComp = new DateTime();
-            DateTime datePaiement = new DateTime();
-            string totalRecu;
-            using (MySqlDataReader reader = this.command.ExecuteReader())
-            {
-                if (reader.Read())
-                {
-                    totalRecu = $"{reader.GetString(3)}";
-                    datePaiement = reader.GetDateTime(2);
-                    periodeFactureeComp = reader.GetDateTime(4);
-                    this.laPeriode = $"{reader.GetDateTime(4):MMMM yyyy}";
-                }
-                else
-                {
-                    throw new Exception("Aucune donnée trouvée pour le paiement recherché.");
-                }
-            }
-            string strPeriodeFacturee = periodeFactureeComp.ToString("d", CultureInfo.CreateSpecificCulture("fr-FR"));
-            string strDatePaiement = datePaiement.ToShortDateString();
-            if (strDatePaiement.Equals("01/01/0001"))
-            {
-                strDatePaiement = "-";
-            }
-
-            // Construit la quittance au format pdf
-            // Génère le chemin vers le fichier
-            string cheminFichier = Environment.CurrentDirectory + $"/Quittances/Quittance {this.leLocataire} - {this.laPeriode}.pdf";
-            // Crée le document
-            Document quittance = new Document(PageSize.A4);
-            // Permet de travailler sur le document
-            PdfWriter.GetInstance(quittance, new FileStream(cheminFichier, FileMode.Create));
-            quittance.Open();
-
-            // Polices de caratère
-            Font fTitre = new Font(iTextSharp.text.Font.FontFamily.HELVETICA, 18f, 1, new BaseColor(0, 0, 0));
-            Font fNormal = new Font(iTextSharp.text.Font.FontFamily.HELVETICA, 11f, iTextSharp.text.Font.NORMAL, new BaseColor(0, 0, 0));
-            Font fItalique = new Font(iTextSharp.text.Font.FontFamily.HELVETICA, 11f, iTextSharp.text.Font.ITALIC, new BaseColor(0, 0, 0));
-            Font fPiedPage = new Font(iTextSharp.text.Font.FontFamily.HELVETICA, 8f, iTextSharp.text.Font.ITALIC, new BaseColor(0, 0, 0));
-            Font fPetitEspace = new Font(iTextSharp.text.Font.FontFamily.HELVETICA, 2f, iTextSharp.text.Font.ITALIC, new BaseColor(0, 0, 0));
-            Font fGrasSouligne = new Font(iTextSharp.text.Font.FontFamily.HELVETICA, 11f, iTextSharp.text.Font.BOLD | iTextSharp.text.Font.UNDERLINE, new BaseColor(0, 0, 0));
-            Font fGras = new Font(iTextSharp.text.Font.FontFamily.HELVETICA, 11f, iTextSharp.text.Font.BOLD, new BaseColor(0, 0, 0));
-
-            // Crée les différents paragraphes du document
-            // Titre
-            Paragraph titre = new Paragraph($"QUITTANCE DE LOYER\n{this.laPeriode.ToUpper()}\n\n", fTitre)
-            {
-                Alignment = Element.ALIGN_CENTER
-            };
-            quittance.Add(titre);
-
-            // Encart bailleur
-            Paragraph enTeteBailleur = new Paragraph("Le bailleur :", fGrasSouligne)
-            {
-                Alignment = Element.ALIGN_LEFT
-            };
-            quittance.Add(enTeteBailleur);
-            string blocBailleur = $"{this.leBailleur}\n{adresseRue}\n{adresseCp} {adresseVille}";
-            Paragraph donneesBailleur = new Paragraph(blocBailleur, fItalique)
-            {
-                Alignment = Element.ALIGN_LEFT
-            };
-            quittance.Add(donneesBailleur);
-
-            // Encart locataire
-            Paragraph enTeteLocataire = new Paragraph("Le locataire :", fGrasSouligne)
-            {
-                Alignment = Element.ALIGN_RIGHT
-            };
-            quittance.Add(enTeteLocataire);
-            string blocLocataire = $"{this.leLocataire}\n{adresseRueBien}\n{adresseCpVilleBien}\n\n";
-            Paragraph donneesLocataire = new Paragraph(blocLocataire, fItalique)
-            {
-                Alignment = Element.ALIGN_RIGHT
-            };
-            quittance.Add(donneesLocataire);
-
-            // Fait le / à
-            string villeCapitalize = Global.Capitalize(adresseVille);
-            Paragraph faitLe = new Paragraph($"Fait à {villeCapitalize}, le {DateTime.Today:dd MMMM yyyy}\n\n", fItalique)
-            {
-                Alignment = Element.ALIGN_RIGHT
-            };
-            quittance.Add(faitLe);
-
-            // Encart objet
-            string[] blocLocation = { $"Adresse de la location :\n", $"{adresseRueBien} {adresseCpVilleBien}" };
-            Paragraph locationUn = new Paragraph(blocLocation[0], fGrasSouligne)
-            {
-                Alignment = Element.ALIGN_LEFT
-            };
-            quittance.Add(locationUn);
-            Paragraph locationDeux = new Paragraph(blocLocation[1], fGras)
-            {
-                Alignment = Element.ALIGN_LEFT
-            };
-            quittance.Add(locationDeux);
-
-            // Contenu de la quittance
-            string[] laPeriode = strPeriodeFacturee.Split('/');
-            int nbJours = DateTime.DaysInMonth(int.Parse(laPeriode[2]), int.Parse(laPeriode[1]));
-            string periodeFin = $"{nbJours}/{laPeriode[1]}/{laPeriode[2]}";
-            if (strPeriodeFacturee.Equals($"{debutLoc}"))
-            {
-                strPeriodeFacturee = debutLoc;
-            }
-            else if (strPeriodeFacturee.Substring(3).Equals($"{finLoc.Substring(3)}"))
-            {
-                periodeFin = finLoc;
-            }
-            // Séparer les euros et les centimes
-            string[] recu = totalRecu.Split(',');
-            string centimes = "";
-            if (recu.Length > 1)
-            {
-                centimes = $" et {NumberConverter.Spell(int.Parse(recu[1]))} centimes";
-
-            }
-            string blocContenu = $"\nJe soussigné {this.leBailleur} propriétaire du logement désigné ci-dessus, déclare avoir reçu de " +
-                $"{this.leLocataire} la somme de {totalRecu.Replace(',', '.')}€ ({NumberConverter.Spell(int.Parse(recu[0]))} euros" +
-                $"{centimes}) au titre du paiement du loyer et des charges pour la " +
-                $"période du {strPeriodeFacturee} au {periodeFin} et lui en donne quittance sous réserve de tous mes droits.\n\n";
-            Paragraph contenu = new Paragraph(blocContenu, fItalique)
-            {
-                Alignment = Element.ALIGN_JUSTIFIED
-            };
-            quittance.Add(contenu);
-
-            // Encart détails du règlement
-            Paragraph detailsTitre = new Paragraph("Détails du règlement :", fGrasSouligne)
-            {
-                Alignment = Element.ALIGN_LEFT
-            };
-            quittance.Add(detailsTitre);
-            quittance.Add(new Phrase("\n", fPetitEspace));
-            // Calculs pour les détails
-            float ratioChargeLoyer = float.Parse(charges) / float.Parse(loyercc);
-            float chargesRecues = (float)Math.Round(float.Parse(totalRecu) * ratioChargeLoyer, 2);
-            float loyerRecu = (float)Math.Round(float.Parse(totalRecu) - chargesRecues, 2);
-            // Création du tableau contenant les détails du paiment
-            PdfPTable tabDetails = new PdfPTable(2)
-            {
-                WidthPercentage = 40,
-                HorizontalAlignment = 0
-            };
-            // Création des colonnes du tableau
-            AddColumnToTab("Loyer hors charges :", fNormal, 0, tabDetails);
-            AddColumnToTab($"{loyerRecu.ToString().Replace(',', '.')} euros", fNormal, 2, tabDetails);
-            // Création du contenu des cellules
-            string[] donnees = new string[6];
-            donnees[0] = "Charges :";
-            donnees[1] = $"{chargesRecues.ToString().Replace(',', '.')} euros";
-            donnees[2] = "Total :";
-            donnees[3] = $"{totalRecu.ToString().Replace(',', '.')} euros";
-            donnees[4] = "Date du règlement :";
-            donnees[5] = strDatePaiement;
-            int i = 0;
-            foreach (string donnee in donnees)
-            {
-                PdfPCell cell = new PdfPCell(new Phrase(donnee, fNormal));
-                if (i == 4)
-                {
-                    i = 0;
-                }
-                cell.HorizontalAlignment = i;
-                cell.BorderColor = BaseColor.WHITE;
-                tabDetails.AddCell(cell);
-                i += 2;
-            };
-            quittance.Add(tabDetails);
-
-            quittance.Add(new Phrase("\n"));
-
-            // Encart signature
-            // Nom et Prénom
-            Paragraph signNomPrenom = new Paragraph(this.leBailleur, fGras)
-            {
-                Alignment = 2
-            };
-            quittance.Add(signNomPrenom);
-            // Signature
-            string cheminSignature = Environment.CurrentDirectory + $"/Signature/{this.leBailleur}.png";
-            Stream inputImageStream = new FileStream(cheminSignature, FileMode.Open, FileAccess.Read, FileShare.Read);
-            Image signature = Image.GetInstance(inputImageStream);
-            // Redimensionnement de la signature
-            signature.ScalePercent(17);
-            // Positionnement de la signature
-            signature.SetAbsolutePosition(quittance.PageSize.Width - quittance.RightMargin - signature.ScaledWidth, signature.AbsoluteY);
-            // Intégration de la signature dans un paragraphe
-            Paragraph sign = new Paragraph()
-            {
-                signature
-            };
-            // Intégration du paragraphe contenant la signature à la fenêtre
-            quittance.Add(sign);
-
-            // Encart pied de page
-            quittance.Add(new Phrase("\n\n\n\n\n\n\n\n"));
-            string messagePied = "Cette quittance annule tous les reçus qui auraient pu être établis précédemment en cas de paiement partiel du " +
-                "montant du présent terme. Elle est à conserver pendant trois ans par le locataire (loi n° 89-462 du 6 juillet 1989 : art. 7-1).";
-            Paragraph piedPage = new Paragraph(messagePied, fPiedPage)
-            {
-                Alignment = Element.ALIGN_JUSTIFIED
-            };
-            quittance.Add(piedPage);
-
-            // Ferme le document
-            quittance.Close();
-
-            // Ouvre le pdf dans le navigateur
-            //Process.Start(Environment.CurrentDirectory + $"/Quittances/{this.leLocataire} - {this.laPeriode}.pdf");
         }
 
-
         /// <summary>
-        /// Envoi la quittance
+        /// Envoie la quittance par e-mail
         /// </summary>
         public void EnvoyerQuittance()
         {
-            // Construit l'email
+            if (string.IsNullOrEmpty(this.emailLocataire))
+            {
+                MessageBox.Show("Le locataire ne possède pas d'adresse email valide.",
+                                "Envoi impossible", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string dossierQuittances = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Quittances");
+            string chemin = Path.Combine(dossierQuittances, $"Quittance {this.leLocataire} - {this.laPeriode}.pdf");
+
+            if (!File.Exists(chemin))
+            {
+                MessageBox.Show("Le fichier de quittance introuvable. Veuillez d'abord le générer.",
+                                "Fichier manquant", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             var email = new MimeMessage();
             email.From.Add(new MailboxAddress(Global.User, Global.EmailUser));
             email.To.Add(new MailboxAddress(this.leLocataire, this.emailLocataire));
-            email.Subject = $"Votre quittance de loyer de {laPeriode}";
-            // Bailleur en Cci du mail
+            email.Subject = $"Votre quittance de loyer de {this.laPeriode}";
             email.Bcc.Add(new MailboxAddress(Global.User, Global.EmailUser));
-            string de = "de ";
-            // Si le mois concerné par la quittance commence par une voyelle
-            if (laPeriode[0].Equals('a') || laPeriode[0].Equals('o'))
-            {
-                de = "d'";
-            }
+
+            string de = (!string.IsNullOrEmpty(this.laPeriode) && (this.laPeriode.StartsWith("a", StringComparison.OrdinalIgnoreCase) || this.laPeriode.StartsWith("o", StringComparison.OrdinalIgnoreCase))) ? "d'" : "de ";
+
             var builder = new BodyBuilder
             {
-                // Corps du message
-                HtmlBody = "<p>Bonjour,<br /></p>" +
-            $"<p>Veuillez trouver, ci-jointe, votre quittance de loyer {de}{laPeriode}.<br /><br /></p>" +
-            $"<p>Cordialement,<br /><strong>{this.leBailleur}</strong></p>"
+                HtmlBody = $"<p>Bonjour,<br /></p>" +
+                           $"<p>Veuillez trouver, ci-jointe, votre quittance de loyer {de}{this.laPeriode}.<br /><br /></p>" +
+                           $"<p>Cordialement,<br /><strong>{this.leBailleur}</strong></p>"
             };
-            // Chemin de la pièce jointe
-            string chemin = Environment.CurrentDirectory + $"/Quittances/{this.leLocataire} - {this.laPeriode}.pdf";
-            // Crée la pièce jointe
-            var pj = new MimePart()
-            {
-                Content = new MimeContent(File.OpenRead(chemin)),
-                ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
-                ContentTransferEncoding = ContentEncoding.Base64,
-                FileName = Path.GetFileName(chemin)
-            };
-            // Ajoute la pièce jointe
-            builder.Attachments.Add(pj);
+
+            builder.Attachments.Add(chemin);
             email.Body = builder.ToMessageBody();
 
-            // Crée la session SMTP pour l'envoi
-            var smtp = new MailKit.Net.Smtp.SmtpClient();
-            smtp.Connect(Global.ServeurSmtp, Global.PortEmail, SecureSocketOptions.StartTls);
-            smtp.Authenticate(Global.EmailUser, Global.PwdUser);
-            try
+            bool succes = false;
+            while (!succes)
             {
-                // Envoi le mail
-                smtp.Send(email);
-                // Envoi un message de confirmation à l'utilisateur
-                MessageBox.Show("Quittance envoyée avec succès !", "Mail envoyée", MessageBoxButtons.OK);
-            }
-            // Si exception levée
-            catch
-            {
-                var result = MessageBox.Show("Erreur lors de l'envoi de la quittance !", "Erreur lors de l'envoi du mail", MessageBoxButtons.AbortRetryIgnore);
-                // Si l'utilisateur veut retenter l'envoi du mail
-                if (result == DialogResult.Retry)
+                try
                 {
-                    smtp.Disconnect(true);
-                    EnvoyerQuittance();
+                    using (var smtp = new MailKit.Net.Smtp.SmtpClient())
+                    {
+                        smtp.Connect(Global.ServeurSmtp, Global.PortEmail, SecureSocketOptions.StartTls);
+                        smtp.Authenticate(Global.EmailUser, Global.PwdUser);
+                        smtp.Send(email);
+                        smtp.Disconnect(true);
+                    }
+
+                    MessageBox.Show("Quittance envoyée avec succès !", "Email envoyé", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    succes = true;
+                }
+                catch (Exception ex)
+                {
+                    var result = MessageBox.Show($"Erreur lors de l'envoi de la quittance :\n{ex.Message}",
+                                                 "Erreur d'envoi", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
+
+                    if (result != DialogResult.Retry)
+                    {
+                        break; // Abort ou Ignore
+                    }
                 }
             }
-            pj.Dispose();
-            // Fermeture de la session SMTP
-            smtp.Disconnect(true);
         }
-
 
         /// <summary>
         /// Gère la sélection d'une location
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void SelectLocation(object sender, EventArgs e)
         {
-            if (lstLocations.SelectedItem != null)
+            if (lstLocations.SelectedItem != null && this.lesId.TryGetValue(lstLocations.SelectedItem.ToString(), out int idLoc))
             {
-                // Récupère le nouvel id de location
-                this.idLocation = this.lesId[lstLocations.SelectedItem.ToString()];
-                // Met à jour la liste des paiements
+                this.idLocation = idLoc;
                 RemplirListePaiements();
             }
         }
-
 
         /// <summary>
         /// Récupère l'id de la location dont le paiement est sélectionné
         /// </summary>
         public void RecupIdLocation()
         {
-            int idPaiement = int.Parse(this.lesPaiements[lstPaiements.SelectedItem.ToString()]);
-
-            this.req = $"SELECT * FROM paiement WHERE idpaiement = @id";
-            this.command = new MySqlCommand(this.req, Global.Connexion);
-            this.command.Parameters.AddWithValue("@id", idPaiement);
-
-            using (MySqlDataReader reader = this.command.ExecuteReader())
+            if (lstPaiements.SelectedItem == null || !this.lesPaiements.TryGetValue(lstPaiements.SelectedItem.ToString(), out string strIdPaiement))
             {
-                if (reader.Read())
-                {
-                    this.idLocation = reader.GetInt32(1);
-                }
-                else
-                {
-                    throw new Exception("Aucune donnée trouvée pour la location.");
-                }
+                return;
             }
 
-            Console.WriteLine("Id de location = " + this.idLocation);
+            const string reqPaiement = "SELECT idlocation FROM paiement WHERE idpaiement = @id";
+            try
+            {
+                using (var cmd = new MySqlCommand(reqPaiement, Global.Connexion))
+                {
+                    cmd.Parameters.AddWithValue("@id", strIdPaiement);
+                    object result = cmd.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        this.idLocation = Convert.ToInt32(result);
+                    }
+                }
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"Erreur lors de la récupération de la location :\n{ex.Message}",
+                                "Erreur BDD", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
-
 
         /// <summary>
         /// Met à jour l'id de location du paiement sélectionné
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void LstPaiements_Click(object sender, EventArgs e)
         {
             if (lstPaiements.SelectedItem != null)
@@ -821,19 +702,14 @@ namespace GestionLocation
             }
         }
 
-
         /// <summary>
-        /// Ajoute une colonne à un tableau
+        /// Ajoute une colonne/cellule à un tableau PdfPTable
         /// </summary>
-        /// <param name="str">Titre de la colonne à ajouter</param>
-        /// <param name="f">Police s'appliquant à la colonne</param>
-        /// <param name="p">Indice de la position du texte</param>
-        /// <param name="t">Tableau auquel il faut ajouter la colonne</param>
-        public void AddColumnToTab(string str, Font f, int p, PdfPTable t)
+        public void AddColumnToTab(string str, iTextFont f, int alignment, PdfPTable t)
         {
             PdfPCell cell = new PdfPCell(new Phrase(str, f))
             {
-                HorizontalAlignment = p,
+                HorizontalAlignment = alignment,
                 BorderColor = BaseColor.WHITE
             };
             t.AddCell(cell);
