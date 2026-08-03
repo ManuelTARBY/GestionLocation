@@ -13,6 +13,7 @@ Application bureau (Windows Forms, C#) pour la gestion de locations immobilière
 - [Configuration](#configuration)
 - [Authentification](#authentification)
 - [Migration des mots de passe (installations existantes)](#migration-des-mots-de-passe-installations-existantes)
+- [État d'avancement du nettoyage du code](#état-davancement-du-nettoyage-du-code)
 - [Structure du projet](#structure-du-projet)
 - [Sécurité](#sécurité)
 - [Limitations connues](#limitations-connues)
@@ -82,26 +83,58 @@ Les installations antérieures au passage à BCrypt stockaient les mots de passe
 - Le script est idempotent : les mots de passe déjà hashés (préfixe `$2a$`/`$2b$`/`$2y$`) sont ignorés, il peut donc être relancé sans risque
 - À exécuter une seule fois, puis à retirer du projet
 
+## État d'avancement du nettoyage du code
+
+Le code a été repris progressivement, fenêtre par fenêtre, pour corriger des problèmes de sécurité et de robustesse récurrents dans la version d'origine. Fenêtres déjà passées en revue et corrigées :
+
+| Fenêtre | Principaux correctifs |
+|---|---|
+| `Connexion.cs` | Requêtes paramétrées, séparation connexion technique / authentification, mots de passe hashés (BCrypt) |
+| `Accueil.cs` | Colonnes nommées, `using`, correction du chemin de fichier signature |
+| `AjoutModifUtilisateurs.cs` | Passage au DTO `UtilisateurDTO`, requêtes paramétrées, préservation de `clientid`/`clientsecret`, correctif GDI+ sur le redimensionnement de la signature |
+| `Biens.cs` | Requêtes paramétrées, suppression d'un `try/catch` utilisé comme contrôle de flux |
+| `AjoutModifBiens.cs` | Requêtes 100% paramétrées, gestion de la table vide, validations numériques, prise en charge des champs DPE/fiscal |
+| `FicheBien.cs` | Requêtes paramétrées, **6 bugs de plantage corrigés** (charges annuelles inconnues, bien sans location, incompatibilités de type lors de lectures BDD, divisions par zéro, agrégats sans `COALESCE`), taille de fenêtre adaptée aux petits écrans |
+| `ListeCharges.cs` | Remplacement des dictionnaires indexés par texte affiché par une vraie structure (`LigneCharge`), correction d'un bug de reader SQL imbriqué (connexion partagée) |
+| `AjoutModifChargeAnnuelle.cs` | Requêtes paramétrées, génération d'id sécurisée, suppression de code mort, unification de la gestion des montants (virgule/point) |
+| `AjoutModifLocataires.cs` / `Locataires.cs` | Déjà largement nettoyé ; quelques finitions mineures (cas limite sur la saisie des prénoms) |
+| `Cautions.cs` | Nettoyé sur le même modèle que `Locataires.cs` |
+| `ModifPaiements.cs`, `Paiements.cs`, `Stats.cs` | Nettoyés |
+
+**Constantes rencontrées dans le code d'origine**, corrigées de façon systématique à chaque passage :
+- Requêtes SQL construites par concaténation de chaînes (injection SQL) → requêtes paramétrées
+- `SELECT *` avec accès aux colonnes par index numérique → colonnes nommées
+- `MySqlCommand`/`MySqlDataReader` sans `using` → fuites de ressources
+- Exceptions utilisées comme contrôle de flux normal (ex: détecter une valeur `NULL`) → vérifications explicites (`IsDBNull`, `reader.Read()`)
+- Génération manuelle d'identifiants via `MAX(...) + 1` sans gérer le cas d'une table vide → `IFNULL(MAX(...), 0) + 1`
+
+**Fenêtres restant à revoir** : `Locations.cs`, `GroupesDeBiens.cs`, et toute fenêtre non listée ci-dessus — à confirmer au fur et à mesure.
+
 ## Structure du projet
 
 ```
 GestionLocation/
-├── Connexion.cs                  # Authentification (connexion technique + applicative)
-├── Accueil.cs                    # Fenêtre principale après connexion
-├── AjoutModifUtilisateurs.cs     # Création / modification d'un utilisateur
+├── Connexion.cs                   # Authentification (connexion technique + applicative)
+├── Accueil.cs                     # Fenêtre principale après connexion
+├── AjoutModifUtilisateurs.cs      # Création / modification d'un utilisateur
 ├── DTO/
-│   └── UtilisateurDTO.cs         # DTO représentant un utilisateur (namespace GestionLocation.DTO)
-├── Locations.cs                  # Gestion des locations
-├── Locataires.cs                 # Gestion des locataires
-├── Biens.cs                      # Gestion des biens
-├── Cautions.cs                   # Gestion des cautions
-├── ListeCharges.cs                # Gestion des charges
-├── Paiements.cs                  # Suivi des paiements
-├── GroupesDeBiens.cs             # Gestion des groupes de biens
-├── Stats.cs                      # Statistiques
-├── Global.cs                     # État partagé (connexion BDD, session utilisateur)
-├── Quittances/                   # Quittances générées (créé au premier lancement)
-└── Signature/                    # Signatures des utilisateurs (créé au premier lancement)
+│   └── UtilisateurDTO.cs          # DTO représentant un utilisateur (namespace GestionLocation.DTO)
+├── Biens.cs                       # Liste des biens
+├── AjoutModifBiens.cs             # Création / modification d'un bien
+├── FicheBien.cs                   # Fiche détaillée d'un bien ou groupe de biens (stats, graphique CF)
+├── ListeCharges.cs                # Liste des charges annuelles d'un bien / groupe
+├── AjoutModifChargeAnnuelle.cs    # Création / modification d'une charge annuelle
+├── GroupesDeBiens.cs              # Gestion des groupes de biens
+├── Locataires.cs                  # Liste des locataires
+├── AjoutModifLocataires.cs        # Création / modification d'un locataire
+├── Cautions.cs                    # Gestion des cautions
+├── Locations.cs                   # Gestion des locations
+├── Paiements.cs                   # Suivi des paiements
+├── ModifPaiements.cs              # Modification d'un paiement
+├── Stats.cs                       # Statistiques
+├── Global.cs                      # État partagé (connexion BDD, session utilisateur)
+├── Quittances/                    # Quittances générées (créé au premier lancement)
+└── Signature/                     # Signatures des utilisateurs (créé au premier lancement)
 ```
 
 > Structure indicative basée sur les fenêtres identifiées jusqu'ici — à compléter si d'autres fichiers existent dans le projet.
@@ -119,4 +152,5 @@ GestionLocation/
 
 - Pas de fonctionnalité de réinitialisation de mot de passe applicatif si oublié (conséquence normale du hashage)
 - L'écran Ajout/Modification d'utilisateur ne permet pas de modifier `clientid`/`clientsecret` (probablement liés à une authentification OAuth pour l'envoi d'email) — ces champs sont préservés tels quels lors des modifications
+- Éditer une charge annuelle (`AjoutModifChargeAnnuelle.cs`) initialement créée pour un **groupe** de biens ne permet de modifier que la ligne du bien affiché (le groupe n'est pas ré-éditable en tant que tel) — comportement existant, documenté dans le code
 - Pas de tests automatisés identifiés à ce jour
