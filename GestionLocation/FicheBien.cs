@@ -635,9 +635,23 @@ namespace GestionLocation
 
             const string req =
                 "SELECT CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', nomlocataire) AS locataire, " +
-                "debutlocation, LEAST(finlocation, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY)) AS finlocation_ajustee, " +
-                "CONCAT(ROUND(DATEDIFF(LEAST(finlocation, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY)), " +
-                "DATE_SUB(debutlocation, INTERVAL 1 DAY)) / 30.417, 1), ' mois') AS duree " +
+                "debutlocation, " +
+
+                // Si debutlocation > date du jour -> debutlocation + 30 jours, sinon -> logique initiale
+                "IF(debutlocation > CURRENT_DATE(), " +
+                "   DATE_ADD(debutlocation, INTERVAL 30 DAY), " +
+                "   LEAST(finlocation, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY))" +
+                ") AS finlocation_ajustee, " +
+
+                // On réutilise la même condition pour le calcul de la durée
+                "CONCAT(ROUND(DATEDIFF(" +
+                "   IF(debutlocation > CURRENT_DATE(), " +
+                "      DATE_ADD(debutlocation, INTERVAL 30 DAY), " +
+                "      LEAST(finlocation, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY))" +
+                "   ), " +
+                "   DATE_SUB(debutlocation, INTERVAL 1 DAY)" +
+                ") / 30.417, 1), ' mois') AS duree " +
+
                 "FROM location NATURAL JOIN locataire WHERE idbien = @id ORDER BY debutlocation DESC";
 
             using var command = new MySqlCommand(req, Global.Connexion);
@@ -686,6 +700,11 @@ namespace GestionLocation
                 chartCF.Series["CA annuel"].Points.AddXY(annee, ca);
                 chartCF.Series["Charges annuelles"].Points.AddXY(annee, GetChargesAnnuelles(annee));
             }
+        }
+
+        private void FicheBien_Load(object sender, EventArgs e)
+        {
+
         }
 
         /// <summary>
