@@ -10,7 +10,6 @@ namespace GestionLocation
         private readonly Cautions fenCaution;
         private readonly string typeReq;
         private readonly int id;
-        private readonly string[] stringDelimit = { ", " };
         private string[] nomprenom;
 
         /// <summary>
@@ -68,16 +67,33 @@ namespace GestionLocation
         }
 
         /// <summary>
-        /// Vérifie si tous les champs obligatoires ont été renseignés
+        /// Vérifie si tous les champs obligatoires ont été renseignés et valides
         /// </summary>
         private bool ChampsRenseignes()
         {
-            if (string.IsNullOrWhiteSpace(txtPrenom.Text) || string.IsNullOrWhiteSpace(txtNom.Text))
+            // Vérification que le prénom contient au moins un caractère valide hors virgules/espaces
+            string prenomNettoye = txtPrenom.Text.Replace(",", "").Trim();
+
+            if (string.IsNullOrWhiteSpace(prenomNettoye) || string.IsNullOrWhiteSpace(txtNom.Text))
             {
                 return false;
             }
 
-            return !string.IsNullOrWhiteSpace(txtEmail.Text) || !string.IsNullOrWhiteSpace(txtTelephone.Text);
+            bool emailRenseigne = !string.IsNullOrWhiteSpace(txtEmail.Text);
+            bool telephoneRenseigne = !string.IsNullOrWhiteSpace(txtTelephone.Text);
+
+            if (!emailRenseigne && !telephoneRenseigne)
+            {
+                return false;
+            }
+
+            // Contrôle de cohérence sur le format de l'adresse email si elle est renseignée
+            if (emailRenseigne && !txtEmail.Text.Contains("@"))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -87,7 +103,8 @@ namespace GestionLocation
         {
             if (!ChampsRenseignes())
             {
-                MessageBox.Show("Vous devez au moins remplir les champs Prénom, Nom et Téléphone ou Email pour pouvoir valider la saisie.");
+                MessageBox.Show("Vous devez au moins remplir les champs Prénom, Nom et Téléphone ou saisir un Email valide pour pouvoir valider la saisie.",
+                                "Saisie incomplète", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -97,14 +114,22 @@ namespace GestionLocation
                 ? ObtenirReqModif()
                 : ObtenirReqAjout();
 
-            using (var command = new MySqlCommand(req, Global.Connexion))
+            try
             {
-                AjouterParametres(command);
-                command.ExecuteNonQuery();
-            }
+                using (var command = new MySqlCommand(req, Global.Connexion))
+                {
+                    AjouterParametres(command);
+                    command.ExecuteNonQuery();
+                }
 
-            this.fenCaution.RemplirLstCautions();
-            this.Dispose();
+                this.fenCaution.RemplirLstCautions();
+                this.Dispose();
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"Erreur lors de l'enregistrement en base de données :\n{ex.Message}",
+                                "Erreur BDD", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
@@ -138,11 +163,11 @@ namespace GestionLocation
             command.Parameters.AddWithValue("@prenom", this.nomprenom[0]);
             command.Parameters.AddWithValue("@nom", this.nomprenom[1]);
             command.Parameters.AddWithValue("@nomcomplet", this.nomprenom[2]);
-            command.Parameters.AddWithValue("@adresse", txtAdresse.Text);
-            command.Parameters.AddWithValue("@cp", txtCp.Text);
-            command.Parameters.AddWithValue("@ville", txtVille.Text.ToUpper());
+            command.Parameters.AddWithValue("@adresse", txtAdresse.Text.Trim());
+            command.Parameters.AddWithValue("@cp", txtCp.Text.Trim());
+            command.Parameters.AddWithValue("@ville", txtVille.Text.Trim().ToUpper());
             command.Parameters.AddWithValue("@telephone", EspacerNumTel());
-            command.Parameters.AddWithValue("@email", txtEmail.Text);
+            command.Parameters.AddWithValue("@email", txtEmail.Text.Trim());
             command.Parameters.AddWithValue("@archive", cbxArchive.Checked);
         }
 
@@ -164,21 +189,36 @@ namespace GestionLocation
         }
 
         /// <summary>
-        /// Récupère et met en forme les noms et prénoms du formulaire
+        /// Récupère et met en forme les noms et prénoms du formulaire de manière tolérante à la saisie
         /// </summary>
         private string[] MiseEnFormeNomPrenom()
         {
             string[] result = { "", "", "" };
-            string[] lesPrenoms = txtPrenom.Text.Split(stringDelimit, StringSplitOptions.RemoveEmptyEntries);
 
-            result[1] = txtNom.Text.ToUpper();
-            result[2] = result[1] + " " + Global.Capitalize(lesPrenoms[0]);
+            // Découpage sur la virgule, puis suppression des espaces superflus autour de chaque prénom
+            string[] lesPrenoms = txtPrenom.Text.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            for (int i = 0; i < lesPrenoms.Length - 1; i++)
+            for (int i = 0; i < lesPrenoms.Length; i++)
             {
-                result[0] += Global.Capitalize(lesPrenoms[i]) + ", ";
+                lesPrenoms[i] = lesPrenoms[i].Trim();
             }
-            result[0] += Global.Capitalize(lesPrenoms[lesPrenoms.Length - 1]);
+
+            result[1] = txtNom.Text.Trim().ToUpper();
+
+            if (lesPrenoms.Length > 0)
+            {
+                result[2] = result[1] + " " + Global.Capitalize(lesPrenoms[0]);
+
+                for (int i = 0; i < lesPrenoms.Length - 1; i++)
+                {
+                    result[0] += Global.Capitalize(lesPrenoms[i]) + ", ";
+                }
+                result[0] += Global.Capitalize(lesPrenoms[lesPrenoms.Length - 1]);
+            }
+            else
+            {
+                result[2] = result[1];
+            }
 
             return result;
         }

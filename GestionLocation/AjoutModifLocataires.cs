@@ -10,7 +10,6 @@ namespace GestionLocation
         private readonly Locataires fenLocataire;
         private readonly string typeReq;
         private readonly int id;
-        private readonly string[] stringDelimit = { ", " };
         private string[] nomprenom;
 
         /// <summary>
@@ -82,7 +81,8 @@ namespace GestionLocation
         {
             if (!ChampsRenseignes())
             {
-                MessageBox.Show("Vous devez au moins remplir les champs Prénom, Nom, Téléphone et Email pour pouvoir valider la saisie.");
+                MessageBox.Show("Vous devez remplir les champs Prénom, Nom, Téléphone et saisir un Email valide.",
+                                "Saisie incomplète", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -92,27 +92,46 @@ namespace GestionLocation
                 ? ObtenirReqModif()
                 : ObtenirReqAjout();
 
-            using (var command = new MySqlCommand(req, Global.Connexion))
+            try
             {
-                // Association de tous les paramètres de manière sécurisée et typée
-                AjouterParametres(command);
+                using (var command = new MySqlCommand(req, Global.Connexion))
+                {
+                    AjouterParametres(command);
+                    command.ExecuteNonQuery();
+                }
 
-                command.ExecuteNonQuery();
+                this.fenLocataire.RemplirLstLocataires();
+                this.Dispose();
             }
-
-            this.fenLocataire.RemplirLstLocataires();
-            this.Dispose();
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"Erreur lors de l'enregistrement en base de données :\n{ex.Message}",
+                                "Erreur BDD", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
-        /// Vérifie si tous les champs obligatoires sont renseignés
+        /// Vérifie si tous les champs obligatoires sont renseignés et valides
         /// </summary>
         private bool ChampsRenseignes()
         {
-            return !string.IsNullOrWhiteSpace(txtPrenom.Text) &&
-                   !string.IsNullOrWhiteSpace(txtNom.Text) &&
-                   !string.IsNullOrWhiteSpace(txtTelephone.Text) &&
-                   !string.IsNullOrWhiteSpace(txtEmail.Text);
+            // Vérification basique des champs non vides
+            if (string.IsNullOrWhiteSpace(txtNom.Text) ||
+                string.IsNullOrWhiteSpace(txtTelephone.Text) ||
+                string.IsNullOrWhiteSpace(txtEmail.Text))
+            {
+                return false;
+            }
+
+            // Contrôle de cohérence sur le format de l'adresse email
+            if (!txtEmail.Text.Contains("@"))
+            {
+                return false;
+            }
+
+            // Vérification que le prénom contient au moins un caractère valide hors virgules/espaces
+            string prenomNettoye = txtPrenom.Text.Replace(",", "").Trim();
+            return !string.IsNullOrWhiteSpace(prenomNettoye);
         }
 
         /// <summary>
@@ -149,13 +168,13 @@ namespace GestionLocation
             command.Parameters.AddWithValue("@prenom", this.nomprenom[0]);
             command.Parameters.AddWithValue("@nom", this.nomprenom[1]);
             command.Parameters.AddWithValue("@nomcomplet", this.nomprenom[2]);
-            command.Parameters.AddWithValue("@adresse", txtAdresse.Text);
-            command.Parameters.AddWithValue("@cp", txtCp.Text);
-            command.Parameters.AddWithValue("@ville", txtVille.Text.ToUpper());
+            command.Parameters.AddWithValue("@adresse", txtAdresse.Text.Trim());
+            command.Parameters.AddWithValue("@cp", txtCp.Text.Trim());
+            command.Parameters.AddWithValue("@ville", txtVille.Text.Trim().ToUpper());
             command.Parameters.AddWithValue("@datenaissance", datDateNaissance.Value.Date);
-            command.Parameters.AddWithValue("@lieunaissance", txtLieuNaissance.Text.ToUpper());
+            command.Parameters.AddWithValue("@lieunaissance", txtLieuNaissance.Text.Trim().ToUpper());
             command.Parameters.AddWithValue("@telephone", EspacerNumTel());
-            command.Parameters.AddWithValue("@email", txtEmail.Text);
+            command.Parameters.AddWithValue("@email", txtEmail.Text.Trim());
             command.Parameters.AddWithValue("@archive", cbxArchive.Checked);
         }
 
@@ -177,21 +196,36 @@ namespace GestionLocation
         }
 
         /// <summary>
-        /// Récupère et met en forme le nom et les prénoms
+        /// Récupère et met en forme le nom et les prénoms de manière tolérante à la saisie
         /// </summary>
         private string[] MiseEnFormeNomPrenom()
         {
             string[] result = { "", "", "" };
-            string[] lesPrenoms = txtPrenom.Text.Split(stringDelimit, StringSplitOptions.RemoveEmptyEntries);
 
-            result[1] = txtNom.Text.ToUpper();
-            result[2] = result[1] + " " + Global.Capitalize(lesPrenoms[0]);
+            // Découpage sur la virgule, puis suppression des espaces superflus autour de chaque prénom
+            string[] lesPrenoms = txtPrenom.Text.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            for (int i = 0; i < lesPrenoms.Length - 1; i++)
+            for (int i = 0; i < lesPrenoms.Length; i++)
             {
-                result[0] += Global.Capitalize(lesPrenoms[i]) + ", ";
+                lesPrenoms[i] = lesPrenoms[i].Trim();
             }
-            result[0] += Global.Capitalize(lesPrenoms[lesPrenoms.Length - 1]);
+
+            result[1] = txtNom.Text.Trim().ToUpper();
+
+            if (lesPrenoms.Length > 0)
+            {
+                result[2] = result[1] + " " + Global.Capitalize(lesPrenoms[0]);
+
+                for (int i = 0; i < lesPrenoms.Length - 1; i++)
+                {
+                    result[0] += Global.Capitalize(lesPrenoms[i]) + ", ";
+                }
+                result[0] += Global.Capitalize(lesPrenoms[lesPrenoms.Length - 1]);
+            }
+            else
+            {
+                result[2] = result[1];
+            }
 
             return result;
         }
