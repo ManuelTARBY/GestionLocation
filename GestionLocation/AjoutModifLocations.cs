@@ -511,7 +511,7 @@ namespace GestionLocation
             if (resultat)
             {
                 // Récupère le dernier IRL
-                string uri = "https://api.insee.fr/series/BDM/data/SERIES_BDM/001515333";
+                string uri = Global.IrlURI;
                 string bearerToken = Global.bearerToken;
 
                 HttpClient client = new HttpClient();
@@ -604,8 +604,8 @@ namespace GestionLocation
             HttpClient client = new HttpClient();
             var parameters = new FormUrlEncodedContent(new[]
             {
-        new KeyValuePair<string, string>("grant_type", "client_credentials")
-    });
+                new KeyValuePair<string, string>("grant_type", "client_credentials")
+            });
 
             var authorization = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{Global.consumerkey}:{Global.secretclient}"));
             client.DefaultRequestHeaders.Add("Authorization", $"Basic {authorization}");

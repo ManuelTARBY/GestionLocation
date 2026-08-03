@@ -16,6 +16,7 @@ namespace GestionLocation
         // Consumer key et secret key
         public static string consumerkey = "w39Gz3nkKnJrjIgfPIDOnM6qUzca";
         public static string secretclient = "xrCxn5Q1hm1TN1DCd5fOKwQ75Psa";
+        public static string IrlURI = "https://api.insee.fr/series/BDM/data/SERIES_BDM/001515333";
         // Token de connexion à l'API de l'INSEE (pour récupérer l'IRL)
         public static string bearerToken = "";
         // Date du dernier token
