@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace GestionLocation
 {
     public partial class DateAssurance : Form
     {
-        // Variable contenant les valeurs qui seront retournées
-        public string[] datasAssur = { "", "", "" };
-        
+        // Propriétés publiques typées accessibles par le formulaire parent après validation
+        public DateTime DateSouscription { get; private set; }
+        public DateTime DateEcheance { get; private set; }
+        public decimal MontantAssurance { get; private set; }
+
         /// <summary>
         /// Constructeur
         /// </summary>
@@ -15,38 +18,39 @@ namespace GestionLocation
         {
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.StartPosition = FormStartPosition.CenterParent;
         }
 
-
         /// <summary>
-        /// Récupère les deux dates
+        /// Validation et enregistrement des données
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnValider_Click(object sender, EventArgs e)
         {
-            if (!txtMontantAssur.Text.Equals("") && float.TryParse(txtMontantAssur.Text.Replace('.', ','), out float result))
+            // Normalisation de la saisie (accepte le point et la virgule)
+            string montantTexte = txtMontantAssur.Text.Trim().Replace(',', '.');
+
+            if (decimal.TryParse(montantTexte, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal montant) && montant >= 0)
             {
-                this.datasAssur[2] = result.ToString().Replace(',', '.');
-                this.Dispose();
+                // Assignation des propriétés
+                DateSouscription = dateSouscri.Value.Date;
+                DateEcheance = DateSouscription.AddYears(1).AddDays(-1);
+                MontantAssurance = montant;
+
+                // Ferme la fenêtre en indiquant au parent que la saisie est validée
+                this.DialogResult = DialogResult.OK;
+                this.Close();
             }
             else
             {
-                MessageBox.Show("Veuillez saisir un montant correct pour la prime d'assurance.");
+                MessageBox.Show(
+                    "Veuillez saisir un montant valide pour la prime d'assurance.",
+                    "Saisie incorrecte",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
                 txtMontantAssur.Focus();
+                txtMontantAssur.SelectAll();
             }
-        }
-
-
-        /// <summary>
-        /// Affecte les valeursde retour à la fermeture de la fenêtre
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DateAssurance_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            this.datasAssur[0] = dateSouscri.Value.ToString("dd/MM/yyyy");
-            this.datasAssur[1] = dateSouscri.Value.AddYears(1).AddDays(-1).ToString("dd/MM/yyyy");
         }
     }
 }

@@ -145,7 +145,6 @@ namespace GestionLocation
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "DateAssurance";
             this.Text = "DateAssurance";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DateAssurance_FormClosing);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);

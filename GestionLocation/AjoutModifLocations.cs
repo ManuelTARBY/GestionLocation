@@ -206,21 +206,21 @@ namespace GestionLocation
             this.datas.Add("LoyerCC", $"{reader["loyerCC"]}");
             this.datas.Add("AdresseBien", $"{reader["adressebien"]}");
             this.datas.Add("CPBien", $"{reader["cpbien"]}");
-            this.datas.Add("VilleBien", $"{ reader["villebien"]}");
-            this.datas.Add("NumFiscal", $"{ reader["numerofiscal"]}");
-            this.datas.Add("ClasseEnergie", $"{ reader["classeDPE"]}");
-            this.datas.Add("EstimationCoutElec", $"{ reader["estimationconsommation"]}");
-            this.datas.Add("AnneeReference", $"{ reader["anneereference"]}");
-            this.datas.Add("TypeHabitat", $"{ reader["typehabitat"]}");
-            this.datas.Add("RegJuriImmeuble", $"{ reader["regimejuridique"]}");
-            this.datas.Add("PeriodeConstruc", $"{ reader["periodeconstruction"]}");
-            this.datas.Add("superficie", $"{ reader["superficie"]}");
-            this.datas.Add("NbPiece", $"{ reader["nbpiece"]}");
-            this.datas.Add("DescriLogement", $"{ reader["description"]}");
-            this.datas.Add("ElementEquip", $"{ reader["elementequip"]}");
-            this.datas.Add("AutrePartieLog", $"{ reader["autre"]}");
-            this.datas.Add("ModProdChauff", $"{ reader["prodchauff"]}");
-            this.datas.Add("ModProdEauChaude", $"{ reader["prodeauchaude"]}");
+            this.datas.Add("VilleBien", $"{reader["villebien"]}");
+            this.datas.Add("NumFiscal", $"{reader["numerofiscal"]}");
+            this.datas.Add("ClasseEnergie", $"{reader["classeDPE"]}");
+            this.datas.Add("EstimationCoutElec", $"{reader["estimationconsommation"]}");
+            this.datas.Add("AnneeReference", $"{reader["anneereference"]}");
+            this.datas.Add("TypeHabitat", $"{reader["typehabitat"]}");
+            this.datas.Add("RegJuriImmeuble", $"{reader["regimejuridique"]}");
+            this.datas.Add("PeriodeConstruc", $"{reader["periodeconstruction"]}");
+            this.datas.Add("superficie", $"{reader["superficie"]}");
+            this.datas.Add("NbPiece", $"{reader["nbpiece"]}");
+            this.datas.Add("DescriLogement", $"{reader["description"]}");
+            this.datas.Add("ElementEquip", $"{reader["elementequip"]}");
+            this.datas.Add("AutrePartieLog", $"{reader["autre"]}");
+            this.datas.Add("ModProdChauff", $"{reader["prodchauff"]}");
+            this.datas.Add("ModProdEauChaude", $"{reader["prodeauchaude"]}");
             reader.Close();
         }
 
@@ -642,11 +642,20 @@ namespace GestionLocation
         /// </summary>
         public void RecupAssurance()
         {
-            DateAssurance fenDateAssur = new DateAssurance();
-            fenDateAssur.ShowDialog();
-            this.datas.Add("DateSousAssur", fenDateAssur.datasAssur[0]);
-            this.datas.Add("DateFinAssur", fenDateAssur.datasAssur[1]);
-            this.datas.Add("MontantAssur", fenDateAssur.datasAssur[2]);
+            using (var fenAssurance = new DateAssurance())
+            {
+                if (fenAssurance.ShowDialog() == DialogResult.OK)
+                {
+                    // Récupération directe des données typées
+                    string debut = fenAssurance.DateSouscription.ToString("dd/MM:yyyy");
+                    string fin = fenAssurance.DateEcheance.ToString("dd/MM:yyyy");
+                    string montant = fenAssurance.MontantAssurance.ToString();
+
+                    this.datas.Add("DateSousAssur", debut);
+                    this.datas.Add("DateFinAssur", fin);
+                    this.datas.Add("MontantAssur", montant);
+                }
+            }
         }
 
 
