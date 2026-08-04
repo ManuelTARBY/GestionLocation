@@ -958,7 +958,6 @@ namespace GestionLocation
         }
 
 
-
         /// <summary>
         /// Remplace toutes les occurrences d'une balise par une chaîne de texte dans le document Word.
         /// </summary>
@@ -993,109 +992,6 @@ namespace GestionLocation
             );
         }
 
-
-        ///// <summary>
-        ///// Récupère le dernier indice IRL
-        ///// </summary>
-        //public async Task RecupIRLAsync()
-        //{
-
-        //    bool jetonObtenu = await AssurerJetonAPIInseeValideAsync();
-
-        //    if (!jetonObtenu)
-        //    {
-        //        MessageBox.Show(
-        //            "Impossible d'obtenir le jeton d'accès à l'API de l'INSEE.\nVous devrez renseigner la valeur de l'IRL manuellement.",
-        //            "Authentification INSEE échouée",
-        //            MessageBoxButtons.OK,
-        //            MessageBoxIcon.Warning);
-        //    }
-        //    else
-        //    {
-        //        // Récupère le dernier IRL
-        //        string uri = Global.IrlURI;
-        //        string bearerToken = Global.bearerToken;
-
-        //        HttpClient client = new HttpClient();
-        //        // Configure les en-têtes de requête
-        //        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
-        //        client.DefaultRequestHeaders.Accept.Clear();
-        //        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml"));
-        //        client.DefaultRequestHeaders.AcceptEncoding.Clear();
-        //        client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-
-        //        try
-        //        {
-        //            // Envoie la requête GET de manière asynchrone
-        //            HttpResponseMessage httpResponse = await client.GetAsync(uri);
-
-        //            if (httpResponse.IsSuccessStatusCode)
-        //            {
-        //                Stream responseStream = await httpResponse.Content.ReadAsStreamAsync();
-
-        //                // Vérifie si le contenu est compressé
-        //                if (httpResponse.Content.Headers.ContentEncoding.Contains("gzip"))
-        //                {
-        //                    // Décompresse le contenu gzip
-        //                    using (GZipStream gzipStream = new GZipStream(responseStream, CompressionMode.Decompress))
-        //                    using (StreamReader reader = new StreamReader(gzipStream))
-        //                    {
-        //                        string response = await reader.ReadToEndAsync();
-
-        //                        // Charger le XML dans un XmlDocument
-        //                        XmlDocument xmlDoc = new XmlDocument();
-        //                        xmlDoc.LoadXml(response);
-        //                        XmlNodeList elements = xmlDoc.GetElementsByTagName("Obs");
-        //                        foreach (XmlNode elt in elements)
-        //                        {
-        //                            // Accéder aux éléments des IRL
-        //                            if (!string.IsNullOrEmpty(elt.Attributes["DATE_JO"]?.Value))
-        //                            {
-        //                                string period = elt.Attributes["TIME_PERIOD"].Value;
-        //                                string valeur = elt.Attributes["OBS_VALUE"].Value;
-        //                                this.datas.Add("IRL", $"{valeur} ({period.Replace("Q", "T")})");
-        //                                break;
-        //                            }
-        //                        }
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    // Lire directement si le contenu n'est pas compressé
-        //                    using (StreamReader reader = new StreamReader(responseStream))
-        //                    {
-        //                        string response = await reader.ReadToEndAsync();
-
-        //                        // Charger le XML dans un XmlDocument
-        //                        XmlDocument xmlDoc = new XmlDocument();
-        //                        xmlDoc.LoadXml(response);
-        //                        XmlNodeList elements = xmlDoc.GetElementsByTagName("Obs");
-        //                        foreach (XmlNode elt in elements)
-        //                        {
-        //                            // Accéder aux éléments des IRL
-        //                            if (!string.IsNullOrEmpty(elt.Attributes["DATE_JO"]?.Value))
-        //                            {
-        //                                string period = elt.Attributes["TIME_PERIOD"].Value;
-        //                                string valeur = elt.Attributes["OBS_VALUE"].Value;
-        //                                this.datas.Add("IRL", $"{valeur} ({period.Replace("Q", "T")})");
-        //                                break;
-        //                            }
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //            else
-        //            {
-        //                this.datas.Add("IRL", "");
-        //                MessageBox.Show("La requête permettant de récupérer l'IRL a échoué. Pensez à le renseigner vous-même.");
-        //            }
-        //        }
-        //        catch (HttpRequestException err)
-        //        {
-        //            MessageBox.Show($"Une erreur s'est produite lors de la récupération de l'IRL via l'API de l'INSEE : {err.Message}");
-        //        }
-        //    }
-        //}
 
         /// <summary>
         /// Récupère le dernier indice IRL depuis l'API INSEE avec un timeout strict de 5 secondes.
@@ -1247,46 +1143,6 @@ namespace GestionLocation
             }
         }
 
-        ///// <summary>
-        ///// Récupère un jeton pour utiliser l'API de l'INSEE
-        ///// </summary>
-        //public async Task<bool> RecupJetonAPIInseeAsync()
-        //{
-        //    HttpClient client = new HttpClient();
-        //    var parameters = new FormUrlEncodedContent(new[]
-        //    {
-        //        new KeyValuePair<string, string>("grant_type", "client_credentials")
-        //    });
-
-        //    var authorization = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{Global.consumerkey}:{Global.secretclient}"));
-        //    client.DefaultRequestHeaders.Add("Authorization", $"Basic {authorization}");
-
-        //    try
-        //    {
-        //        HttpResponseMessage response = await client.PostAsync("https://api.insee.fr/token", parameters);
-
-        //        if (response.IsSuccessStatusCode)
-        //        {
-        //            string responseBody = await response.Content.ReadAsStringAsync();
-        //            dynamic jsonObject = JsonConvert.DeserializeObject(responseBody);
-        //            Global.bearerToken = jsonObject["access_token"];
-        //            Global.dateBearerToken = DateTime.Now;
-        //            return true;
-        //        }
-        //        else
-        //        {
-        //            MessageBox.Show("Erreur lors de la récupération du jeton d'accès à l'API de l'INSEE. " +
-        //                "Vous devrez renseigner l'IRL vous-même. " + response.ReasonPhrase);
-        //            return false;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show($"Erreur réseau lors de l'authentification INSEE : {ex.Message}");
-        //        return false;
-        //    }
-        //}
-
 
         /// <summary>
         /// Récupère les dates de début et de fin d'assurance du logement
@@ -1426,146 +1282,6 @@ namespace GestionLocation
             this.Close();
         }
 
-
-        ///// <summary>
-        ///// Gère les procédures de mise à jour et d'ajout des enregistrements de la table Paiement
-        ///// </summary>
-        ///// <param name="id">id de la location sur laquelle porte les Paiements</param>
-        //public void MajTablePaiement(int id)
-        //{
-        //    // Déclaration/affectation des variables
-        //    List<string[]> lesMensualites = new List<string[]>();
-        //    int jour;
-        //    string debutLoc = $"{datDebut.Value:yyyy-MM-dd}";
-        //    string finLoc = $"{datFin.Value:yyyy-MM-dd}";
-        //    string periodeFacturee, moisDebutLoc, anneeDebutLoc, moisFinLoc, anneeFinLoc;
-        //    DateTime dateCpt = datDebut.Value;
-        //    string date = "01" + dateCpt.ToString().Substring(2);
-        //    dateCpt = DateTime.Parse(date);
-        //    anneeFinLoc = finLoc.Substring(0, 4);
-        //    moisFinLoc = finLoc.Substring(5, 2);
-        //    anneeDebutLoc = debutLoc.Substring(0, 4);
-        //    moisDebutLoc = debutLoc.Substring(5, 2);
-        //    // Parcourt tous les mois de la date de début à la date de fin
-        //    while (dateCpt <= datFin.Value)
-        //    {
-        //        // Détermine le jour de la mensualité (jour de début, jour de fin de contrat ou 1er jour du mois)
-        //        if (dateCpt.ToString().Substring(3, 2).Equals(moisDebutLoc) && dateCpt.ToString().Substring(6, 4).Equals(anneeDebutLoc))
-        //        {
-        //            jour = int.Parse(debutLoc.Substring(8, 2));
-        //        }
-        //        else if (dateCpt.ToString().Substring(3, 2).Equals(moisFinLoc) && dateCpt.ToString().Substring(6, 4).Equals(anneeFinLoc))
-        //        {
-        //            jour = int.Parse(finLoc.Substring(8, 2));
-        //        }
-        //        else
-        //        {
-        //            jour = 1;
-        //        }
-
-        //        // Enregistre la période facturée de la mensualité dans la liste lesMensualités
-        //        periodeFacturee = dateCpt.ToString().Substring(6, 4) + "-" + dateCpt.ToString().Substring(3, 2) + "-" + jour.ToString("D2");
-        //        string[] mensualite = { periodeFacturee, id.ToString() };
-        //        lesMensualites.Add(mensualite);
-        //        dateCpt = dateCpt.AddMonths(1);
-        //    }
-
-        //    // Recherche si des enregistrements de Paiement existent déjà pour cette location
-        //    int i = 0;
-        //    this.req = $"SELECT * FROM paiement WHERE idlocation = {id}";
-        //    List<string[]> resBdd = new List<string[]>();
-        //    this.command = new MySqlCommand(this.req, Global.Connexion);
-        //    this.command.Prepare();
-        //    MySqlDataReader reader = this.command.ExecuteReader();
-        //    bool finCurseur = !reader.Read();
-        //    while (!finCurseur)
-        //    {
-        //        DateTime laDate = reader.GetDateTime(4);
-        //        string[] tab = { laDate.ToString("yyyy-MM-dd"), reader.GetString(0) };
-        //        resBdd.Add(tab);
-        //        finCurseur = !reader.Read();
-        //    }
-        //    reader.Close();
-
-        //    // Si la requête n'a pas trouvé d'enregistrements
-        //    if (resBdd.Count() == 0)
-        //    {
-        //        // Crée un nouvel id de paiement
-        //        this.req = "SELECT MAX(idpaiement) FROM (SELECT idpaiement FROM paiement) AS req";
-        //        this.command = new MySqlCommand(this.req, Global.Connexion);
-        //        this.command.Prepare();
-        //        reader = this.command.ExecuteReader();
-        //        reader.Read();
-        //        int idPaiement = int.Parse(reader.GetString(0)) + 1;
-        //        reader.Close();
-        //        while (i <= lesMensualites.Count() - 1)
-        //        {
-        //            // Ajouter le nouvel enregistrement dans la table Paiement
-        //            AjoutePaiement(lesMensualites[i], idPaiement);
-        //            i++;
-        //            idPaiement++;
-        //        }
-        //    }
-        //    // Si la requête a trouvé des enregistrements correspondant à la location dans la table Paiement
-        //    else
-        //    {
-        //        while (i < lesMensualites.Count())
-        //        {
-        //            bool trouve = false;
-        //            // Vérifie si un enregistrement existe pour cette location, ce mois et cette année
-        //            foreach (string[] enr in resBdd)
-        //            {
-        //                // Si un enregistrement existe avec la même année et le même mois
-        //                if (enr[0].Substring(0, 7).Equals(lesMensualites[i][0].Substring(0, 7)))
-        //                {
-        //                    // Si l'enregistrement n'a pas le même jour
-        //                    if (!enr[0].Substring(8, 2).Equals(lesMensualites[i][0].Substring(8, 2)))
-        //                    {
-        //                        float montantDu = CalculeMontantDu(lstBiens.SelectedItem.ToString(), lesMensualites[i][0]);
-        //                        ModifiePaiement(enr[1], montantDu, lesMensualites[i][0]);
-        //                    }
-        //                    trouve = true;
-        //                    break;
-        //                }
-        //            }
-        //            // Si aucun enregistrement n'a été trouvé pour cette location et pour ce mois + année
-        //            if (trouve == false)
-        //            {
-        //                // Récupère l'id du paiement
-        //                int idPaiement;
-        //                this.req = "SELECT MAX(idpaiement) FROM (SELECT idpaiement FROM paiement) AS req";
-        //                this.command = new MySqlCommand(this.req, Global.Connexion);
-        //                this.command.Prepare();
-        //                reader = this.command.ExecuteReader();
-        //                reader.Read();
-        //                idPaiement = int.Parse(reader.GetString(0)) + 1;
-        //                reader.Close();
-        //                AjoutePaiement(lesMensualites[i], idPaiement);
-        //            }
-        //            i++;
-        //        }
-        //        // Vérifie si des enregistrements doivent être supprimés
-        //        // Crée le tableau des dates de paiement de la location
-        //        string[] lesMensu = new string[lesMensualites.Count()];
-        //        for (int j = 0; j < lesMensu.Length; j++)
-        //        {
-        //            lesMensu[j] = lesMensualites[j][0].Substring(0, 7);
-        //        }
-        //        // Parcourt les enregistrements qui étaient déjà présents dans la BDD
-        //        string dateAChercher;
-        //        for (int k = 0; k < resBdd.Count(); k++)
-        //        {
-        //            // Extrait annee + mois de l'enregistrement
-        //            dateAChercher = resBdd[k][0].Substring(0, 7);
-        //            // Si la date issue de la BDD n'est pas dans le tableau des dates de paiement de la location
-        //            if (!lesMensu.Contains(dateAChercher))
-        //            {
-        //                this.req = $"DELETE FROM paiement WHERE idpaiement = {resBdd[k][1]}";
-        //                ExecuteReqCUD();
-        //            }
-        //        }
-        //    }
-        //}
 
         /// <summary>
         /// Structure légère pour lire et manipuler les paiements existants depuis la BDD
@@ -1835,26 +1551,6 @@ namespace GestionLocation
             }
         }
 
-
-        ///// <summary>
-        ///// Gère la sélection d'une caution
-        ///// </summary>
-        ///// <param name="sender"></param>
-        ///// <param name="e"></param>
-        //private void LstCautions_SelectedIndexChanged(object sender, EventArgs e)
-        //{
-        //    lblContratVisale.Visible = lstCautions.SelectedItem.Equals("VISALE (Action Logement)");
-        //    txtContratVisale.Visible = lstCautions.SelectedItem.Equals("VISALE (Action Logement)");
-        //    if (!lstCautions.SelectedItem.Equals("VISALE (Action Logement)"))
-        //    {
-        //        txtContratVisale.Text = "";
-        //        txtContratVisale.Visible = false;
-        //    }
-        //    else
-        //    {
-        //        txtContratVisale.Visible = true;
-        //    }
-        //}
 
         /// <summary>
         /// Gère la sélection d'une caution
