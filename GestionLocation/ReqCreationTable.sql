@@ -180,7 +180,7 @@ CREATE TABLE IF NOT EXISTS `locataire` (
 
 DROP TABLE IF EXISTS `location`;
 CREATE TABLE IF NOT EXISTS `location` (
-  `idlocation` int NOT NULL AUTO_INCREMENT,
+  `idlocation` int NOT NULL,
   `idbien` int NOT NULL,
   `idcaution` int NOT NULL,
   `idlocataire` int NOT NULL,
@@ -203,7 +203,7 @@ CREATE TABLE IF NOT EXISTS `location` (
 
 DROP TABLE IF EXISTS `paiement`;
 CREATE TABLE IF NOT EXISTS `paiement` (
-  `idpaiement` int NOT NULL,
+  `idpaiement` int NOT NULL AUTO_INCREMENT,
   `idlocation` int NOT NULL,
   `datepaiement` date DEFAULT NULL,
   `montantpaye` float(13,2) DEFAULT NULL,
