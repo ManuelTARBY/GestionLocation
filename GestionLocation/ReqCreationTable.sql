@@ -212,7 +212,12 @@ CREATE TABLE IF NOT EXISTS `paiement` (
   `resteapayer` float(13,2) DEFAULT NULL,
   `loyerregle` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`idpaiement`),
-  KEY `i_fk_paiement_location1` (`idlocation`)
+  KEY `i_fk_paiement_location1` (`idlocation`),
+  CONSTRAINT `fk_paiement_location`
+    FOREIGN KEY (`idlocation`)
+    REFERENCES `location` (`idlocation`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
