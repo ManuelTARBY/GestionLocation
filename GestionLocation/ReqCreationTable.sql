@@ -180,7 +180,7 @@ CREATE TABLE IF NOT EXISTS `locataire` (
 
 DROP TABLE IF EXISTS `location`;
 CREATE TABLE IF NOT EXISTS `location` (
-  `idlocation` int NOT NULL,
+  `idlocation` int NOT NULL AUTO_INCREMENT,
   `idbien` int NOT NULL,
   `idcaution` int NOT NULL,
   `idlocataire` int NOT NULL,
