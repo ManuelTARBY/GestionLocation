@@ -12,7 +12,7 @@ namespace GestionLocation
         // À terme, à externaliser dans App.config / appsettings.json plutôt qu'en dur dans le code
         public string ChaineConnexionTechnique =
             "server=localhost;user id=manu;" +
-            "Convert Zero Datetime=True;Allow Zero Datetime=true;SslMode=none;database=gestionlocation";
+            "Convert Zero Datetime=True;Allow Zero Datetime=true;SslMode=none;database=gestionlocationtest";
 
         // Compteur de tentatives de connexion
         private int cptEssai = 1;

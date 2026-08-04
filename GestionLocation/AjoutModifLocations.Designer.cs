@@ -150,6 +150,7 @@ namespace GestionLocation
             this.txtDepotGarantie.Name = "txtDepotGarantie";
             this.txtDepotGarantie.Size = new System.Drawing.Size(133, 26);
             this.txtDepotGarantie.TabIndex = 31;
+            this.txtDepotGarantie.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // lblDepotGarantie
             // 
@@ -181,7 +182,7 @@ namespace GestionLocation
             this.btnValider.TabIndex = 34;
             this.btnValider.Text = "Valider";
             this.btnValider.UseVisualStyleBackColor = true;
-            this.btnValider.Click += new System.EventHandler(this.BtnValider_ClickAsync);
+            this.btnValider.Click += new System.EventHandler(this.btnValider_Click);
             // 
             // lblBiens
             // 

@@ -9,10 +9,8 @@ namespace GestionLocation
     public partial class Accueil : Form
     {
         
-        private MySqlCommand command;
         private readonly Connexion fenConnexion;
         private readonly string idUser;
-        private string req;
         
         /// <summary>
         /// Constructeur de la fenêtre Accueil

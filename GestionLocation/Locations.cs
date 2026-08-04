@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -12,11 +13,12 @@ namespace GestionLocation
         /// <summary>
         /// Classe interne pour encapsuler l'ID et le texte d'affichage de la location dans la ListBox
         /// </summary>
-        private class LocationItem
+        public class LocationItem
         {
             public int Id { get; set; }
             public string DisplayText { get; set; }
 
+            // Indispensable si vous n'utilisez pas DisplayMember
             public override string ToString()
             {
                 return DisplayText;
@@ -171,34 +173,39 @@ namespace GestionLocation
                     const string deletePaiements = "DELETE FROM paiement WHERE idlocation = @id";
                     const string deleteLocation = "DELETE FROM location WHERE idlocation = @id";
 
-                    using (var transaction = Global.Connexion.BeginTransaction())
+                    using (MySqlTransaction transaction = Global.Connexion.BeginTransaction())
                     {
                         try
                         {
-                            // Suppression des paiements rattachés
-                            using (var cmdPaiements = new MySqlCommand(deletePaiements, Global.Connexion, transaction))
+                            // 1. Suppression des paiements rattachés (obligatoire avant de supprimer la location)
+                            using (MySqlCommand cmdPaiements = new MySqlCommand(deletePaiements, Global.Connexion, transaction))
                             {
                                 cmdPaiements.Parameters.AddWithValue("@id", location.Id);
                                 cmdPaiements.ExecuteNonQuery();
                             }
 
-                            // Suppression de la location
-                            using (var cmdLocation = new MySqlCommand(deleteLocation, Global.Connexion, transaction))
+                            // 2. Suppression de la location
+                            using (MySqlCommand cmdLocation = new MySqlCommand(deleteLocation, Global.Connexion, transaction))
                             {
                                 cmdLocation.Parameters.AddWithValue("@id", location.Id);
                                 cmdLocation.ExecuteNonQuery();
                             }
 
+                            // Validation définitive des deux suppressions
                             transaction.Commit();
                         }
-                        catch
+                        catch (Exception ex)
                         {
+                            // Annulation complète des opérations en cas d'erreur
                             transaction.Rollback();
-                            MessageBox.Show("Une erreur est survenue lors de la suppression.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show($"Une erreur est survenue lors de la suppression : {ex.Message}", "Erreur BDD", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
                     }
 
+                    MessageBox.Show("La location et ses paiements associés ont été supprimés avec succès.", "Suppression effectuée", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // Rafraîchissement de la liste
                     MajAffichageLoc();
                 }
             }
@@ -324,10 +331,75 @@ namespace GestionLocation
             SurvolSortie((Button)sender);
         }
 
-        public void MajAffichageLoc()
+        /// <summary>
+        /// Rafraîchit la liste des locations dans l'interface de manière fluide et optimisée
+        /// </summary>
+        private void MajAffichageLoc()
         {
-            AfficherLocations();
-            this.fenAccueil.AfficherLocations();
+            // 1. Sauvegarde de l'ID sélectionné pour restaurer la position après le rechargement
+            int idSelectionne = (lstLocations.SelectedItem is LocationItem itemCourant) ? itemCourant.Id : 0;
+
+            // 2. Une SEULE requête SQL avec JOIN pour récupérer toutes les données liées d'un coup
+            string req = @"SELECT l.idlocation, l.debutlocation, l.finlocation, 
+                          b.nombien AS nomBien, b.villebien, 
+                          loc.nomlocataire AS nomLocataire, loc.prenomlocataire AS prenomLocataire
+                   FROM location l
+                   INNER JOIN bien b ON l.idbien = b.idbien
+                   INNER JOIN locataire loc ON l.idlocataire = loc.idlocataire
+                   ORDER BY l.debutlocation DESC";
+
+            List<LocationItem> listeLocations = new List<LocationItem>();
+
+            using (MySqlCommand cmd = new MySqlCommand(req, Global.Connexion))
+            {
+                using (MySqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        int id = reader.GetInt32("idlocation");
+                        DateTime dateDebut = reader.GetDateTime("debutlocation");
+                        DateTime dateFin = reader.GetDateTime("finlocation");
+                        string nomBien = reader.GetString("nomBien");
+                        string villeBien = reader.IsDBNull(reader.GetOrdinal("villebien")) ? "" : reader.GetString("villebien");
+                        string nomLocataire = reader.GetString("nomLocataire").ToUpper();
+                        string prenomLocataire = reader.GetString("prenomLocataire");
+
+                        // Formate un libellé lisible et propre pour l'affichage
+                        string libelle = $"[{id}] {nomBien} ({villeBien}) - {nomLocataire} {prenomLocataire} ({dateDebut:dd/MM/yyyy} au {dateFin:dd/MM/yyyy})";
+
+                        listeLocations.Add(new LocationItem
+                        {
+                            Id = id,
+                            DisplayText = libelle
+                        });
+                    }
+                }
+            }
+
+            // 3. Mise à jour de la ListBox (BeginUpdate empêche le clignotement pendant le remplissage)
+            lstLocations.BeginUpdate();
+            try
+            {
+                // Utilisation du DataBinding pour une affectation directe
+                lstLocations.DataSource = null;
+                lstLocations.DataSource = listeLocations;
+                lstLocations.DisplayMember = "DisplayText";
+                lstLocations.ValueMember = "Id";
+
+                // 4. Restauration de la sélection précédente si elle existe toujours
+                if (idSelectionne > 0)
+                {
+                    LocationItem itemAReselectionner = listeLocations.FirstOrDefault(x => x.Id == idSelectionne);
+                    if (itemAReselectionner != null)
+                    {
+                        lstLocations.SelectedItem = itemAReselectionner;
+                    }
+                }
+            }
+            finally
+            {
+                lstLocations.EndUpdate(); // Réautorise le dessin du contrôle WinForms
+            }
         }
 
         public Accueil GetFenAccueil() => this.fenAccueil;
