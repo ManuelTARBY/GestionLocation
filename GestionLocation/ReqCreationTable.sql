@@ -1,3 +1,8 @@
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -44,7 +49,6 @@ CREATE TABLE IF NOT EXISTS `bien` (
   UNIQUE KEY `nombien` (`nombien`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-
 -- --------------------------------------------------------
 
 --
@@ -66,7 +70,12 @@ CREATE TABLE IF NOT EXISTS `caution` (
   PRIMARY KEY (`idcaution`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Déchargement des données de la table `caution`
+--
 
+INSERT INTO `caution` (`idcaution`, `prenomcaution`, `nomcaution`, `nomcompletcaution`, `adressecaution`, `cpcaution`, `villecaution`, `telephonecaution`, `emailcaution`, `cautionarchivee`) VALUES
+(1, '(Action Logement)', 'VISALE', 'VISALE (Action Logement)', '19/21 quai d\'Austerlitz', '75013', 'Paris', '09 70 80 08 00', '', 0);
 -- --------------------------------------------------------
 
 --
@@ -180,20 +189,20 @@ CREATE TABLE IF NOT EXISTS `locataire` (
 
 DROP TABLE IF EXISTS `location`;
 CREATE TABLE IF NOT EXISTS `location` (
-  `idlocation` int NOT NULL,
+  `idlocation` int NOT NULL AUTO_INCREMENT,
   `idbien` int NOT NULL,
   `idcaution` int NOT NULL,
   `idlocataire` int NOT NULL,
   `debutlocation` date DEFAULT NULL,
   `finlocation` date DEFAULT NULL,
-  `depotgarantie` float(13,2) DEFAULT NULL,
+  `depotgarantie` float(13,2) DEFAULT '0.00',
   `locationarchivee` tinyint(1) DEFAULT NULL,
   `numcontratvisale` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idlocation`),
   KEY `i_fk_location_bien1` (`idbien`),
   KEY `i_fk_location_caution1` (`idcaution`),
   KEY `i_fk_location_locataire1` (`idlocataire`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -212,13 +221,8 @@ CREATE TABLE IF NOT EXISTS `paiement` (
   `resteapayer` float(13,2) DEFAULT NULL,
   `loyerregle` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`idpaiement`),
-  KEY `i_fk_paiement_location1` (`idlocation`),
-  CONSTRAINT `fk_paiement_location`
-    FOREIGN KEY (`idlocation`)
-    REFERENCES `location` (`idlocation`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `i_fk_paiement_location1` (`idlocation`)
+) ENGINE=InnoDB AUTO_INCREMENT=376 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -245,28 +249,6 @@ CREATE TABLE IF NOT EXISTS `utilisateur` (
   `signature` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`iduser`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Doublure de structure pour la vue `v_ca_annuel`
--- (Voir ci-dessous la vue réelle)
---
-DROP VIEW IF EXISTS `v_ca_annuel`;
-CREATE TABLE IF NOT EXISTS `v_ca_annuel` (
-`Année` int
-,`CA` double(19,2)
-);
-
--- --------------------------------------------------------
-
---
--- Structure de la vue `v_ca_annuel`
---
-DROP TABLE IF EXISTS `v_ca_annuel`;
-
-DROP VIEW IF EXISTS `v_ca_annuel`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_ca_annuel`  AS SELECT year(`paiement`.`periodefacturee`) AS `Année`, sum(`paiement`.`montantpaye`) AS `CA` FROM ((`paiement` join `location` on((`paiement`.`idlocation` = `location`.`idlocation`))) join `bien` on((`location`.`idbien` = `bien`.`idbien`))) WHERE (`bien`.`nombien` = 'Maison 4') GROUP BY year(`paiement`.`periodefacturee`) ORDER BY year(`paiement`.`periodefacturee`) ASC  ;
 
 --
 -- Contraintes pour les tables déchargées
@@ -298,7 +280,7 @@ ALTER TABLE `location`
 -- Contraintes pour la table `paiement`
 --
 ALTER TABLE `paiement`
-  ADD CONSTRAINT `paiement_ibfk_1` FOREIGN KEY (`idlocation`) REFERENCES `location` (`idlocation`);
+  ADD CONSTRAINT `FK_paiement_location` FOREIGN KEY (`idlocation`) REFERENCES `location` (`idlocation`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
