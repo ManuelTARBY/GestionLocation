@@ -41,7 +41,8 @@ namespace GestionLocation
             this.id = id;
 
             // Définition du titre de la fenêtre (ex: "Ajout d'une location" ou "Modification d'une location")
-            this.Text = $"{this.typeReq} d'une location";
+            string mode = this.typeReq.Equals("UPDATE") ? "Modification" : "Ajout";
+            this.Text = $"{mode} d'une location";
 
             // 1. Remplissage des listes déroulantes (Biens, Locataires, Cautions)
             AfficheLesListes();
@@ -640,81 +641,6 @@ namespace GestionLocation
 
 
         /// <summary>
-        /// Prépare la commande SQL d'insertion d'une nouvelle location avec requêtes paramétrées.
-        /// </summary>
-        private void PreparerCommandeAjout(MySqlCommand cmd, string[] lesId)
-        {
-            cmd.CommandText = @"
-            INSERT INTO location (idlocation, idbien, idlocataire, idcaution, debutlocation, finlocation, numcontratvisale)
-            VALUES (@idlocation, @idbien, @idlocataire, @idcaution, @debloc, @finloc, @numcontratvisale)";
-
-            // 1. Clé primaire
-            cmd.Parameters.AddWithValue("@idlocation", this.id);
-
-            // 2. Clés étrangères (Bien et Locataire)
-            cmd.Parameters.AddWithValue("@idbien", Convert.ToInt32(lesId[0]));
-            cmd.Parameters.AddWithValue("@idlocataire", Convert.ToInt32(lesId[1]));
-
-            // 3. Gestion de la caution optionnelle (si id == "0" ou vide -> DBNull.Value)
-            if (int.TryParse(lesId[2], out int idCaution) && idCaution > 0)
-            {
-                cmd.Parameters.AddWithValue("@idcaution", idCaution);
-            }
-            else
-            {
-                cmd.Parameters.AddWithValue("@idcaution", DBNull.Value);
-            }
-
-            // 4. Dates (passage d'objets DateTime directs, MySQL gère le format automatiquement)
-            cmd.Parameters.AddWithValue("@debloc", datDebut.Value.Date);
-            cmd.Parameters.AddWithValue("@finloc", datFin.Value.Date);
-
-            // 5. Numéro de contrat Visale
-            cmd.Parameters.AddWithValue("@numcontratvisale", txtContratVisale.Text);
-        }
-
-
-        /// <summary>
-        /// Prépare la commande SQL de mise à jour d'une location existante avec requêtes paramétrées.
-        /// </summary>
-        private void PreparerCommandeModif(MySqlCommand cmd, string[] lesId)
-        {
-            cmd.CommandText = @"
-            UPDATE location 
-            SET idbien = @idbien, 
-                idlocataire = @idlocataire, 
-                idcaution = @idcaution, 
-                debutlocation = @debloc, 
-                finlocation = @finloc, 
-                numcontratvisale = @numcontratvisale
-            WHERE idlocation = @idlocation";
-
-            // Clause WHERE
-            cmd.Parameters.AddWithValue("@idlocation", this.id);
-
-            // Clés étrangères
-            cmd.Parameters.AddWithValue("@idbien", Convert.ToInt32(lesId[0]));
-            cmd.Parameters.AddWithValue("@idlocataire", Convert.ToInt32(lesId[1]));
-
-            // Caution optionnelle
-            if (int.TryParse(lesId[2], out int idCaution) && idCaution > 0)
-            {
-                cmd.Parameters.AddWithValue("@idcaution", idCaution);
-            }
-            else
-            {
-                cmd.Parameters.AddWithValue("@idcaution", DBNull.Value);
-            }
-
-            // Dates et Montants
-            cmd.Parameters.AddWithValue("@debloc", datDebut.Value.Date);
-            cmd.Parameters.AddWithValue("@finloc", datFin.Value.Date);
-
-            // Numéro de contrat Visale
-            cmd.Parameters.AddWithValue("@numcontratvisale", txtContratVisale.Text);
-        }
-
-        /// <summary>
         /// Génère les états des lieux d'entrée et l'inventaire du mobilier dans une seule session Word
         /// </summary>
         public async Task GenererEtatDesLieuxAsync()
@@ -928,7 +854,7 @@ namespace GestionLocation
                 catch (Exception ex)
                 {
                     // Enregistrement de l'erreur / log si nécessaire
-                    MessageBox.Show($"Impossible de copier le fichier modèle : {ex.Message}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Erreur : {ex.Message}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return false;
                 }
                 finally
@@ -1167,56 +1093,6 @@ namespace GestionLocation
 
 
         /// <summary>
-        /// Vérifie la validité des champs de saisie avant enregistrement.
-        /// </summary>
-        /// <returns>True si le formulaire est valide, False sinon.</returns>
-        private bool ChampsRenseignes()
-        {
-            // 1. Sélection des éléments obligatoires dans les listes
-            if (lstBiens.SelectedItem == null)
-            {
-                AfficherAvertissement("Veuillez sélectionner un bien.", lstBiens);
-                return false;
-            }
-
-            if (lstLocataires.SelectedItem == null)
-            {
-                AfficherAvertissement("Veuillez sélectionner un locataire.", lstLocataires);
-                return false;
-            }
-
-            if (lstCautions.SelectedItem == null)
-            {
-                AfficherAvertissement("Veuillez sélectionner une caution.", lstCautions);
-                return false;
-            }
-
-            // 2. Cohérence des dates (comparaison sur les dates seules, sans les heures)
-            if (datFin.Value.Date < datDebut.Value.Date)
-            {
-                AfficherAvertissement("La date de fin de contrat ne peut pas être antérieure à la date de début.", datFin);
-                return false;
-            }
-
-            // 3. Validation spécifique du contrat Visale
-            string cautionSelectionnee = lstCautions.SelectedItem.ToString();
-            if (cautionSelectionnee.StartsWith("VISALE", StringComparison.OrdinalIgnoreCase) &&
-                string.IsNullOrWhiteSpace(txtContratVisale.Text))
-            {
-                AfficherAvertissement("Veuillez renseigner le numéro de contrat Visale.", txtContratVisale);
-                return false;
-            }
-
-            // 4. Normalisation des valeurs par défaut
-            if (string.IsNullOrWhiteSpace(txtDepotGarantie.Text))
-            {
-                txtDepotGarantie.Text = "0";
-            }
-
-            return true;
-        }
-
-        /// <summary>
         /// Centralise l'affichage des messages d'avertissement et repositionne le curseur sur le contrôle en erreur
         /// </summary>
         private void AfficherAvertissement(string message, Control controleAProbleme)
@@ -1228,47 +1104,6 @@ namespace GestionLocation
                 MessageBoxIcon.Warning);
 
             controleAProbleme?.Focus();
-        }
-
-
-        /// <summary>
-        /// Récupère l'ID du bien, du locataire et de la caution sélectionnés.
-        /// </summary>
-        private string[] RecupLesId()
-        {
-            string[] lesId = new string[3];
-
-            lesId[0] = ObtenirIdViaNom("bien", "idbien", "nombien", lstBiens.SelectedItem?.ToString());
-            lesId[1] = ObtenirIdViaNom("locataire", "idlocataire", "nomcompletlocataire", lstLocataires.SelectedItem?.ToString());
-            lesId[2] = ObtenirIdViaNom("caution", "idcaution", "nomcompletcaution", lstCautions.SelectedItem?.ToString());
-
-            return lesId;
-        }
-
-        /// <summary>
-        /// Helper sécurisé pour récupérer un ID à partir d'un libellé
-        /// </summary>
-        private string ObtenirIdViaNom(string table, string champId, string champNom, string valeurRecherchee)
-        {
-            if (string.IsNullOrWhiteSpace(valeurRecherchee))
-                return "0";
-
-            string req = $"SELECT {champId} FROM {table} WHERE {champNom} = @nom";
-
-            try
-            {
-                using (MySqlCommand cmd = new MySqlCommand(req, Global.Connexion))
-                {
-                    cmd.Parameters.AddWithValue("@nom", valeurRecherchee);
-                    object result = cmd.ExecuteScalar();
-                    return result != null && result != DBNull.Value ? result.ToString() : "0";
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erreur lors de la recherche de l'ID dans {table} : {ex.Message}", "Erreur BDD", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return "0";
-            }
         }
 
 
