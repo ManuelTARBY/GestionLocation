@@ -97,8 +97,12 @@ Le code a été repris progressivement, fenêtre par fenêtre, pour corriger des
 | `FicheBien.cs` | Requêtes paramétrées, **6 bugs de plantage corrigés** (charges annuelles inconnues, bien sans location, incompatibilités de type lors de lectures BDD, divisions par zéro, agrégats sans `COALESCE`), taille de fenêtre adaptée aux petits écrans |
 | `ListeCharges.cs` | Remplacement des dictionnaires indexés par texte affiché par une vraie structure (`LigneCharge`), correction d'un bug de reader SQL imbriqué (connexion partagée) |
 | `AjoutModifChargeAnnuelle.cs` | Requêtes paramétrées, génération d'id sécurisée, suppression de code mort, unification de la gestion des montants (virgule/point) |
+| `GroupesDeBiens.cs` | Requêtes paramétrées, `IFNULL` sur la génération d'id, transactions pour l'atomicité (création/suppression), navigation clavier corrigée (`SelectedIndexChanged` au lieu de `MouseClick`) |
+| `AjoutModifLocations.cs` | Requêtes paramétrées, IDs sécurisés, remplacement du calcul de mensualités dépendant des paramètres régionaux de la machine par un calcul `DateTime` fiable, coquille de format de date corrigée ; passage ultérieur à `decimal`, transactions et `ListItem` typé |
+| `Locations.cs` | Correctifs identiques au reste du projet (requêtes paramétrées, `using`, IDs sécurisés) |
 | `AjoutModifLocataires.cs` / `Locataires.cs` | Déjà largement nettoyé ; quelques finitions mineures (cas limite sur la saisie des prénoms) |
-| `Cautions.cs` | Nettoyé sur le même modèle que `Locataires.cs` |
+| `Cautions.cs` / `AjoutModifCautions.cs` | Nettoyé sur le même modèle que `Locataires.cs` / `AjoutModifLocataires.cs` |
+| `DateAssurance.cs` | Correctifs identiques au reste du projet |
 | `ModifPaiements.cs`, `Paiements.cs`, `Stats.cs` | Nettoyés |
 
 **Constantes rencontrées dans le code d'origine**, corrigées de façon systématique à chaque passage :
@@ -108,7 +112,7 @@ Le code a été repris progressivement, fenêtre par fenêtre, pour corriger des
 - Exceptions utilisées comme contrôle de flux normal (ex: détecter une valeur `NULL`) → vérifications explicites (`IsDBNull`, `reader.Read()`)
 - Génération manuelle d'identifiants via `MAX(...) + 1` sans gérer le cas d'une table vide → `IFNULL(MAX(...), 0) + 1`
 
-**Fenêtres restant à revoir** : `Locations.cs`, `GroupesDeBiens.cs`, et toute fenêtre non listée ci-dessus — à confirmer au fur et à mesure.
+**Fenêtres restant à revoir** : toute fenêtre non listée ci-dessus (à confirmer au fur et à mesure — par exemple les éventuelles fenêtres de génération de quittances, si elles existent).
 
 ## Structure du projet
 
@@ -127,8 +131,11 @@ GestionLocation/
 ├── GroupesDeBiens.cs              # Gestion des groupes de biens
 ├── Locataires.cs                  # Liste des locataires
 ├── AjoutModifLocataires.cs        # Création / modification d'un locataire
-├── Cautions.cs                    # Gestion des cautions
-├── Locations.cs                   # Gestion des locations
+├── Cautions.cs                    # Liste des cautions
+├── AjoutModifCautions.cs          # Création / modification d'une caution
+├── Locations.cs                   # Liste des locations
+├── AjoutModifLocations.cs         # Création / modification d'une location (génération bail/état des lieux Word, IRL INSEE)
+├── DateAssurance.cs               # Saisie des dates d'assurance (colocations)
 ├── Paiements.cs                   # Suivi des paiements
 ├── ModifPaiements.cs              # Modification d'un paiement
 ├── Stats.cs                       # Statistiques
@@ -153,4 +160,5 @@ GestionLocation/
 - Pas de fonctionnalité de réinitialisation de mot de passe applicatif si oublié (conséquence normale du hashage)
 - L'écran Ajout/Modification d'utilisateur ne permet pas de modifier `clientid`/`clientsecret` (probablement liés à une authentification OAuth pour l'envoi d'email) — ces champs sont préservés tels quels lors des modifications
 - Éditer une charge annuelle (`AjoutModifChargeAnnuelle.cs`) initialement créée pour un **groupe** de biens ne permet de modifier que la ligne du bien affiché (le groupe n'est pas ré-éditable en tant que tel) — comportement existant, documenté dans le code
+- ⚠️ **À vérifier** : une version de `AjoutModifLocations.cs` s'appuie sur `cmd.LastInsertedId` pour récupérer l'id d'une nouvelle location/paiement, ce qui suppose que `idlocation`/`idpaiement` sont déclarées `AUTO_INCREMENT` en base. Le schéma `location` vu initialement dans le projet ne l'était pas — à confirmer avant de considérer ce point comme réglé, sinon revenir à un calcul manuel (`IFNULL(MAX(...), 0) + 1`) comme dans le reste de l'application
 - Pas de tests automatisés identifiés à ce jour
