@@ -1030,19 +1030,20 @@ namespace GestionLocation
             // 2. Préparation de la requête de jeton
             var requestContent = new FormUrlEncodedContent(new[]
             {
-                new KeyValuePair<string, string>("grant_type", "client_credentials")
-            });
+        new KeyValuePair<string, string>("grant_type", "client_credentials")
+    });
 
             string credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{Global.consumerkey}:{Global.secretclient}"));
 
             using (var request = new HttpRequestMessage(HttpMethod.Post, "https://api.insee.fr/token"))
+            using (var client = new HttpClient())
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Basic", credentials);
                 request.Content = requestContent;
 
                 try
                 {
-                    using (HttpResponseMessage response = await new HttpClient().SendAsync(request))
+                    using (HttpResponseMessage response = await client.SendAsync(request))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -1057,13 +1058,11 @@ namespace GestionLocation
                             }
                         }
 
-                        // Journalisation ou retour d'échec
                         return false;
                     }
                 }
                 catch (Exception)
                 {
-                    // En cas d'erreur réseau, on retourne false pour que le formulaire appelant gère la saisie manuelle
                     return false;
                 }
             }
