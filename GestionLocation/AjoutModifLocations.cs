@@ -924,17 +924,6 @@ namespace GestionLocation
         /// </summary>
         public async Task RecupIRLAsync()
         {
-            bool jetonObtenu = await AssurerJetonAPIInseeValideAsync();
-
-            if (!jetonObtenu)
-            {
-                MessageBox.Show(
-                    "Impossible d'obtenir le jeton d'accès à l'API de l'INSEE.\nVous devrez renseigner la valeur de l'IRL manuellement.",
-                    "Authentification INSEE échouée",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-                return;
-            }
 
             string uri = Global.IrlURI;
             string bearerToken = Global.bearerToken;
@@ -1009,61 +998,6 @@ namespace GestionLocation
                         this.datas["IRL"] = "";
                         MessageBox.Show($"Une erreur réseau s'est produite lors de la récupération de l'IRL : {err.Message}", "Erreur Réseau", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// Récupère un jeton valide pour l'API de l'INSEE.
-        /// Utilise le jeton en cache si celui-ci est encore valide.
-        /// </summary>
-        public static async Task<bool> AssurerJetonAPIInseeValideAsync()
-        {
-            // 1. Vérification du cache : si le token a moins de 6 jours, on le conserve
-            if (!string.IsNullOrEmpty(Global.bearerToken) &&
-                (DateTime.Now - Global.dateBearerToken).TotalDays < 6)
-            {
-                return true;
-            }
-
-            // 2. Préparation de la requête de jeton
-            var requestContent = new FormUrlEncodedContent(new[]
-            {
-        new KeyValuePair<string, string>("grant_type", "client_credentials")
-    });
-
-            string credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{Global.consumerkey}:{Global.secretclient}"));
-
-            using (var request = new HttpRequestMessage(HttpMethod.Post, "https://api.insee.fr/token"))
-            using (var client = new HttpClient())
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Basic", credentials);
-                request.Content = requestContent;
-
-                try
-                {
-                    using (HttpResponseMessage response = await client.SendAsync(request))
-                    {
-                        if (response.IsSuccessStatusCode)
-                        {
-                            string responseBody = await response.Content.ReadAsStringAsync();
-                            JObject json = JObject.Parse(responseBody);
-
-                            if (json.TryGetValue("access_token", out JToken tokenToken))
-                            {
-                                Global.bearerToken = tokenToken.ToString();
-                                Global.dateBearerToken = DateTime.Now;
-                                return true;
-                            }
-                        }
-
-                        return false;
-                    }
-                }
-                catch (Exception)
-                {
-                    return false;
                 }
             }
         }
