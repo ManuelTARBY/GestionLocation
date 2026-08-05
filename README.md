@@ -160,5 +160,4 @@ GestionLocation/
 - Pas de fonctionnalité de réinitialisation de mot de passe applicatif si oublié (conséquence normale du hashage)
 - L'écran Ajout/Modification d'utilisateur ne permet pas de modifier `clientid`/`clientsecret` (probablement liés à une authentification OAuth pour l'envoi d'email) — ces champs sont préservés tels quels lors des modifications
 - Éditer une charge annuelle (`AjoutModifChargeAnnuelle.cs`) initialement créée pour un **groupe** de biens ne permet de modifier que la ligne du bien affiché (le groupe n'est pas ré-éditable en tant que tel) — comportement existant, documenté dans le code
-- ⚠️ **À vérifier** : une version de `AjoutModifLocations.cs` s'appuie sur `cmd.LastInsertedId` pour récupérer l'id d'une nouvelle location/paiement, ce qui suppose que `idlocation`/`idpaiement` sont déclarées `AUTO_INCREMENT` en base. Le schéma `location` vu initialement dans le projet ne l'était pas — à confirmer avant de considérer ce point comme réglé, sinon revenir à un calcul manuel (`IFNULL(MAX(...), 0) + 1`) comme dans le reste de l'application
 - Pas de tests automatisés identifiés à ce jour
