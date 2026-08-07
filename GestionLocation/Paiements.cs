@@ -10,6 +10,7 @@ using MimeKit;
 using MailKit.Security;
 using Developpez.Dotnet;
 using iTextFont = iTextSharp.text.Font;
+using iTextBaseColor = iTextSharp.text.BaseColor;
 
 namespace GestionLocation
 {
@@ -400,19 +401,21 @@ namespace GestionLocation
         /// </summary>
         public void GenererQuittance(string idPaiement)
         {
+            string cheminLog = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "erreur_quittance.log");
+
             const string reqFull = @"
-                SELECT 
-                    u.nomuser, u.prenomuser, u.adresseuser, u.cpuser, u.villeuser,
-                    loc.debutlocation, loc.finlocation,
-                    l.nomlocataire, l.prenomlocataire, l.emailocataire,
-                    b.charges, b.loyercc, b.adressebien, b.cpbien, b.villebien,
-                    p.montantpaye, p.datepaiement, p.periodefacturee
-                FROM paiement p
-                JOIN location loc ON p.idlocation = loc.idlocation
-                JOIN locataire l ON loc.idlocataire = l.idlocataire
-                JOIN bien b ON loc.idbien = b.idbien
-                JOIN utilisateur u ON u.iduser = @idUser
-                WHERE p.idpaiement = @idPaiement";
+        SELECT 
+            u.nomuser, u.prenomuser, u.adresseuser, u.cpuser, u.villeuser,
+            loc.debutlocation, loc.finlocation,
+            l.nomlocataire, l.prenomlocataire, l.emailocataire,
+            b.charges, b.loyercc, b.adressebien, b.cpbien, b.villebien,
+            p.montantpaye, p.datepaiement, p.periodefacturee
+        FROM paiement p
+        JOIN location loc ON p.idlocation = loc.idlocation
+        JOIN locataire l ON loc.idlocataire = l.idlocataire
+        JOIN bien b ON loc.idbien = b.idbien
+        JOIN utilisateur u ON u.iduser = @idUser
+        WHERE p.idpaiement = @idPaiement";
 
             try
             {
@@ -425,47 +428,51 @@ namespace GestionLocation
                     {
                         if (!reader.Read())
                         {
-                            MessageBox.Show("Impossible de récupérer les données nécessaires à la quittance.",
-                                            "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("Impossible de trouver le paiement ou les données associées en base de données.",
+                                            "Aucune donnée", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
                         }
 
-                        // Extraction sécurisée des données par nom de colonne
+                        // 1. Extraction sécurisée (protection contre les champs NULL en BDD)
                         this.leBailleur = $"{reader["prenomuser"]} {reader["nomuser"]}";
-                        string adresseRueBailleur = reader["adresseuser"].ToString();
-                        string adresseCpBailleur = reader["cpuser"].ToString();
-                        string adresseVilleBailleur = reader["villeuser"].ToString();
+                        string adresseRueBailleur = reader["adresseuser"]?.ToString() ?? "";
+                        string adresseCpBailleur = reader["cpuser"]?.ToString() ?? "";
+                        string adresseVilleBailleur = reader["villeuser"]?.ToString() ?? "";
 
-                        DateTime datDebutLoc = Convert.ToDateTime(reader["debutlocation"]);
-                        DateTime datFinLoc = Convert.ToDateTime(reader["finlocation"]);
+                        DateTime datDebutLoc = reader["debutlocation"] != DBNull.Value ? Convert.ToDateTime(reader["debutlocation"]) : DateTime.Today;
+                        DateTime datFinLoc = reader["finlocation"] != DBNull.Value ? Convert.ToDateTime(reader["finlocation"]) : DateTime.Today;
 
-                        string nomLoc = reader["nomlocataire"].ToString();
-                        string prenomLoc = reader["prenomlocataire"].ToString();
+                        string nomLoc = reader["nomlocataire"]?.ToString() ?? "";
+                        string prenomLoc = reader["prenomlocataire"]?.ToString() ?? "";
                         this.leLocataire = $"{prenomLoc} {nomLoc}";
-                        this.emailLocataire = reader["emailocataire"].ToString();
+                        this.emailLocataire = reader["emailocataire"]?.ToString() ?? "";
 
-                        decimal charges = Convert.ToDecimal(reader["charges"]);
-                        decimal loyercc = Convert.ToDecimal(reader["loyercc"]);
-                        string adresseRueBien = reader["adressebien"].ToString();
+                        decimal charges = reader["charges"] != DBNull.Value ? Convert.ToDecimal(reader["charges"]) : 0m;
+                        decimal loyercc = reader["loyercc"] != DBNull.Value ? Convert.ToDecimal(reader["loyercc"]) : 0m;
+                        string adresseRueBien = reader["adressebien"]?.ToString() ?? "";
                         string adresseCpVilleBien = $"{reader["cpbien"]} {reader["villebien"]}";
 
-                        decimal totalRecu = Convert.ToDecimal(reader["montantpaye"]);
+                        decimal totalRecu = reader["montantpaye"] != DBNull.Value ? Convert.ToDecimal(reader["montantpaye"]) : 0m;
                         DateTime datePaiement = reader["datepaiement"] != DBNull.Value ? Convert.ToDateTime(reader["datepaiement"]) : DateTime.MinValue;
-                        DateTime periodeFactureeComp = Convert.ToDateTime(reader["periodefacturee"]);
+                        DateTime periodeFactureeComp = reader["periodefacturee"] != DBNull.Value ? Convert.ToDateTime(reader["periodefacturee"]) : DateTime.Today;
+
                         this.laPeriode = periodeFactureeComp.ToString("MMMM yyyy", CultureInfo.CurrentCulture);
 
                         // Formatage des dates
-                        string debutLoc = datDebutLoc.ToString("d", CultureInfo.GetCultureInfo("fr-FR"));
-                        string finLoc = datFinLoc.ToString("d", CultureInfo.GetCultureInfo("fr-FR"));
-                        string strPeriodeFacturee = periodeFactureeComp.ToString("d", CultureInfo.GetCultureInfo("fr-FR"));
-                        string strDatePaiement = (datePaiement == DateTime.MinValue || datePaiement.Year <= 1) ? "-" : datePaiement.ToShortDateString();
+                        string debutLoc = datDebutLoc.ToString("dd/MM/yyyy");
+                        string finLoc = datFinLoc.ToString("dd/MM/yyyy");
+                        string strPeriodeFacturee = periodeFactureeComp.ToString("dd/MM/yyyy");
+                        string strDatePaiement = (datePaiement == DateTime.MinValue || datePaiement.Year <= 1) ? "-" : datePaiement.ToString("dd/MM/yyyy");
 
-                        // Création du répertoire destination si inexistant
+                        // 2. Préparation du chemin du fichier PDF
                         string dossierQuittances = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Quittances");
                         Directory.CreateDirectory(dossierQuittances);
-                        string cheminFichier = Path.Combine(dossierQuittances, $"Quittance {this.leLocataire} - {this.laPeriode}.pdf");
 
-                        // Génération du PDF
+                        string nomFichierBrut = $"Quittance {this.leLocataire} - {this.laPeriode}.pdf";
+                        string nomFichierSain = string.Join("_", nomFichierBrut.Split(Path.GetInvalidFileNameChars()));
+                        string cheminFichier = Path.Combine(dossierQuittances, nomFichierSain);
+
+                        // 3. Génération du PDF avec iTextSharp
                         using (var fs = new FileStream(cheminFichier, FileMode.Create, FileAccess.Write, FileShare.None))
                         {
                             using (Document quittance = new Document(PageSize.A4))
@@ -473,15 +480,16 @@ namespace GestionLocation
                                 PdfWriter.GetInstance(quittance, fs);
                                 quittance.Open();
 
-                                // Polices de caractères pour iTextSharp
-                                iTextFont fTitre = new iTextFont(iTextFont.FontFamily.HELVETICA, 18f, iTextFont.BOLD, BaseColor.BLACK);
-                                iTextFont fNormal = new iTextFont(iTextFont.FontFamily.HELVETICA, 11f, iTextFont.NORMAL, BaseColor.BLACK);
-                                iTextFont fItalique = new iTextFont(iTextFont.FontFamily.HELVETICA, 11f, iTextFont.ITALIC, BaseColor.BLACK);
-                                iTextFont fPiedPage = new iTextFont(iTextFont.FontFamily.HELVETICA, 8f, iTextFont.ITALIC, BaseColor.BLACK);
-                                iTextFont fPetitEspace = new iTextFont(iTextFont.FontFamily.HELVETICA, 2f, iTextFont.ITALIC, BaseColor.BLACK);
-                                iTextFont fGrasSouligne = new iTextFont(iTextFont.FontFamily.HELVETICA, 11f, iTextFont.BOLD | iTextFont.UNDERLINE, BaseColor.BLACK);
-                                iTextFont fGras = new iTextFont(iTextFont.FontFamily.HELVETICA, 11f, iTextFont.BOLD, BaseColor.BLACK);
+                                
 
+                                // Polices iTextSharp
+                                iTextFont fTitre = FontFactory.GetFont(FontFactory.HELVETICA, 18f, iTextFont.BOLD, iTextBaseColor.Black);
+                                iTextFont fNormal = FontFactory.GetFont(FontFactory.HELVETICA, 11f, iTextFont.NORMAL, iTextBaseColor.Black);
+                                iTextFont fItalique = FontFactory.GetFont(FontFactory.HELVETICA, 11f, iTextFont.ITALIC, iTextBaseColor.Black);
+                                iTextFont fPiedPage = FontFactory.GetFont(FontFactory.HELVETICA, 8f, iTextFont.ITALIC, iTextBaseColor.Black);
+                                iTextFont fPetitEspace = FontFactory.GetFont(FontFactory.HELVETICA, 2f, iTextFont.ITALIC, iTextBaseColor.Black);
+                                iTextFont fGrasSouligne = FontFactory.GetFont(FontFactory.HELVETICA, 11f, iTextFont.BOLD | iTextFont.UNDERLINE, iTextBaseColor.Black);
+                                iTextFont fGras = FontFactory.GetFont(FontFactory.HELVETICA, 11f, iTextFont.BOLD, iTextBaseColor.Black);
                                 Paragraph titre = new Paragraph($"QUITTANCE DE LOYER\n{this.laPeriode.ToUpper()}\n\n", fTitre) { Alignment = Element.ALIGN_CENTER };
                                 quittance.Add(titre);
 
@@ -499,7 +507,6 @@ namespace GestionLocation
                                 quittance.Add(new Paragraph("Adresse de la location :", fGrasSouligne) { Alignment = Element.ALIGN_LEFT });
                                 quittance.Add(new Paragraph($"{adresseRueBien} {adresseCpVilleBien}", fGras) { Alignment = Element.ALIGN_LEFT });
 
-                                // Calcul des dates de période
                                 int nbJours = DateTime.DaysInMonth(periodeFactureeComp.Year, periodeFactureeComp.Month);
                                 string periodeFin = $"{nbJours:D2}/{periodeFactureeComp.Month:D2}/{periodeFactureeComp.Year}";
 
@@ -512,7 +519,6 @@ namespace GestionLocation
                                     periodeFin = finLoc;
                                 }
 
-                                // Conversion montant en lettres
                                 long euros = (long)Math.Truncate(totalRecu);
                                 long centimesVal = (long)Math.Round((totalRecu - euros) * 100);
                                 string centimesText = centimesVal > 0 ? $" et {NumberConverter.Spell((int)centimesVal)} centimes" : string.Empty;
@@ -523,7 +529,6 @@ namespace GestionLocation
                                     $"période du {strPeriodeFacturee} au {periodeFin} et lui en donne quittance sous réserve de tous mes droits.\n\n";
                                 quittance.Add(new Paragraph(blocContenu, fItalique) { Alignment = Element.ALIGN_JUSTIFIED });
 
-                                // Détails du règlement
                                 quittance.Add(new Paragraph("Détails du règlement :", fGrasSouligne) { Alignment = Element.ALIGN_LEFT });
                                 quittance.Add(new Phrase("\n", fPetitEspace));
 
@@ -547,7 +552,6 @@ namespace GestionLocation
                                 quittance.Add(tabDetails);
                                 quittance.Add(new Phrase("\n"));
 
-                                // Signature
                                 quittance.Add(new Paragraph(this.leBailleur, fGras) { Alignment = Element.ALIGN_RIGHT });
 
                                 string cheminSignature = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Signature", $"{this.leBailleur}.png");
@@ -575,8 +579,11 @@ namespace GestionLocation
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erreur lors de la génération de la quittance :\n{ex.Message}",
-                                "Erreur de génération", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // Capture absolue de TOUTE exception et écriture sur le disque
+                File.WriteAllText(cheminLog, ex.ToString());
+
+                MessageBox.Show($"Une erreur est survenue lors de la génération :\n\n{ex.Message}\n\nLe détail complet a été écrit dans :\n{cheminLog}",
+                                "Erreur détectée", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -710,7 +717,7 @@ namespace GestionLocation
             PdfPCell cell = new PdfPCell(new Phrase(str, f))
             {
                 HorizontalAlignment = alignment,
-                BorderColor = BaseColor.WHITE
+                BorderColor = BaseColor.White
             };
             t.AddCell(cell);
         }
