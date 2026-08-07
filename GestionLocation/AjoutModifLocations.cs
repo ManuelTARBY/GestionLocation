@@ -1078,8 +1078,6 @@ namespace GestionLocation
                 int jour;
                 if (dateCpt.Year == dateDebut.Year && dateCpt.Month == dateDebut.Month)
                     jour = dateDebut.Day;
-                //else if (dateCpt.Year == dateFin.Year && dateCpt.Month == dateFin.Month)
-                //    jour = dateFin.Day;
                 else
                     jour = 1;
 

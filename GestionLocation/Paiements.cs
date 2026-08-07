@@ -572,6 +572,9 @@ namespace GestionLocation
                                 quittance.Add(new Paragraph(messagePied, fPiedPage) { Alignment = Element.ALIGN_JUSTIFIED });
 
                                 quittance.Close();
+
+                                MessageBox.Show($"La quittance a été générée avec succès et enregistrée dans le dossier :\n{dossierQuittances}",
+                                                "Quittance générée", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             }
                         }
                     }

@@ -47,27 +47,28 @@ namespace GestionLocation
         /// </summary>
         public void AfficherLocations()
         {
-            lstLocations.Items.Clear();
-
-            // Si aucun bien n'est coché, inutile d'exécuter une requête
+            // Si aucun bien n'est coché, on vide la liste et on arrête
             if (clbBiens.CheckedItems.Count == 0)
             {
+                lstLocations.DataSource = null;
                 return;
             }
 
+            var locations = new List<LocationItem>();
+
             var sqlBuilder = new StringBuilder(@"
-                SELECT 
-                    nombien, 
-                    CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', nomlocataire) AS `locataire`, 
-                    debutlocation, 
-                    finlocation, 
-                    CONCAT(SUBSTRING_INDEX(prenomcaution, ',', 1), ' ', nomcaution) AS `caution`, 
-                    idlocation AS `id`
-                FROM location 
-                NATURAL JOIN locataire 
-                NATURAL JOIN bien 
-                NATURAL JOIN caution 
-                WHERE 1=1 ");
+            SELECT 
+                nombien, 
+                CONCAT(SUBSTRING_INDEX(prenomlocataire, ',', 1), ' ', nomlocataire) AS `locataire`, 
+                debutlocation, 
+                finlocation, 
+                CONCAT(SUBSTRING_INDEX(prenomcaution, ',', 1), ' ', nomcaution) AS `caution`, 
+                idlocation AS `id`
+            FROM location 
+            NATURAL JOIN locataire 
+            NATURAL JOIN bien 
+            NATURAL JOIN caution 
+            WHERE 1=1 ");
 
             using (var command = new MySqlCommand())
             {
@@ -102,12 +103,52 @@ namespace GestionLocation
                     {
                         string display = $"{reader["nombien"]} || {reader["locataire"]} || Du {reader.GetDateTime("debutlocation"):d} au {reader.GetDateTime("finlocation"):d} || Caution : {reader["caution"]}";
 
-                        lstLocations.Items.Add(new LocationItem
+                        locations.Add(new LocationItem
                         {
                             Id = reader.GetInt32("id"),
                             DisplayText = display
                         });
                     }
+                }
+            }
+
+            // Liaison propre à la ListBox
+            lstLocations.DataSource = locations;
+            lstLocations.DisplayMember = "DisplayText";
+            lstLocations.ValueMember = "Id";
+        }
+
+        private void lstLocations_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Option A : Si vous avez utilisé DataSource (avec ValueMember = "Id")
+            if (lstLocations.SelectedValue != null && int.TryParse(lstLocations.SelectedValue.ToString(), out int idViaValue))
+            {
+                // idViaValue contient l'ID
+            }
+
+            // Option B : En castant directement l'objet sélectionné (fonctionne dans TOUS les cas)
+            if (lstLocations.SelectedItem is LocationItem location)
+            {
+                int id = location.Id;
+                // Utiliser id ici (ex: charger les détails de la location)
+            }
+        }
+
+        private void lstLocations_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            // Vérifie que le clic a eu lieu sur un élément valide de la liste
+            int index = lstLocations.IndexFromPoint(e.Location);
+
+            if (index != ListBox.NoMatches)
+            {
+                var item = lstLocations.Items[index] as LocationItem;
+                if (item != null)
+                {
+                    int selectedId = item.Id;
+
+                    // Exemple d'action : ouvrir un formulaire d'édition pour cette location
+                    // var frmDetails = new FormDetailsLocation(selectedId);
+                    // frmDetails.ShowDialog();
                 }
             }
         }
@@ -147,7 +188,7 @@ namespace GestionLocation
                     command.ExecuteNonQuery();
                 }
 
-                MajAffichageLoc();
+                AfficherLocations();
             }
             else
             {
@@ -206,7 +247,7 @@ namespace GestionLocation
                     MessageBox.Show("La location et ses paiements associés ont été supprimés avec succès.", "Suppression effectuée", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     // Rafraîchissement de la liste
-                    MajAffichageLoc();
+                    AfficherLocations();
                 }
             }
             else
@@ -329,77 +370,6 @@ namespace GestionLocation
         private void BtnFermerAppli_MouseLeave(object sender, EventArgs e)
         {
             SurvolSortie((Button)sender);
-        }
-
-        /// <summary>
-        /// Rafraîchit la liste des locations dans l'interface de manière fluide et optimisée
-        /// </summary>
-        private void MajAffichageLoc()
-        {
-            // 1. Sauvegarde de l'ID sélectionné pour restaurer la position après le rechargement
-            int idSelectionne = (lstLocations.SelectedItem is LocationItem itemCourant) ? itemCourant.Id : 0;
-
-            // 2. Une SEULE requête SQL avec JOIN pour récupérer toutes les données liées d'un coup
-            string req = @"SELECT l.idlocation, l.debutlocation, l.finlocation, 
-                          b.nombien AS nomBien, b.villebien, 
-                          loc.nomlocataire AS nomLocataire, loc.prenomlocataire AS prenomLocataire
-                   FROM location l
-                   INNER JOIN bien b ON l.idbien = b.idbien
-                   INNER JOIN locataire loc ON l.idlocataire = loc.idlocataire
-                   ORDER BY l.debutlocation DESC";
-
-            List<LocationItem> listeLocations = new List<LocationItem>();
-
-            using (MySqlCommand cmd = new MySqlCommand(req, Global.Connexion))
-            {
-                using (MySqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        int id = reader.GetInt32("idlocation");
-                        DateTime dateDebut = reader.GetDateTime("debutlocation");
-                        DateTime dateFin = reader.GetDateTime("finlocation");
-                        string nomBien = reader.GetString("nomBien");
-                        string villeBien = reader.IsDBNull(reader.GetOrdinal("villebien")) ? "" : reader.GetString("villebien");
-                        string nomLocataire = reader.GetString("nomLocataire").ToUpper();
-                        string prenomLocataire = reader.GetString("prenomLocataire");
-
-                        // Formate un libellé lisible et propre pour l'affichage
-                        string libelle = $"[{id}] {nomBien} ({villeBien}) - {nomLocataire} {prenomLocataire} ({dateDebut:dd/MM/yyyy} au {dateFin:dd/MM/yyyy})";
-
-                        listeLocations.Add(new LocationItem
-                        {
-                            Id = id,
-                            DisplayText = libelle
-                        });
-                    }
-                }
-            }
-
-            // 3. Mise à jour de la ListBox (BeginUpdate empêche le clignotement pendant le remplissage)
-            lstLocations.BeginUpdate();
-            try
-            {
-                // Utilisation du DataBinding pour une affectation directe
-                lstLocations.DataSource = null;
-                lstLocations.DataSource = listeLocations;
-                lstLocations.DisplayMember = "DisplayText";
-                lstLocations.ValueMember = "Id";
-
-                // 4. Restauration de la sélection précédente si elle existe toujours
-                if (idSelectionne > 0)
-                {
-                    LocationItem itemAReselectionner = listeLocations.FirstOrDefault(x => x.Id == idSelectionne);
-                    if (itemAReselectionner != null)
-                    {
-                        lstLocations.SelectedItem = itemAReselectionner;
-                    }
-                }
-            }
-            finally
-            {
-                lstLocations.EndUpdate(); // Réautorise le dessin du contrôle WinForms
-            }
         }
 
         public Accueil GetFenAccueil() => this.fenAccueil;
